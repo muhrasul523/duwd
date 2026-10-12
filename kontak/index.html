@@ -25,7 +25,7 @@
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
 
     <style>
-        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #ffffff 100%); min-height: 100vh; color: #1e293b; }
+        body { font-family: 'Inter', sans-serif; background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #ffffff 100%); min-height: 100vh; color: #1e293b; display: flex; flex-direction: column;}
         .glass-panel { background: rgba(255, 255, 255, 0.95); border: 1px solid rgba(255, 255, 255, 0.6); box-shadow: 0 10px 40px rgba(30, 58, 138, 0.08); }
         .fade-in { animation: fadeIn 0.4s ease-out forwards; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
@@ -34,39 +34,29 @@
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #f1f5f9; border-radius: 10px; }
         ::-webkit-scrollbar-thumb { background: #94a3b8; border-radius: 10px; }
-        .checkbox-custom:checked + div { background-color: #1e3a8a; border-color: #1e3a8a; }
-        .checkbox-custom:checked + div svg { display: block; }
     </style>
 </head>
 <body class="antialiased selection:bg-brand-gold selection:text-brand-blue" onload="initSystem()">
 
+    <!-- OVERLAY LOADING AWAL -->
     <div id="loadingOverlay" class="fixed inset-0 bg-brand-blue z-[9999] flex flex-col items-center justify-center text-white transition-opacity duration-300">
-        <!-- Area Spinner yang dibatasi ukurannya agar tidak berhimpitan -->
         <div class="relative flex justify-center items-center w-24 h-24 mb-6">
             <div class="absolute inset-0 border-4 border-brand-gold border-t-transparent border-b-transparent rounded-full animate-spin"></div>
             <div class="absolute inset-2 border-4 border-blue-400 border-l-transparent border-r-transparent rounded-full animate-[spin_1.5s_linear_infinite_reverse]"></div>
             <img src="../logo_wahdah_islamiyah.png" alt="Logo" class="h-10 w-10 object-contain drop-shadow-md z-10" onerror="this.style.display='none'">
         </div>
-        <div class="w-56 h-2 bg-blue-900 rounded-full overflow-hidden shadow-inner relative mb-4">
-            <div class="absolute top-0 left-0 h-full bg-gradient-to-r from-brand-gold to-yellow-300 w-full animate-[pulse_0.8s_ease-in-out_infinite] rounded-full"></div>
-        </div>
-        <p id="loadingText" class="text-sm font-semibold text-blue-100 tracking-wide">
+        <p id="loadingText" class="text-sm font-semibold text-blue-100 tracking-wide mt-2">
             Memuat... <span id="loadingPercent" class="text-brand-gold font-bold ml-1">0%</span>
         </p>
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <!-- Header (Logo bisa diklik untuk login rahasia) -->
+    <div class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Header -->
         <div class="text-center mb-8 fade-in hidden" id="headerSection">
             <img src="../logo_wahdah_islamiyah.png" alt="Logo Wahdah" onclick="openLoginModal()" class="h-20 mx-auto mb-4 drop-shadow-xl cursor-pointer hover:scale-105 transition-transform" onerror="this.style.display='none'" title="Klik untuk masuk mode edit">
-            <h1 class="text-2xl md:text-3xl font-extrabold text-brand-blue tracking-tight uppercase">Sistem Informasi DPW & DPD</h1>
-            <div class="mt-2 text-sm md:text-base font-semibold text-gray-600">
-                <p>Departemen Urusan Wilayah dan Daerah</p>
-                <p>Dewan Pimpinan Pusat</p>
-                <p class="text-brand-gold">Wahdah Islamiyah</p>
-            </div>
+            <h1 class="text-2xl md:text-3xl font-extrabold text-brand-blue tracking-tight uppercase">Sistem Informasi DPW DPD Wahdah Islamiyah</h1>
             
-            <!-- Indikator Mode Edit -->
             <div id="adminBadge" class="hidden mt-4 inline-flex items-center bg-green-100 text-green-700 px-3 py-1 rounded-full text-xs font-bold border border-green-300 shadow-sm">
                 <i class="fa-solid fa-user-shield mr-2"></i> Mode Edit Aktif
                 <button onclick="logoutAdmin()" class="ml-3 text-red-500 hover:text-red-700"><i class="fa-solid fa-power-off"></i></button>
@@ -75,69 +65,99 @@
 
         <!-- Main App Container -->
         <div id="mainAppView" class="hidden fade-in">
-            <!-- Dashboard Recap -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                <div class="bg-gradient-to-br from-brand-blue to-blue-800 rounded-xl p-4 text-white shadow-lg border border-blue-400/30">
-                    <p class="text-xs text-blue-200 font-semibold mb-1"><i class="fa-solid fa-map-location-dot mr-1 text-brand-gold"></i> Total Provinsi</p>
-                    <h3 class="text-2xl font-bold" id="statProvinsi">-</h3>
+            
+            <!-- Dashboard Target 2030 (Global/Tidak Kena Filter) -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div class="bg-gradient-to-br from-brand-blue to-blue-800 rounded-xl p-5 text-white shadow-lg border border-blue-400/30 flex flex-col justify-center">
+                    <h3 class="text-lg font-bold text-brand-gold uppercase tracking-wider mb-1"><i class="fa-solid fa-bullseye mr-1"></i> Target 2030</h3>
+                    <p class="text-sm text-blue-100 font-medium">Nasionalisasi Organisasi</p>
+                    <div class="mt-3 text-xs text-blue-200">
+                        <p>Target DPW: <span class="font-bold text-white">38</span></p>
+                        <p>Target DPD: <span class="font-bold text-white">412</span></p>
+                    </div>
                 </div>
-                <div class="bg-white rounded-xl p-4 text-brand-blue shadow-md border border-gray-100">
-                    <p class="text-xs text-gray-500 font-semibold mb-1"><i class="fa-solid fa-building-flag mr-1 text-green-500"></i> DPW Resmi</p>
-                    <h3 class="text-2xl font-bold" id="statDpw">-</h3>
+                <div class="bg-white rounded-xl p-5 text-brand-blue shadow-md border border-gray-100 relative overflow-hidden">
+                    <p class="text-sm text-gray-500 font-bold mb-1 uppercase tracking-wide">Capaian DPW</p>
+                    <div class="flex items-end gap-2">
+                        <h3 class="text-5xl font-black" id="statGlobalDpw">-</h3>
+                        <div class="pb-1.5">
+                            <p class="text-lg font-bold text-gray-700"><span id="statGlobalDpwCurrent">-</span> / 38</p>
+                            <p class="text-sm font-bold text-green-600" id="statGlobalDpwPct">-%</p>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-building-flag absolute -right-4 -bottom-4 text-7xl text-blue-50 opacity-50"></i>
                 </div>
-                <div class="bg-white rounded-xl p-4 text-brand-blue shadow-md border border-gray-100">
-                    <p class="text-xs text-gray-500 font-semibold mb-1"><i class="fa-solid fa-city mr-1 text-purple-500"></i> DPD Resmi</p>
-                    <h3 class="text-2xl font-bold" id="statDpd">-</h3>
+                <div class="bg-white rounded-xl p-5 text-brand-blue shadow-md border border-gray-100 relative overflow-hidden">
+                    <p class="text-sm text-gray-500 font-bold mb-1 uppercase tracking-wide">Capaian DPD</p>
+                    <div class="flex items-end gap-2">
+                        <h3 class="text-5xl font-black" id="statGlobalDpd">-</h3>
+                        <div class="pb-1.5">
+                            <p class="text-lg font-bold text-gray-700"><span id="statGlobalDpdCurrent">-</span> / 412</p>
+                            <p class="text-sm font-bold text-green-600" id="statGlobalDpdPct">-%</p>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-city absolute -right-4 -bottom-4 text-7xl text-blue-50 opacity-50"></i>
                 </div>
-                <div class="bg-white rounded-xl p-4 text-brand-blue shadow-md border border-gray-100">
-                    <p class="text-xs text-gray-500 font-semibold mb-1"><i class="fa-solid fa-clock mr-1 text-orange-500"></i> Belum Resmi</p>
-                    <h3 class="text-2xl font-bold text-gray-600" id="statNon">-</h3>
-                </div>
+            </div>
+
+            <!-- Dashboard Pulau (Scrollable horizontal on small screens) -->
+            <div id="pulauCards" class="flex gap-4 mb-8 overflow-x-auto pb-3 snap-x">
+                <!-- Diisi via JavaScript -->
             </div>
 
             <div class="glass-panel rounded-2xl p-5 mb-6 border-t-4 border-t-brand-gold">
                 <div class="flex flex-col lg:flex-row justify-between gap-5">
                     
-                    <!-- Checkbox Filters -->
+                    <!-- Checkbox Filters dengan Ikon Centang -->
                     <div class="flex flex-wrap gap-4 items-center">
-                        <label class="cursor-pointer flex items-center">
+                        <label class="cursor-pointer flex items-center group">
                             <input type="checkbox" id="chkDPW" checked class="peer sr-only" onchange="applyFilters()">
-                            <div class="w-5 h-5 rounded border border-gray-300 bg-white peer-checked:bg-brand-blue peer-checked:border-brand-blue flex items-center justify-center transition-colors mr-2">
-                                <i class="fa-solid fa-check text-white text-xs hidden peer-checked:block"></i>
+                            <div class="w-5 h-5 rounded border border-gray-300 bg-white peer-checked:bg-brand-blue peer-checked:border-brand-blue flex items-center justify-center transition-all mr-2 shadow-sm group-hover:border-brand-blue">
+                                <svg class="hidden peer-checked:block w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                                </svg>
                             </div>
-                            <span class="text-sm font-semibold text-gray-700">DPW</span>
+                            <span class="text-sm font-semibold text-gray-700 select-none">DPW</span>
                         </label>
-                        <label class="cursor-pointer flex items-center">
+                        <label class="cursor-pointer flex items-center group">
                             <input type="checkbox" id="chkDPD" checked class="peer sr-only" onchange="applyFilters()">
-                            <div class="w-5 h-5 rounded border border-gray-300 bg-white peer-checked:bg-brand-blue peer-checked:border-brand-blue flex items-center justify-center transition-colors mr-2">
-                                <i class="fa-solid fa-check text-white text-xs hidden peer-checked:block"></i>
+                            <div class="w-5 h-5 rounded border border-gray-300 bg-white peer-checked:bg-brand-blue peer-checked:border-brand-blue flex items-center justify-center transition-all mr-2 shadow-sm group-hover:border-brand-blue">
+                                <svg class="hidden peer-checked:block w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                                </svg>
                             </div>
-                            <span class="text-sm font-semibold text-gray-700">DPD</span>
+                            <span class="text-sm font-semibold text-gray-700 select-none">DPD</span>
                         </label>
+                        
                         <div class="w-px h-5 bg-gray-300 mx-1 hidden sm:block"></div>
-                        <label class="cursor-pointer flex items-center">
+                        
+                        <label class="cursor-pointer flex items-center group">
                             <input type="checkbox" id="chkNonDPW" class="peer sr-only" onchange="applyFilters()">
-                            <div class="w-5 h-5 rounded border border-gray-300 bg-white peer-checked:bg-gray-600 peer-checked:border-gray-600 flex items-center justify-center transition-colors mr-2">
-                                <i class="fa-solid fa-check text-white text-xs hidden peer-checked:block"></i>
+                            <div class="w-5 h-5 rounded border border-gray-300 bg-white peer-checked:bg-gray-500 peer-checked:border-gray-500 flex items-center justify-center transition-all mr-2 shadow-sm group-hover:border-gray-400">
+                                <svg class="hidden peer-checked:block w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                                </svg>
                             </div>
-                            <span class="text-sm font-medium text-gray-600">Non DPW</span>
+                            <span class="text-sm font-medium text-gray-600 select-none">Non DPW</span>
                         </label>
-                        <label class="cursor-pointer flex items-center">
+                        <label class="cursor-pointer flex items-center group">
                             <input type="checkbox" id="chkNonDPD" class="peer sr-only" onchange="applyFilters()">
-                            <div class="w-5 h-5 rounded border border-gray-300 bg-white peer-checked:bg-gray-600 peer-checked:border-gray-600 flex items-center justify-center transition-colors mr-2">
-                                <i class="fa-solid fa-check text-white text-xs hidden peer-checked:block"></i>
+                            <div class="w-5 h-5 rounded border border-gray-300 bg-white peer-checked:bg-gray-500 peer-checked:border-gray-500 flex items-center justify-center transition-all mr-2 shadow-sm group-hover:border-gray-400">
+                                <svg class="hidden peer-checked:block w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                                </svg>
                             </div>
-                            <span class="text-sm font-medium text-gray-600">Non DPD</span>
+                            <span class="text-sm font-medium text-gray-600 select-none">Non DPD</span>
                         </label>
                     </div>
 
-                    <!-- Actions -->
-                    <div class="flex gap-2 w-full lg:w-auto">
-                        <button onclick="copyFilteredData()" class="flex-1 lg:flex-none bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-4 py-2 rounded-xl text-sm font-semibold transition-all shadow-sm flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-copy"></i> Salin Data
+                    <!-- Actions Toolbar -->
+                    <div class="flex gap-2 w-full lg:w-auto" id="toolbarActions">
+                        <button onclick="promptCopyOption(copyFilteredData)" class="flex-1 lg:flex-none bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 px-4 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-copy"></i> Salin Data Filter
                         </button>
-                        <button onclick="exportCSV()" class="flex-1 lg:flex-none bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 px-4 py-2 rounded-xl text-sm font-semibold transition-all shadow-sm flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-file-excel"></i> Export Excel
+                        <button onclick="exportCSV()" class="flex-1 lg:flex-none bg-green-50 hover:bg-green-100 text-green-700 border border-green-200 px-4 py-2.5 rounded-xl text-sm font-bold transition-all shadow-sm flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-file-excel"></i> Export CSV
                         </button>
                     </div>
                 </div>
@@ -157,7 +177,7 @@
                         </select>
                     </div>
                     <div class="w-full md:w-1/3 relative">
-                        <input type="text" id="searchTable" oninput="applyFilters()" placeholder="Cari nama daerah, pengurus..." class="w-full rounded-xl border-gray-300 border bg-white px-10 py-[0.65rem] focus:ring-4 focus:ring-blue-100 outline-none text-sm text-gray-700 shadow-sm">
+                        <input type="text" id="searchTable" oninput="applyFilters()" placeholder="Cari nama daerah, pengurus..." class="w-full rounded-xl border-gray-300 border bg-white px-10 py-[0.65rem] focus:ring-4 focus:ring-blue-100 outline-none text-sm text-gray-700 shadow-sm transition-all">
                         <i class="fa-solid fa-search absolute left-4 top-3 text-gray-400 text-sm"></i>
                     </div>
                 </div>
@@ -168,13 +188,13 @@
                     <table class="w-full text-left text-sm whitespace-nowrap">
                         <thead class="bg-brand-blue text-white border-b-2 border-blue-900">
                             <tr>
-                                <th class="px-4 py-3.5 font-semibold text-center w-12 border-r border-blue-800/30">No</th>
-                                <th class="px-4 py-3.5 font-semibold cursor-pointer border-r border-blue-800/30" onclick="setSort('daerah')">Wilayah/Daerah <i class="fa-solid fa-sort ml-1 text-blue-300"></i></th>
-                                <th class="px-4 py-3.5 font-semibold border-r border-blue-800/30">Provinsi & Pulau</th>
-                                <th class="px-4 py-3.5 font-semibold border-r border-blue-800/30">Status</th>
-                                <th class="px-4 py-3.5 font-semibold border-r border-blue-800/30">Ketua</th>
-                                <th class="px-4 py-3.5 font-semibold border-r border-blue-800/30">Sekretaris</th>
-                                <th class="px-4 py-3.5 font-semibold text-center w-24">Aksi</th>
+                                <th class="px-4 py-4 font-semibold text-center w-12 border-r border-blue-800/30">No</th>
+                                <th class="px-4 py-4 font-semibold cursor-pointer border-r border-blue-800/30" onclick="setSort('daerah')">Wilayah/Daerah <i class="fa-solid fa-sort ml-1 text-blue-300"></i></th>
+                                <th class="px-4 py-4 font-semibold cursor-pointer border-r border-blue-800/30" onclick="setSort('provinsi')">Provinsi & Pulau <i class="fa-solid fa-sort ml-1 text-blue-300"></i></th>
+                                <th class="px-4 py-4 font-semibold cursor-pointer border-r border-blue-800/30" onclick="setSort('status')">Status <i class="fa-solid fa-sort ml-1 text-blue-300"></i></th>
+                                <th class="px-4 py-4 font-semibold border-r border-blue-800/30">Ketua</th>
+                                <th class="px-4 py-4 font-semibold border-r border-blue-800/30">Sekretaris</th>
+                                <th class="px-4 py-4 font-semibold text-center w-24">Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="tableBody" class="divide-y divide-gray-200 bg-white">
@@ -188,8 +208,15 @@
             </div>
         </div>
     </div>
+    
+    <!-- FOOTER IDENTITAS -->
+    <footer class="mt-auto text-center text-sm font-semibold text-gray-600 pb-8 fade-in">
+        <p>Departemen Urusan Wilayah dan Daerah</p>
+        <p>Dewan Pimpinan Pusat</p>
+        <p>Wahdah Islamiyah</p>
+    </footer>
 
-    <!-- Modal Password Rahasia -->
+    <!-- Modal Login Edit -->
     <div id="loginModal" class="fixed inset-0 bg-black/60 z-[100] hidden flex justify-center items-center p-4 backdrop-blur-sm">
         <div class="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl fade-in border-t-4 border-t-brand-blue">
             <div class="text-center mb-4">
@@ -224,11 +251,11 @@
                 </div>
 
                 <div class="mb-5">
-                    <label class="block text-sm font-bold text-brand-blue mb-1.5">Status Pengurus Wilayah/Daerah</label>
-                    <select id="formStatus" class="w-full rounded-xl border-gray-300 border bg-white px-3.5 py-2.5 focus:ring-4 focus:ring-blue-100 outline-none text-gray-700 font-semibold">
-                        <option value="">Belum Resmi (Kosong)</option>
-                        <option value="dpw">Resmi DPW</option>
-                        <option value="dpd">Resmi DPD</option>
+                    <label class="block text-sm font-bold text-brand-blue mb-1.5">Status Pengurus</label>
+                    <select id="formStatus" class="w-full rounded-xl border-gray-300 border bg-white px-3.5 py-2.5 focus:ring-4 focus:ring-blue-100 outline-none text-gray-700 font-semibold uppercase">
+                        <option value="">Belum (Kosong)</option>
+                        <option value="dpw">DPW</option>
+                        <option value="dpd">DPD</option>
                     </select>
                 </div>
 
@@ -237,7 +264,7 @@
                         <h4 class="font-bold text-sm text-gray-700 mb-3 flex items-center"><i class="fa-solid fa-user-tie text-brand-blue mr-2"></i> Data Ketua</h4>
                         <div class="mb-3">
                             <label class="block text-xs font-semibold text-gray-500 mb-1">Nama Lengkap</label>
-                            <input type="text" id="formKetuaNama" class="w-full rounded-lg border-gray-300 border px-3 py-2 text-sm focus:ring-2 focus:ring-brand-blue outline-none">
+                            <input type="text" id="formKetuaNama" oninput="this.value = this.value.toUpperCase()" class="w-full rounded-lg border-gray-300 border px-3 py-2 text-sm focus:ring-2 focus:ring-brand-blue outline-none uppercase">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-gray-500 mb-1">No. WhatsApp</label>
@@ -249,7 +276,7 @@
                         <h4 class="font-bold text-sm text-gray-700 mb-3 flex items-center"><i class="fa-solid fa-user text-green-600 mr-2"></i> Data Sekretaris</h4>
                         <div class="mb-3">
                             <label class="block text-xs font-semibold text-gray-500 mb-1">Nama Lengkap</label>
-                            <input type="text" id="formSekretarisNama" class="w-full rounded-lg border-gray-300 border px-3 py-2 text-sm focus:ring-2 focus:ring-brand-blue outline-none">
+                            <input type="text" id="formSekretarisNama" oninput="this.value = this.value.toUpperCase()" class="w-full rounded-lg border-gray-300 border px-3 py-2 text-sm focus:ring-2 focus:ring-brand-blue outline-none uppercase">
                         </div>
                         <div>
                             <label class="block text-xs font-semibold text-gray-500 mb-1">No. WhatsApp</label>
@@ -270,7 +297,7 @@
 
     <script>
         // ==========================================
-        // GANTI URL DI BAWAH INI DENGAN WEB APP URL BARU ANDA
+        // API SCRIPT (Ganti dengan URL yang baru!)
         // ==========================================
         const API_URL = 'https://script.google.com/macros/s/AKfycbxJax4WfJLgDGYbfd-knxDq4TNdaB2o5j2AXwlFUzL0zXcyKR9biPfI0_R3H0cperaVbg/exec';
         
@@ -281,30 +308,26 @@
         let tableState = { sortBy: 'daerah', sortAsc: true };
         let loadInterval, loadProgress = 0;
 
-        // --- SISTEM LOADING ---
-        function startLoading(text = "Memuat...") {
-            document.getElementById('loadingText').innerHTML = `${text} <span id="loadingPercent" class="text-brand-gold font-bold ml-1">0%</span>`;
-            const ol = document.getElementById('loadingOverlay');
-            ol.style.display = 'flex';
-            setTimeout(() => ol.style.opacity = '1', 10);
-            
+        // --- SISTEM LOADING AWAL ---
+        function startInitialLoading() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
             loadProgress = 0;
             clearInterval(loadInterval);
             loadInterval = setInterval(() => {
-                loadProgress += Math.floor(Math.random() * 15) + 10;
+                loadProgress += Math.floor(Math.random() * 15) + 5;
                 if (loadProgress > 95) loadProgress = 95;
                 document.getElementById('loadingPercent').innerText = loadProgress + '%';
-            }, 80);
+            }, 100);
         }
 
-        function endLoading() {
+        function endInitialLoading() {
             document.getElementById('loadingPercent').innerText = '100%';
             clearInterval(loadInterval);
             setTimeout(() => {
                 const ol = document.getElementById('loadingOverlay');
                 ol.style.opacity = '0';
                 setTimeout(() => ol.style.display = 'none', 300);
-            }, 300);
+            }, 200);
         }
 
         // --- KOMUNIKASI API ---
@@ -315,17 +338,9 @@
                     headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify(payload)
                 });
-                
-                // Pengecekan Error JSON saat Access Apps Script salah
-                let result;
-                try {
-                    result = await res.json();
-                } catch (e) {
-                    throw new Error("Gagal mengurai data. Pastikan akses API WebApp disetel ke 'Anyone'.");
-                }
-
+                let result = await res.json();
                 if (result.status === 'success') return result.data;
-                throw new Error(result.message || "Gagal menghubungi server.");
+                throw new Error(result.message);
             } catch (err) {
                 console.error("Fetch Error:", err);
                 throw err;
@@ -333,32 +348,88 @@
         }
 
         async function initSystem() {
-            startLoading("Memuat...");
+            startInitialLoading();
             try {
                 const res = await fetchAPI({ action: 'getAllData' });
-                // Proteksi Struktur Data Array
                 db.data = Array.isArray(res) ? res : (res?.data || []);
                 
                 document.getElementById('headerSection').classList.remove('hidden');
                 document.getElementById('mainAppView').classList.remove('hidden');
                 
+                calculateGlobalStats();
                 setupDropdowns();
                 applyFilters();
-                endLoading();
+                endInitialLoading();
             } catch (error) {
-                endLoading();
+                endInitialLoading();
                 Swal.fire({
                     icon: 'error', title: 'Koneksi Gagal',
-                    text: 'Pastikan API_URL di kode HTML sudah benar dan Web App di-deploy dengan akses "Anyone".',
+                    text: 'Pastikan API_URL di kode HTML sudah benar dan URL tujuan bisa diakses publik.',
                     confirmButtonText: 'Coba Lagi'
                 }).then(() => location.reload());
             }
         }
 
-        // --- SETUP DROPDOWN (TomSelect) ---
+        // --- HITUNG STATISTIK GLOBAL (Abaikan Filter) ---
+        function calculateGlobalStats() {
+            const targetDPW = 38;
+            const targetDPD = 412;
+            
+            let currentDPW = 0;
+            let currentDPD = 0;
+            
+            // Map untuk hitung pulau
+            const mapPulau = {};
+
+            db.data.forEach(d => {
+                const p = d.pulau || 'Lainnya';
+                if (!mapPulau[p]) {
+                    mapPulau[p] = { total: 0, dpw: 0, dpd: 0 };
+                }
+                mapPulau[p].total++;
+                
+                if (d.status === 'dpw') {
+                    currentDPW++;
+                    mapPulau[p].dpw++;
+                } else if (d.status === 'dpd') {
+                    currentDPD++;
+                    mapPulau[p].dpd++;
+                }
+            });
+
+            // Update DOM Global Target
+            document.getElementById('statGlobalDpw').innerText = currentDPW;
+            document.getElementById('statGlobalDpwCurrent').innerText = currentDPW;
+            document.getElementById('statGlobalDpwPct').innerText = Math.round((currentDPW/targetDPW)*100) + '%';
+            
+            document.getElementById('statGlobalDpd').innerText = currentDPD;
+            document.getElementById('statGlobalDpdCurrent').innerText = currentDPD;
+            document.getElementById('statGlobalDpdPct').innerText = Math.round((currentDPD/targetDPD)*100) + '%';
+
+            // Render Card Pulau
+            const pulauContainer = document.getElementById('pulauCards');
+            pulauContainer.innerHTML = '';
+            
+            // Render urutan sesuai object keys
+            Object.keys(mapPulau).forEach(pName => {
+                const pd = mapPulau[pName];
+                pulauContainer.innerHTML += `
+                    <div class="bg-white rounded-xl p-4 min-w-[200px] flex-shrink-0 shadow-sm border border-gray-100 flex-1 snap-start">
+                        <p class="text-[11px] text-gray-500 font-bold uppercase tracking-wider mb-2 border-b pb-1"><i class="fa-solid fa-map-location-dot text-brand-gold mr-1"></i> Pulau ${pName}</p>
+                        <p class="text-xs text-gray-600 mb-1">Total Wilayah: <span class="font-bold text-gray-800">${pd.total}</span></p>
+                        <div class="flex justify-between text-sm font-semibold">
+                            <span class="text-brand-blue">DPW: ${pd.dpw}</span>
+                            <span class="text-purple-700">DPD: ${pd.dpd}</span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // --- SETUP DROPDOWN (Sesuai Urutan Sheet) ---
         function setupDropdowns() {
-            // Ambil daftar unik
-            const pulauList = [...new Set(db.data.map(d => d.pulau))].filter(Boolean).sort();
+            // Gunakan Set murni tanpa .sort() untuk menjaga urutan Sheet
+            const pulauList = [...new Set(db.data.map(d => d.pulau))].filter(Boolean);
             
             const selPulau = document.getElementById('filterPulau');
             pulauList.forEach(p => selPulau.innerHTML += `<option value="${p}">${p}</option>`);
@@ -366,15 +437,15 @@
             tsPulau = new TomSelect('#filterPulau', { placeholder: "Cari / Pilih Pulau...", allowEmptyOption: true });
             tsProvinsi = new TomSelect('#filterProvinsi', { placeholder: "Cari / Pilih Provinsi...", allowEmptyOption: true });
             
-            handlePulauChange(); // init provinsi dinamis
+            handlePulauChange(); // Init dinamis pertama
         }
 
         function handlePulauChange() {
             const p = document.getElementById('filterPulau').value;
             let provList = [];
             
-            if (p) provList = [...new Set(db.data.filter(d => d.pulau === p).map(d => d.provinsi))].filter(Boolean).sort();
-            else provList = [...new Set(db.data.map(d => d.provinsi))].filter(Boolean).sort();
+            if (p) provList = [...new Set(db.data.filter(d => d.pulau === p).map(d => d.provinsi))].filter(Boolean);
+            else provList = [...new Set(db.data.map(d => d.provinsi))].filter(Boolean);
 
             tsProvinsi.clear();
             tsProvinsi.clearOptions();
@@ -384,7 +455,7 @@
             applyFilters();
         }
 
-        // --- FILTERING & RENDERING ---
+        // --- FILTERING (Instant) ---
         function applyFilters() {
             const fPulau = document.getElementById('filterPulau').value;
             const fProv = document.getElementById('filterProvinsi').value;
@@ -396,17 +467,15 @@
             const showNonDpd = document.getElementById('chkNonDPD').checked;
 
             filteredData = db.data.filter(d => {
-                // Filter Teks (Proteksi undefined)
                 const str = `${d.daerah || ''} ${d.provinsi || ''} ${d.ketua_nama || ''} ${d.sekretaris_nama || ''}`.toLowerCase();
                 if (search && !str.includes(search)) return false;
                 
-                // Filter Geografi
                 if (fPulau && d.pulau !== fPulau) return false;
                 if (fProv && d.provinsi !== fProv) return false;
 
-                // Filter Ceklis Status
-                const isDPW = d.tingkat === 'DPW';
-                const isResmi = (d.status === 'dpw' || d.status === 'dpd');
+                const isDPW = (d.tingkat || '').toUpperCase() === 'DPW';
+                const s = (d.status || '').toLowerCase();
+                const isResmi = (s === 'dpw' || s === 'dpd');
 
                 if (isDPW) {
                     if (isResmi && !showDpw) return false;
@@ -418,16 +487,15 @@
                 return true;
             });
 
-            // Sorting
+            // Sorting Dinamis
             filteredData.sort((a, b) => {
-                let vA = a[tableState.sortBy] || '';
-                let vB = b[tableState.sortBy] || '';
+                let vA = String(a[tableState.sortBy] || '').toLowerCase();
+                let vB = String(b[tableState.sortBy] || '').toLowerCase();
                 if (vA < vB) return tableState.sortAsc ? -1 : 1;
                 if (vA > vB) return tableState.sortAsc ? 1 : -1;
                 return 0;
             });
 
-            renderDashboard();
             renderTable();
         }
 
@@ -437,61 +505,51 @@
             applyFilters();
         }
 
-        function renderDashboard() {
-            const provSet = new Set(filteredData.map(d => d.provinsi));
-            let sumDpw = 0, sumDpd = 0, sumNon = 0;
-            
-            filteredData.forEach(d => {
-                if (d.status === 'dpw') sumDpw++;
-                else if (d.status === 'dpd') sumDpd++;
-                else sumNon++;
-            });
-
-            document.getElementById('statProvinsi').innerText = provSet.size;
-            document.getElementById('statDpw').innerText = sumDpw;
-            document.getElementById('statDpd').innerText = sumDpd;
-            document.getElementById('statNon').innerText = sumNon;
-            document.getElementById('txtInfoTable').innerText = `Menampilkan ${filteredData.length} baris data`;
-        }
-
         function renderTable() {
             const tbody = document.getElementById('tableBody');
             tbody.innerHTML = '';
+            document.getElementById('txtInfoTable').innerText = `Menampilkan ${filteredData.length} baris data`;
 
             if (filteredData.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="7" class="text-center py-12 text-gray-500 bg-gray-50 italic">Data tidak ditemukan sesuai filter.</td></tr>`;
                 return;
             }
 
+            // Atur Visibilitas Toolbar Edit vs Salin
+            if(isLoggedIn) document.getElementById('toolbarActions').classList.add('hidden');
+            else document.getElementById('toolbarActions').classList.remove('hidden');
+
             filteredData.forEach((d, idx) => {
-                let statusBadge = `<span class="bg-gray-100 text-gray-500 border border-gray-200 px-2 py-0.5 rounded text-[10px] font-bold uppercase">Belum Resmi</span>`;
+                let statusBadge = `<span class="bg-gray-100 text-gray-500 border border-gray-200 px-2 py-0.5 rounded text-[10px] font-bold uppercase">Belum</span>`;
                 if (d.status === 'dpw') statusBadge = `<span class="bg-blue-100 text-brand-blue border border-blue-200 px-2 py-0.5 rounded text-[10px] font-bold uppercase"><i class="fa-solid fa-building-flag mr-1"></i> DPW</span>`;
                 if (d.status === 'dpd') statusBadge = `<span class="bg-purple-100 text-purple-700 border border-purple-200 px-2 py-0.5 rounded text-[10px] font-bold uppercase"><i class="fa-solid fa-city mr-1"></i> DPD</span>`;
 
                 const waKetua = d.ketua_wa ? `<a href="https://wa.me/${cleanWA(d.ketua_wa)}" target="_blank" class="text-green-600 hover:text-green-800"><i class="fa-brands fa-whatsapp"></i> ${d.ketua_wa}</a>` : '-';
                 const waSek = d.sekretaris_wa ? `<a href="https://wa.me/${cleanWA(d.sekretaris_wa)}" target="_blank" class="text-green-600 hover:text-green-800"><i class="fa-brands fa-whatsapp"></i> ${d.sekretaris_wa}</a>` : '-';
 
-                const btnCopy = `<button onclick="copyRow('${d.id}')" class="text-indigo-500 hover:bg-indigo-50 p-1.5 rounded transition-colors" title="Salin Baris"><i class="fa-solid fa-copy"></i></button>`;
-                const btnEdit = isLoggedIn ? `<button onclick="openForm('${d.id}')" class="text-brand-gold hover:bg-yellow-50 p-1.5 rounded transition-colors ml-1" title="Edit Data"><i class="fa-solid fa-pen-to-square"></i></button>` : '';
+                // Jika Edit mode aktif, tombol Copy dihilangkan per barisnya
+                const btnCopy = isLoggedIn ? '' : `<button onclick="promptCopyOption(val => copyRow('${d.id}', val))" class="text-indigo-500 hover:bg-indigo-50 p-2 rounded-lg transition-colors border border-transparent hover:border-indigo-100" title="Salin Baris"><i class="fa-solid fa-copy"></i></button>`;
+                const btnEdit = isLoggedIn ? `<button onclick="openForm('${d.id}')" class="text-brand-gold hover:bg-yellow-50 p-2 rounded-lg transition-colors border border-transparent hover:border-yellow-200" title="Edit Data"><i class="fa-solid fa-pen-to-square"></i></button>` : '';
 
+                // Warna belang-belang tipis (Ganjil Putih, Genap Slate 50)
                 tbody.innerHTML += `
-                    <tr class="odd:bg-white even:bg-blue-50/30 hover:bg-blue-100/50 transition-colors border-b border-gray-100">
+                    <tr class="odd:bg-white even:bg-slate-50/50 hover:bg-blue-50/50 transition-colors border-b border-gray-100">
                         <td class="px-4 py-3 text-center text-gray-500 text-sm">${idx + 1}</td>
                         <td class="px-4 py-3">
-                            <p class="font-bold text-gray-800">${d.daerah}</p>
-                            <p class="text-[10px] text-gray-400 font-mono tracking-widest mt-0.5">${d.tingkat} - ID:${d.id}</p>
+                            <p class="font-bold text-gray-800 uppercase">${d.daerah || '-'}</p>
+                            <p class="text-[10px] font-bold text-gray-400 mt-0.5 uppercase">${d.tingkat || '-'}</p>
                         </td>
                         <td class="px-4 py-3 text-sm text-gray-600">
-                            <p>${d.provinsi}</p>
-                            <p class="text-xs text-gray-400"><i class="fa-solid fa-map text-[10px]"></i> ${d.pulau}</p>
+                            <p class="uppercase">${d.provinsi || '-'}</p>
+                            <p class="text-[11px] text-gray-400"><i class="fa-solid fa-map mr-1"></i>${d.pulau || '-'}</p>
                         </td>
                         <td class="px-4 py-3">${statusBadge}</td>
                         <td class="px-4 py-3 text-sm">
-                            <p class="font-semibold text-gray-700">${d.ketua_nama || '-'}</p>
+                            <p class="font-bold text-gray-700">${d.ketua_nama || '-'}</p>
                             <p class="text-xs mt-0.5">${waKetua}</p>
                         </td>
                         <td class="px-4 py-3 text-sm">
-                            <p class="font-semibold text-gray-700">${d.sekretaris_nama || '-'}</p>
+                            <p class="font-bold text-gray-700">${d.sekretaris_nama || '-'}</p>
                             <p class="text-xs mt-0.5">${waSek}</p>
                         </td>
                         <td class="px-4 py-3 text-center whitespace-nowrap">${btnCopy} ${btnEdit}</td>
@@ -500,16 +558,14 @@
             });
         }
 
-        // --- AUTH LOGIC ---
+        // --- AUTH & EDIT LOGIC ---
         function openLoginModal() {
-            if (isLoggedIn) return; // Jika sudah login, tidak usah buka modal
+            if (isLoggedIn) return;
             document.getElementById('adminPassword').value = '';
             document.getElementById('loginModal').classList.remove('hidden');
             setTimeout(() => document.getElementById('adminPassword').focus(), 100);
         }
-
         function closeLoginModal() { document.getElementById('loginModal').classList.add('hidden'); }
-
         function verifyLogin() {
             const pwd = document.getElementById('adminPassword').value;
             if (pwd === 'duwd1404') {
@@ -517,24 +573,22 @@
                 closeLoginModal();
                 document.getElementById('adminBadge').classList.remove('hidden');
                 document.getElementById('adminBadge').classList.add('inline-flex');
-                renderTable(); // Re-render to show edit buttons
+                renderTable(); 
                 Swal.fire({icon: 'success', title: 'Mode Edit Aktif', timer: 1500, showConfirmButton: false});
             } else {
                 Swal.fire('Akses Ditolak', 'Kata sandi salah.', 'error');
             }
         }
-
         function logoutAdmin() {
             isLoggedIn = false;
             document.getElementById('adminBadge').classList.add('hidden');
             document.getElementById('adminBadge').classList.remove('inline-flex');
-            renderTable(); // Re-render to hide edit buttons
-            Swal.fire({icon: 'info', title: 'Mode Edit Dimatikan', timer: 1500, showConfirmButton: false});
+            renderTable(); 
+            Swal.fire({icon: 'info', title: 'Keluar Mode Edit', timer: 1000, showConfirmButton: false});
         }
 
-        // --- EDIT LOGIC ---
         function openForm(id) {
-            const d = db.data.find(x => x.id === id);
+            const d = db.data.find(x => String(x.id) === String(id));
             if (!d) return;
 
             document.getElementById('formId').value = d.id;
@@ -545,15 +599,14 @@
             document.getElementById('dispDaerah').innerText = d.daerah;
             document.getElementById('dispProvinsi').innerHTML = `<i class="fa-solid fa-map mr-1"></i> ${d.provinsi}, Pulau ${d.pulau}`;
             
-            document.getElementById('formStatus').value = d.status;
-            document.getElementById('formKetuaNama').value = d.ketua_nama;
-            document.getElementById('formKetuaWa').value = d.ketua_wa;
-            document.getElementById('formSekretarisNama').value = d.sekretaris_nama;
-            document.getElementById('formSekretarisWa').value = d.sekretaris_wa;
+            document.getElementById('formStatus').value = (d.status || '').toLowerCase();
+            document.getElementById('formKetuaNama').value = d.ketua_nama || '';
+            document.getElementById('formKetuaWa').value = d.ketua_wa || '';
+            document.getElementById('formSekretarisNama').value = d.sekretaris_nama || '';
+            document.getElementById('formSekretarisWa').value = d.sekretaris_wa || '';
             
             document.getElementById('formModal').classList.remove('hidden');
         }
-
         function closeForm() { document.getElementById('formModal').classList.add('hidden'); }
 
         async function saveData(e) {
@@ -563,42 +616,79 @@
                 tingkat: document.getElementById('formTingkat').value,
                 daerah: document.getElementById('formDaerah').value,
                 status: document.getElementById('formStatus').value,
-                ketua_nama: document.getElementById('formKetuaNama').value.trim(),
+                ketua_nama: document.getElementById('formKetuaNama').value.trim().toUpperCase(),
                 ketua_wa: cleanWA(document.getElementById('formKetuaWa').value),
-                sekretaris_nama: document.getElementById('formSekretarisNama').value.trim(),
+                sekretaris_nama: document.getElementById('formSekretarisNama').value.trim().toUpperCase(),
                 sekretaris_wa: cleanWA(document.getElementById('formSekretarisWa').value)
             };
 
             closeForm();
-            startLoading("Menyimpan...");
+            
+            // Menggunakan Swal blur overlay halus tanpa logo putar besar
+            Swal.fire({
+                title: 'Menyimpan...',
+                text: 'Mencatat pembaruan data ke server',
+                allowOutsideClick: false,
+                didOpen: () => { Swal.showLoading(); }
+            });
             
             try {
                 const res = await fetchAPI({ action: 'updateData', data: record });
                 db.data = Array.isArray(res) ? res : (res?.data || []);
+                calculateGlobalStats(); // Update chart global jika status berubah
                 applyFilters();
-                endLoading();
                 Swal.fire({icon: 'success', title: 'Berhasil', text: 'Data disimpan.', timer: 1500, showConfirmButton: false});
             } catch (error) {
-                endLoading();
-                Swal.fire('Error', 'Gagal menyimpan data.', 'error');
+                Swal.fire('Gagal Menyimpan', 'Terjadi kesalahan sistem', 'error');
             }
         }
 
-        // --- UTILS & EKSPOR ---
+        // --- UTILS & EKSPOR SALIN DATA ---
         function cleanWA(wa) {
-            let val = wa.replace(/\D/g, ''); 
+            if(!wa) return '';
+            let val = String(wa).replace(/\D/g, ''); 
             if (val.startsWith('08')) val = '628' + val.substring(2); 
             return val;
         }
-
         function formatWA(input) { input.value = cleanWA(input.value); }
 
-        function formatDataText(d) {
-            let t = `*${(d.status || d.tingkat).toUpperCase()} ${d.daerah}*\n`;
-            t += `Provinsi: ${d.provinsi}`;
-            if (d.ketua_nama) t += `\nKetua: ${d.ketua_nama} ${cleanWA(d.ketua_wa) ? '(wa.me/'+cleanWA(d.ketua_wa)+')' : ''}`;
-            if (d.sekretaris_nama) t += `\nSekretaris: ${d.sekretaris_nama} ${cleanWA(d.sekretaris_wa) ? '(wa.me/'+cleanWA(d.sekretaris_wa)+')' : ''}`;
+        function formatDataText(d, mode) {
+            let s = d.status || d.tingkat || '';
+            let t = `*${s.toUpperCase()} ${d.daerah}*`;
+            
+            if (mode >= 2) {
+                const waK = cleanWA(d.ketua_wa);
+                t += `\n- Ketua: ${d.ketua_nama || '-'} ${waK ? waK : ''}`.trimEnd();
+            }
+            if (mode >= 3) {
+                const waS = cleanWA(d.sekretaris_wa);
+                t += `\n- Sekretaris: ${d.sekretaris_nama || '-'} ${waS ? waS : ''}`.trimEnd();
+            }
             return t;
+        }
+
+        // SweetAlert untuk Opsi Format Salin
+        function promptCopyOption(callbackAction) {
+            if (filteredData.length === 0) return Swal.fire('Kosong', 'Tidak ada data untuk disalin', 'info');
+            
+            Swal.fire({
+                title: 'Format Salinan',
+                text: 'Pilih bagian data yang ingin disalin',
+                input: 'radio',
+                inputOptions: {
+                    '1': 'Hanya Nama Wilayah (DPW/DPD)',
+                    '2': 'Beserta Nama & WA Ketua',
+                    '3': 'Lengkap (Ketua & Sekretaris)'
+                },
+                inputValue: '3',
+                showCancelButton: true,
+                confirmButtonColor: '#1e3a8a',
+                confirmButtonText: '<i class="fa-solid fa-copy"></i> Salin',
+                cancelButtonText: 'Batal',
+                customClass: { input: 'flex flex-col gap-2 text-left p-4' }
+            }).then((result) => {
+                if (result.isConfirmed) callbackAction(parseInt(result.value));
+            });
         }
 
         function copyToClipboard(text, msg) {
@@ -608,18 +698,17 @@
             el.select();
             document.execCommand('copy');
             document.body.removeChild(el);
-            Swal.fire({ title: 'Tersalin!', text: msg, icon: 'success', timer: 1500, showConfirmButton: false });
+            Swal.fire({ title: 'Berhasil Disalin!', text: msg, icon: 'success', timer: 1500, showConfirmButton: false });
         }
 
-        function copyRow(id) {
-            const d = db.data.find(x => x.id === id);
-            if(d) copyToClipboard(formatDataText(d), `Data ${d.daerah} berhasil disalin!`);
+        function copyRow(id, mode) {
+            const d = db.data.find(x => String(x.id) === String(id));
+            if(d) copyToClipboard(formatDataText(d, mode), `1 Baris data tersalin`);
         }
 
-        function copyFilteredData() {
-            if(filteredData.length === 0) return Swal.fire('Info', 'Tidak ada data', 'info');
-            const text = filteredData.map(formatDataText).join('\n\n');
-            copyToClipboard(text, `${filteredData.length} data disalin.`);
+        function copyFilteredData(mode) {
+            const text = filteredData.map(d => formatDataText(d, mode)).join('\n\n'); // Spasi 1 baris antar data
+            copyToClipboard(text, `${filteredData.length} baris data disalin`);
         }
 
         function exportCSV() {
