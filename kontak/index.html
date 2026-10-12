@@ -66,88 +66,105 @@
         <!-- Main App Container -->
         <div id="mainAppView" class="hidden fade-in">
             
-            <!-- Dashboard Target 2030 (Global/Tidak Kena Filter) -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                <div class="bg-gradient-to-br from-brand-blue to-blue-800 rounded-xl p-5 text-white shadow-lg border border-blue-400/30 flex flex-col justify-center">
-                    <h3 class="text-lg font-bold text-brand-gold uppercase tracking-wider mb-1"><i class="fa-solid fa-bullseye mr-1"></i> Target 2030</h3>
-                    <p class="text-sm text-blue-100 font-medium">Nasionalisasi Organisasi</p>
-                    <div class="mt-3 text-xs text-blue-200">
-                        <p>Target DPW: <span class="font-bold text-white">38</span></p>
-                        <p>Target DPD: <span class="font-bold text-white">412</span></p>
-                    </div>
-                </div>
-                <div class="bg-white rounded-xl p-5 text-brand-blue shadow-md border border-gray-100 relative overflow-hidden">
-                    <p class="text-sm text-gray-500 font-bold mb-1 uppercase tracking-wide">Capaian DPW</p>
-                    <div class="flex items-end gap-2">
-                        <h3 class="text-5xl font-black" id="statGlobalDpw">-</h3>
-                        <div class="pb-1.5">
-                            <p class="text-lg font-bold text-gray-700"><span id="statGlobalDpwCurrent">-</span> / 38</p>
-                            <p class="text-sm font-bold text-green-600" id="statGlobalDpwPct">-%</p>
+            <!-- Dashboard Bagian 1: Capaian & Target -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                
+                <!-- CAPAIAN SAAT INI -->
+                <div class="bg-white rounded-xl p-5 text-brand-blue shadow-sm border border-gray-100 flex flex-col justify-center">
+                    <h3 class="text-base font-extrabold text-gray-800 mb-3 border-b pb-2 uppercase tracking-wide">Capaian Saat Ini</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-[11px] text-gray-500 font-bold uppercase mb-1">DPW</p>
+                            <div class="flex items-end gap-2">
+                                <h4 class="text-3xl font-black leading-none" id="capaianDpwVal">-</h4>
+                                <div class="pb-0.5">
+                                    <p class="text-xs font-bold text-gray-500">/ <span id="capaianDpwTotal">-</span> Prov</p>
+                                    <p class="text-xs font-black text-green-600" id="capaianDpwPct">-%</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-[11px] text-gray-500 font-bold uppercase mb-1">DPD</p>
+                            <div class="flex items-end gap-2">
+                                <h4 class="text-3xl font-black leading-none" id="capaianDpdVal">-</h4>
+                                <div class="pb-0.5">
+                                    <p class="text-xs font-bold text-gray-500">/ <span id="capaianDpdTotal">-</span> KabKota</p>
+                                    <p class="text-xs font-black text-green-600" id="capaianDpdPct">-%</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <i class="fa-solid fa-building-flag absolute -right-4 -bottom-4 text-7xl text-blue-50 opacity-50"></i>
                 </div>
-                <div class="bg-white rounded-xl p-5 text-brand-blue shadow-md border border-gray-100 relative overflow-hidden">
-                    <p class="text-sm text-gray-500 font-bold mb-1 uppercase tracking-wide">Capaian DPD</p>
-                    <div class="flex items-end gap-2">
-                        <h3 class="text-5xl font-black" id="statGlobalDpd">-</h3>
-                        <div class="pb-1.5">
-                            <p class="text-lg font-bold text-gray-700"><span id="statGlobalDpdCurrent">-</span> / 412</p>
-                            <p class="text-sm font-bold text-green-600" id="statGlobalDpdPct">-%</p>
+
+                <!-- TARGET 2030 -->
+                <div class="bg-gradient-to-br from-brand-blue to-blue-900 rounded-xl p-5 text-white shadow-sm flex flex-col justify-center border border-blue-800">
+                    <h3 class="text-base font-extrabold text-brand-gold mb-3 border-b border-blue-700 pb-2 uppercase tracking-wide">Target 2030</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <p class="text-[11px] text-blue-200 font-bold uppercase mb-1">DPW</p>
+                            <div class="flex items-end gap-2">
+                                <h4 class="text-3xl font-black leading-none" id="targetDpwVal">-</h4>
+                                <div class="pb-0.5">
+                                    <p class="text-xs font-bold text-blue-100">/ 38</p>
+                                    <p class="text-xs font-black text-brand-gold" id="targetDpwPct">-%</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <p class="text-[11px] text-blue-200 font-bold uppercase mb-1">DPD</p>
+                            <div class="flex items-end gap-2">
+                                <h4 class="text-3xl font-black leading-none" id="targetDpdVal">-</h4>
+                                <div class="pb-0.5">
+                                    <p class="text-xs font-bold text-blue-100">/ <span id="targetDpdTotal">-</span> KabKota</p>
+                                    <p class="text-xs font-black text-brand-gold" id="targetDpdPct">-%</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <i class="fa-solid fa-city absolute -right-4 -bottom-4 text-7xl text-blue-50 opacity-50"></i>
                 </div>
+
             </div>
 
-            <!-- Dashboard Pulau (Scrollable horizontal on small screens) -->
-            <div id="pulauCards" class="flex gap-4 mb-8 overflow-x-auto pb-3 snap-x">
+            <!-- Dashboard Bagian 2: Rekap Pulau (Grid Responsif) -->
+            <div id="pulauCards" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 mb-8">
                 <!-- Diisi via JavaScript -->
             </div>
 
-            <div class="glass-panel rounded-2xl p-5 mb-6 border-t-4 border-t-brand-gold">
+            <div class="glass-panel rounded-2xl p-4 md:p-5 mb-6 border-t-4 border-t-brand-gold">
                 <div class="flex flex-col lg:flex-row justify-between gap-5">
                     
-                    <!-- Checkbox Filters dengan Ikon Centang -->
+                    <!-- Checkbox Filters (Dengan Centang Jelas) -->
                     <div class="flex flex-wrap gap-4 items-center">
                         <label class="cursor-pointer flex items-center group">
                             <input type="checkbox" id="chkDPW" checked class="peer sr-only" onchange="applyFilters()">
-                            <div class="w-5 h-5 rounded border border-gray-300 bg-white peer-checked:bg-brand-blue peer-checked:border-brand-blue flex items-center justify-center transition-all mr-2 shadow-sm group-hover:border-brand-blue">
-                                <svg class="hidden peer-checked:block w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
-                                </svg>
+                            <div class="w-5 h-5 rounded border-2 border-gray-300 bg-white peer-checked:bg-brand-blue peer-checked:border-brand-blue flex items-center justify-center transition-all mr-2 shadow-sm">
+                                <i class="fa-solid fa-check text-white text-[10px] opacity-0 peer-checked:opacity-100 transition-opacity"></i>
                             </div>
-                            <span class="text-sm font-semibold text-gray-700 select-none">DPW</span>
+                            <span class="text-sm font-bold text-gray-700 select-none">DPW</span>
                         </label>
                         <label class="cursor-pointer flex items-center group">
                             <input type="checkbox" id="chkDPD" checked class="peer sr-only" onchange="applyFilters()">
-                            <div class="w-5 h-5 rounded border border-gray-300 bg-white peer-checked:bg-brand-blue peer-checked:border-brand-blue flex items-center justify-center transition-all mr-2 shadow-sm group-hover:border-brand-blue">
-                                <svg class="hidden peer-checked:block w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
-                                </svg>
+                            <div class="w-5 h-5 rounded border-2 border-gray-300 bg-white peer-checked:bg-brand-blue peer-checked:border-brand-blue flex items-center justify-center transition-all mr-2 shadow-sm">
+                                <i class="fa-solid fa-check text-white text-[10px] opacity-0 peer-checked:opacity-100 transition-opacity"></i>
                             </div>
-                            <span class="text-sm font-semibold text-gray-700 select-none">DPD</span>
+                            <span class="text-sm font-bold text-gray-700 select-none">DPD</span>
                         </label>
                         
                         <div class="w-px h-5 bg-gray-300 mx-1 hidden sm:block"></div>
                         
                         <label class="cursor-pointer flex items-center group">
-                            <input type="checkbox" id="chkNonDPW" class="peer sr-only" onchange="applyFilters()">
-                            <div class="w-5 h-5 rounded border border-gray-300 bg-white peer-checked:bg-gray-500 peer-checked:border-gray-500 flex items-center justify-center transition-all mr-2 shadow-sm group-hover:border-gray-400">
-                                <svg class="hidden peer-checked:block w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
-                                </svg>
+                            <input type="checkbox" id="chkNonDPW" checked class="peer sr-only" onchange="applyFilters()">
+                            <div class="w-5 h-5 rounded border-2 border-gray-300 bg-white peer-checked:bg-gray-500 peer-checked:border-gray-500 flex items-center justify-center transition-all mr-2 shadow-sm">
+                                <i class="fa-solid fa-check text-white text-[10px] opacity-0 peer-checked:opacity-100 transition-opacity"></i>
                             </div>
-                            <span class="text-sm font-medium text-gray-600 select-none">Non DPW</span>
+                            <span class="text-sm font-bold text-gray-600 select-none">Non DPW</span>
                         </label>
                         <label class="cursor-pointer flex items-center group">
-                            <input type="checkbox" id="chkNonDPD" class="peer sr-only" onchange="applyFilters()">
-                            <div class="w-5 h-5 rounded border border-gray-300 bg-white peer-checked:bg-gray-500 peer-checked:border-gray-500 flex items-center justify-center transition-all mr-2 shadow-sm group-hover:border-gray-400">
-                                <svg class="hidden peer-checked:block w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3.5">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
-                                </svg>
+                            <input type="checkbox" id="chkNonDPD" checked class="peer sr-only" onchange="applyFilters()">
+                            <div class="w-5 h-5 rounded border-2 border-gray-300 bg-white peer-checked:bg-gray-500 peer-checked:border-gray-500 flex items-center justify-center transition-all mr-2 shadow-sm">
+                                <i class="fa-solid fa-check text-white text-[10px] opacity-0 peer-checked:opacity-100 transition-opacity"></i>
                             </div>
-                            <span class="text-sm font-medium text-gray-600 select-none">Non DPD</span>
+                            <span class="text-sm font-bold text-gray-600 select-none">Non DPD</span>
                         </label>
                     </div>
 
@@ -184,17 +201,18 @@
             </div>
 
             <div class="glass-panel rounded-2xl overflow-hidden shadow-sm">
+                <!-- Hapus whitespace-nowrap dari table agar kolom bisa membungkus teks panjang dan mencegah scroll horizontal -->
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left text-sm whitespace-nowrap">
+                    <table class="w-full text-left text-sm">
                         <thead class="bg-brand-blue text-white border-b-2 border-blue-900">
                             <tr>
-                                <th class="px-4 py-4 font-semibold text-center w-12 border-r border-blue-800/30">No</th>
-                                <th class="px-4 py-4 font-semibold cursor-pointer border-r border-blue-800/30" onclick="setSort('daerah')">Wilayah/Daerah <i class="fa-solid fa-sort ml-1 text-blue-300"></i></th>
-                                <th class="px-4 py-4 font-semibold cursor-pointer border-r border-blue-800/30" onclick="setSort('provinsi')">Provinsi & Pulau <i class="fa-solid fa-sort ml-1 text-blue-300"></i></th>
-                                <th class="px-4 py-4 font-semibold cursor-pointer border-r border-blue-800/30" onclick="setSort('status')">Status <i class="fa-solid fa-sort ml-1 text-blue-300"></i></th>
-                                <th class="px-4 py-4 font-semibold border-r border-blue-800/30">Ketua</th>
-                                <th class="px-4 py-4 font-semibold border-r border-blue-800/30">Sekretaris</th>
-                                <th class="px-4 py-4 font-semibold text-center w-24">Aksi</th>
+                                <th class="px-3 py-3 font-semibold text-center w-10 border-r border-blue-800/30 whitespace-nowrap">No</th>
+                                <th class="px-3 py-3 font-semibold cursor-pointer border-r border-blue-800/30" onclick="setSort('daerah')">Wilayah/Daerah <i class="fa-solid fa-sort ml-1 text-blue-300"></i></th>
+                                <th class="px-3 py-3 font-semibold cursor-pointer border-r border-blue-800/30" onclick="setSort('provinsi')">Provinsi & Pulau <i class="fa-solid fa-sort ml-1 text-blue-300"></i></th>
+                                <th class="px-3 py-3 font-semibold cursor-pointer border-r border-blue-800/30 whitespace-nowrap" onclick="setSort('status')">Status <i class="fa-solid fa-sort ml-1 text-blue-300"></i></th>
+                                <th class="px-3 py-3 font-semibold border-r border-blue-800/30">Ketua</th>
+                                <th class="px-3 py-3 font-semibold border-r border-blue-800/30">Sekretaris</th>
+                                <th class="px-3 py-3 font-semibold text-center w-20 whitespace-nowrap">Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="tableBody" class="divide-y divide-gray-200 bg-white">
@@ -305,7 +323,8 @@
         let filteredData = [];
         let isLoggedIn = false;
         let tsPulau, tsProvinsi;
-        let tableState = { sortBy: 'daerah', sortAsc: true };
+        // Default sort menggunakan _originalIndex agar sesuai dengan urutan Sheet
+        let tableState = { sortBy: '_originalIndex', sortAsc: true };
         let loadInterval, loadProgress = 0;
 
         // --- SISTEM LOADING AWAL ---
@@ -351,7 +370,9 @@
             startInitialLoading();
             try {
                 const res = await fetchAPI({ action: 'getAllData' });
+                // Tambahkan index asli untuk default sorting
                 db.data = Array.isArray(res) ? res : (res?.data || []);
+                db.data = db.data.map((item, index) => ({ ...item, _originalIndex: index }));
                 
                 document.getElementById('headerSection').classList.remove('hidden');
                 document.getElementById('mainAppView').classList.remove('hidden');
@@ -372,54 +393,79 @@
 
         // --- HITUNG STATISTIK GLOBAL (Abaikan Filter) ---
         function calculateGlobalStats() {
-            const targetDPW = 38;
-            const targetDPD = 412;
-            
+            let totalProv = 0;
+            let totalKab = 0;
             let currentDPW = 0;
             let currentDPD = 0;
             
-            // Map untuk hitung pulau
             const mapPulau = {};
 
             db.data.forEach(d => {
                 const p = d.pulau || 'Lainnya';
                 if (!mapPulau[p]) {
-                    mapPulau[p] = { total: 0, dpw: 0, dpd: 0 };
+                    mapPulau[p] = { totalProv: 0, totalKab: 0, dpw: 0, dpd: 0 };
                 }
-                mapPulau[p].total++;
                 
-                if (d.status === 'dpw') {
-                    currentDPW++;
-                    mapPulau[p].dpw++;
-                } else if (d.status === 'dpd') {
-                    currentDPD++;
-                    mapPulau[p].dpd++;
+                const tk = (d.tingkat || '').toUpperCase();
+                const st = (d.status || '').toLowerCase();
+
+                if (tk === 'DPW') {
+                    totalProv++;
+                    mapPulau[p].totalProv++;
+                    if (st === 'dpw') { currentDPW++; mapPulau[p].dpw++; }
+                } else if (tk === 'DPD') {
+                    totalKab++;
+                    mapPulau[p].totalKab++;
+                    if (st === 'dpd') { currentDPD++; mapPulau[p].dpd++; }
                 }
             });
 
-            // Update DOM Global Target
-            document.getElementById('statGlobalDpw').innerText = currentDPW;
-            document.getElementById('statGlobalDpwCurrent').innerText = currentDPW;
-            document.getElementById('statGlobalDpwPct').innerText = Math.round((currentDPW/targetDPW)*100) + '%';
+            // Kalkulasi Persentase
+            const pctDpwCurrent = totalProv > 0 ? Math.round((currentDPW/totalProv)*100) : 0;
+            const pctDpdCurrent = totalKab > 0 ? Math.round((currentDPD/totalKab)*100) : 0;
+            const pctDpwTarget = Math.round((currentDPW/38)*100);
+            const pctDpdTarget = totalKab > 0 ? Math.round((currentDPD/totalKab)*100) : 0;
+
+            // DOM Capaian Saat Ini
+            document.getElementById('capaianDpwVal').innerText = currentDPW;
+            document.getElementById('capaianDpwTotal').innerText = totalProv;
+            document.getElementById('capaianDpwPct').innerText = pctDpwCurrent + '%';
             
-            document.getElementById('statGlobalDpd').innerText = currentDPD;
-            document.getElementById('statGlobalDpdCurrent').innerText = currentDPD;
-            document.getElementById('statGlobalDpdPct').innerText = Math.round((currentDPD/targetDPD)*100) + '%';
+            document.getElementById('capaianDpdVal').innerText = currentDPD;
+            document.getElementById('capaianDpdTotal').innerText = totalKab;
+            document.getElementById('capaianDpdPct').innerText = pctDpdCurrent + '%';
+
+            // DOM Target 2030
+            document.getElementById('targetDpwVal').innerText = currentDPW;
+            document.getElementById('targetDpwPct').innerText = pctDpwTarget + '%';
+            
+            document.getElementById('targetDpdVal').innerText = currentDPD;
+            document.getElementById('targetDpdTotal').innerText = totalKab;
+            document.getElementById('targetDpdPct').innerText = pctDpdTarget + '%';
 
             // Render Card Pulau
             const pulauContainer = document.getElementById('pulauCards');
             pulauContainer.innerHTML = '';
             
-            // Render urutan sesuai object keys
             Object.keys(mapPulau).forEach(pName => {
                 const pd = mapPulau[pName];
+                const cleanName = pName.replace(/pulau /i, '').toUpperCase();
+                
+                const pDpwPct = pd.totalProv > 0 ? Math.round((pd.dpw/pd.totalProv)*100) : 0;
+                const pDpdPct = pd.totalKab > 0 ? Math.round((pd.dpd/pd.totalKab)*100) : 0;
+
                 pulauContainer.innerHTML += `
-                    <div class="bg-white rounded-xl p-4 min-w-[200px] flex-shrink-0 shadow-sm border border-gray-100 flex-1 snap-start">
-                        <p class="text-[11px] text-gray-500 font-bold uppercase tracking-wider mb-2 border-b pb-1"><i class="fa-solid fa-map-location-dot text-brand-gold mr-1"></i> Pulau ${pName}</p>
-                        <p class="text-xs text-gray-600 mb-1">Total Wilayah: <span class="font-bold text-gray-800">${pd.total}</span></p>
-                        <div class="flex justify-between text-sm font-semibold">
-                            <span class="text-brand-blue">DPW: ${pd.dpw}</span>
-                            <span class="text-purple-700">DPD: ${pd.dpd}</span>
+                    <div class="bg-white rounded-xl p-3 sm:p-4 shadow-sm border border-gray-100 flex flex-col justify-center">
+                        <p class="text-[13px] sm:text-sm font-black text-gray-800 mb-2 sm:mb-3 border-b pb-1 text-center tracking-wide">${cleanName}</p>
+                        
+                        <div class="flex justify-between items-center text-[10px] sm:text-xs mb-1 sm:mb-2">
+                            <span class="font-medium text-gray-600">DPW: <span class="font-bold text-gray-900 text-[11px] sm:text-[13px]">${pd.dpw}</span>/${pd.totalProv}</span>
+                            <span class="font-bold ${pDpwPct === 100 ? 'text-green-600' : 'text-gray-400'}">${pDpwPct}%</span>
+                        </div>
+                        
+                        <div class="flex justify-between items-center text-[10px] sm:text-xs">
+                            <span class="font-medium text-gray-600">DPD: <span class="font-bold text-gray-900 text-[11px] sm:text-[13px]">${pd.dpd}</span>/${pd.totalKab}</span>
+                            <span class="font-bold ${pDpdPct === 100 ? 'text-green-600' : 'text-gray-400'}">${pDpdPct}%</span>
                         </div>
                     </div>
                 `;
@@ -521,38 +567,35 @@
 
             filteredData.forEach((d, idx) => {
                 let statusBadge = `<span class="bg-gray-100 text-gray-500 border border-gray-200 px-2 py-0.5 rounded text-[10px] font-bold uppercase">Belum</span>`;
-                if (d.status === 'dpw') statusBadge = `<span class="bg-blue-100 text-brand-blue border border-blue-200 px-2 py-0.5 rounded text-[10px] font-bold uppercase"><i class="fa-solid fa-building-flag mr-1"></i> DPW</span>`;
-                if (d.status === 'dpd') statusBadge = `<span class="bg-purple-100 text-purple-700 border border-purple-200 px-2 py-0.5 rounded text-[10px] font-bold uppercase"><i class="fa-solid fa-city mr-1"></i> DPD</span>`;
+                if (d.status === 'dpw') statusBadge = `<span class="bg-blue-100 text-brand-blue border border-blue-200 px-2 py-0.5 rounded text-[10px] font-bold uppercase"><i class="fa-solid fa-check-circle mr-1"></i> DPW</span>`;
+                if (d.status === 'dpd') statusBadge = `<span class="bg-blue-50 text-blue-800 border border-blue-200 px-2 py-0.5 rounded text-[10px] font-bold uppercase"><i class="fa-solid fa-check mr-1"></i> DPD</span>`;
 
                 const waKetua = d.ketua_wa ? `<a href="https://wa.me/${cleanWA(d.ketua_wa)}" target="_blank" class="text-green-600 hover:text-green-800"><i class="fa-brands fa-whatsapp"></i> ${d.ketua_wa}</a>` : '-';
                 const waSek = d.sekretaris_wa ? `<a href="https://wa.me/${cleanWA(d.sekretaris_wa)}" target="_blank" class="text-green-600 hover:text-green-800"><i class="fa-brands fa-whatsapp"></i> ${d.sekretaris_wa}</a>` : '-';
 
-                // Jika Edit mode aktif, tombol Copy dihilangkan per barisnya
-                const btnCopy = isLoggedIn ? '' : `<button onclick="promptCopyOption(val => copyRow('${d.id}', val))" class="text-indigo-500 hover:bg-indigo-50 p-2 rounded-lg transition-colors border border-transparent hover:border-indigo-100" title="Salin Baris"><i class="fa-solid fa-copy"></i></button>`;
-                const btnEdit = isLoggedIn ? `<button onclick="openForm('${d.id}')" class="text-brand-gold hover:bg-yellow-50 p-2 rounded-lg transition-colors border border-transparent hover:border-yellow-200" title="Edit Data"><i class="fa-solid fa-pen-to-square"></i></button>` : '';
+                const btnCopy = isLoggedIn ? '' : `<button onclick="promptCopyOption(val => copyRow('${d.id}', val))" class="text-gray-500 hover:text-brand-blue hover:bg-blue-50 p-1.5 sm:p-2 rounded-lg transition-colors border border-transparent hover:border-blue-100" title="Salin Baris"><i class="fa-solid fa-copy"></i></button>`;
+                const btnEdit = isLoggedIn ? `<button onclick="openForm('${d.id}')" class="text-brand-gold hover:bg-yellow-50 p-1.5 sm:p-2 rounded-lg transition-colors border border-transparent hover:border-yellow-200" title="Edit Data"><i class="fa-solid fa-pen-to-square"></i></button>` : '';
 
-                // Warna belang-belang tipis (Ganjil Putih, Genap Slate 50)
                 tbody.innerHTML += `
                     <tr class="odd:bg-white even:bg-slate-50/50 hover:bg-blue-50/50 transition-colors border-b border-gray-100">
-                        <td class="px-4 py-3 text-center text-gray-500 text-sm">${idx + 1}</td>
-                        <td class="px-4 py-3">
+                        <td class="px-3 py-3 text-center text-gray-500 text-sm whitespace-nowrap">${idx + 1}</td>
+                        <td class="px-3 py-3">
                             <p class="font-bold text-gray-800 uppercase">${d.daerah || '-'}</p>
-                            <p class="text-[10px] font-bold text-gray-400 mt-0.5 uppercase">${d.tingkat || '-'}</p>
                         </td>
-                        <td class="px-4 py-3 text-sm text-gray-600">
-                            <p class="uppercase">${d.provinsi || '-'}</p>
-                            <p class="text-[11px] text-gray-400"><i class="fa-solid fa-map mr-1"></i>${d.pulau || '-'}</p>
+                        <td class="px-3 py-3 text-sm text-gray-600">
+                            <p class="uppercase font-medium">${d.provinsi || '-'}</p>
+                            <p class="text-[11px] text-gray-400 truncate"><i class="fa-solid fa-map-location-dot mr-1"></i>${d.pulau || '-'}</p>
                         </td>
-                        <td class="px-4 py-3">${statusBadge}</td>
-                        <td class="px-4 py-3 text-sm">
-                            <p class="font-bold text-gray-700">${d.ketua_nama || '-'}</p>
+                        <td class="px-3 py-3 whitespace-nowrap">${statusBadge}</td>
+                        <td class="px-3 py-3 text-sm">
+                            <p class="font-bold text-gray-700 uppercase">${d.ketua_nama || '-'}</p>
                             <p class="text-xs mt-0.5">${waKetua}</p>
                         </td>
-                        <td class="px-4 py-3 text-sm">
-                            <p class="font-bold text-gray-700">${d.sekretaris_nama || '-'}</p>
+                        <td class="px-3 py-3 text-sm">
+                            <p class="font-bold text-gray-700 uppercase">${d.sekretaris_nama || '-'}</p>
                             <p class="text-xs mt-0.5">${waSek}</p>
                         </td>
-                        <td class="px-4 py-3 text-center whitespace-nowrap">${btnCopy} ${btnEdit}</td>
+                        <td class="px-3 py-3 text-center whitespace-nowrap">${btnCopy} ${btnEdit}</td>
                     </tr>
                 `;
             });
