@@ -403,31 +403,40 @@
             <button class="btn btn-outline-danger" onclick="logoutAdmin()"><i class="bi bi-box-arrow-right"></i> Keluar</button>
         </div>
 
-        <!-- Dashboard Cards -->
+        <!-- Dashboard Cards (Restrukturisasi 2 Card Utama) -->
         <div class="row g-3 mb-4">
-            <div class="col-md-4">
+            <!-- Card 1: Rekap Peserta -->
+            <div class="col-md-6">
                 <div class="stat-card">
-                    <div class="stat-title">Total Peserta</div>
-                    <div class="stat-value text-center" id="stat-total" style="font-size: 3.5rem; margin-top: 0.5rem;">0</div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="stat-card">
-                    <div class="stat-title">Kategori Kepengurusan</div>
-                    <div class="d-flex flex-column mt-3 fs-6 fw-bold">
-                        <div class="mb-2">DPP: <span id="stat-dpp" class="text-warning float-end">0</span></div>
-                        <div class="mb-2">DPW: <span id="stat-dpw" class="text-warning float-end">0</span></div>
-                        <div>DPD: <span id="stat-dpd" class="text-warning float-end">0</span></div>
+                    <div class="stat-title">Rekapitulasi Peserta</div>
+                    <div class="d-flex align-items-center mt-3">
+                        <div class="text-center pe-4 border-end border-light border-opacity-25" style="min-width: 120px;">
+                            <div class="stat-value" id="stat-total" style="font-size: 3.5rem; margin-top: 0; line-height: 1;">0</div>
+                            <div class="small opacity-75 mt-1">Total Peserta</div>
+                        </div>
+                        <div class="flex-grow-1 fs-6 fw-bold ps-4">
+                            <div class="mb-2">DPP: <span id="stat-dpp" class="text-warning float-end">0</span></div>
+                            <div class="mb-2">DPW: <span id="stat-dpw" class="text-warning float-end">0</span></div>
+                            <div>DPD: <span id="stat-dpd" class="text-warning float-end">0</span></div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <!-- Card 2: Rekap Infak -->
+            <div class="col-md-6">
                 <div class="stat-card accent">
-                    <div class="stat-title">Statistik Infak</div>
-                    <div class="d-flex flex-column mt-3 fs-6 fw-bold">
-                        <div class="mb-2">= 20.000 : <span id="stat-infak-pas" class="float-end">0 Org</span></div>
-                        <div class="mb-2">> 20.000 : <span id="stat-infak-lebih" class="float-end">0 Org</span></div>
-                        <div>< 20.000 : <span id="stat-infak-kurang" class="float-end">0 Org</span></div>
+                    <div class="stat-title">Rekapitulasi Infak</div>
+                    <div class="d-flex align-items-center mt-3">
+                        <div class="text-center pe-4 border-end border-light border-opacity-25" style="min-width: 160px;">
+                            <div class="stat-value text-warning" id="stat-infak-total" style="font-size: 1.8rem; margin-top: 0; line-height: 1.2;">Rp 0</div>
+                            <div class="small opacity-75 mt-2">Total Potensi</div>
+                        </div>
+                        <div class="flex-grow-1 fw-bold ps-4" style="font-size: 0.9rem;">
+                            <div class="mb-1">> Rp 20.000 : <span id="stat-infak-lebih" class="float-end">0 Org</span></div>
+                            <div class="mb-1">= Rp 20.000 : <span id="stat-infak-pas" class="float-end">0 Org</span></div>
+                            <div class="mb-1">< Rp 20.000 : <span id="stat-infak-kurang" class="float-end">0 Org</span></div>
+                            <div>Tidak Infak : <span id="stat-infak-nol" class="float-end">0 Org</span></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -862,10 +871,14 @@
                 rawAdminData = await apiCall('getAdminData');
                 filteredAdminData = [...rawAdminData];
                 
-                // Ganti view
-                document.getElementById('main-container').style.display = 'none'; 
-                document.getElementById('view-admin').classList.remove('hidden');
-                document.getElementById('view-admin').style.display = 'flex';
+                // Ganti view: Sembunyikan sepenuhnya container utama agar tidak bertumpuk
+                const mainContainer = document.getElementById('main-container');
+                mainContainer.classList.add('hidden');
+                mainContainer.style.setProperty('display', 'none', 'important');
+                
+                const adminView = document.getElementById('view-admin');
+                adminView.classList.remove('hidden');
+                adminView.style.setProperty('display', 'flex', 'important');
                 
                 updateDashboardStats();
                 renderAdminTable();
@@ -878,9 +891,15 @@
         }
 
         function logoutAdmin() {
-            document.getElementById('view-admin').classList.add('hidden');
-            document.getElementById('view-admin').style.display = 'none';
-            document.getElementById('main-container').style.display = 'flex';
+            // Sembunyikan admin dan tampilkan form
+            const adminView = document.getElementById('view-admin');
+            adminView.classList.add('hidden');
+            adminView.style.setProperty('display', 'none', 'important');
+            
+            const mainContainer = document.getElementById('main-container');
+            mainContainer.classList.remove('hidden');
+            mainContainer.style.setProperty('display', 'flex', 'important');
+            
             resetForm();
         }
 
@@ -888,7 +907,8 @@
             document.getElementById('stat-total').innerText = rawAdminData.length;
             
             let cDpp = 0, cDpw = 0, cDpd = 0;
-            let iPas = 0, iLebih = 0, iKurang = 0;
+            let iPas = 0, iLebih = 0, iKurang = 0, iNol = 0;
+            let totalInfak = 0;
 
             rawAdminData.forEach(d => {
                 if(d.Tingkat === 'DPP') cDpp++;
@@ -896,17 +916,24 @@
                 else if(d.Tingkat === 'DPD') cDpd++;
 
                 let infak = Number(d['Nominal Infak']) || 0;
+                totalInfak += infak;
+                
                 if(infak === 20000) iPas++;
                 else if(infak > 20000) iLebih++;
                 else if(infak > 0 && infak < 20000) iKurang++;
+                else if(infak === 0) iNol++;
             });
 
             document.getElementById('stat-dpp').innerText = cDpp;
             document.getElementById('stat-dpw').innerText = cDpw;
             document.getElementById('stat-dpd').innerText = cDpd;
-            document.getElementById('stat-infak-pas').innerText = iPas;
-            document.getElementById('stat-infak-lebih').innerText = iLebih;
-            document.getElementById('stat-infak-kurang').innerText = iKurang;
+            
+            // Set statistik infak baru
+            document.getElementById('stat-infak-total').innerText = 'Rp ' + toRupiahFormat(totalInfak);
+            document.getElementById('stat-infak-pas').innerText = iPas + ' Org';
+            document.getElementById('stat-infak-lebih').innerText = iLebih + ' Org';
+            document.getElementById('stat-infak-kurang').innerText = iKurang + ' Org';
+            document.getElementById('stat-infak-nol').innerText = iNol + ' Org';
         }
 
         function handleAdminSearch() {
