@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrasi Upgrading Wahdah Islamiyah</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- TomSelect (Modern Dropdown UI) -->
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
+    
+    <style>
+        /* CSS Variabel untuk Tema Warna */
+        :root {
+            --primary: #0284c7; /* Sky Blue Deep */
+            --primary-light: #e0f2fe;
+            --accent: #f97316; /* Orange/Coral accent */
+            --accent-hover: #ea580c;
+            --bg-grad-1: #f0f9ff;
+            --bg-grad-2: #eef2ff;
+            --text-dark: #1e293b;
+            --text-muted: #64748b;
+        }
+
+        /* Modern Background with animated subtle gradient */
+        body {
+            background: linear-gradient(120deg, var(--bg-grad-1) 0%, var(--bg-grad-2) 100%);
+            background-size: 200% 200%;
+            animation: bgAnimation 15s ease infinite;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            min-height: 100vh;
+            color: var(--text-dark);
+            display: flex;
+            flex-direction: column;
+        }
+
+        @keyframes bgAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Typography & Hierarchy */
+        .page-title {
+            color: var(--primary);
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        .page-subtitle {
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* Glassmorphism Card Style */
+        .card-custom {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 24px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.05);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        /* Form Inputs & Inline Icons */
+        .form-label {
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.95rem;
+            margin-bottom: 0.4rem;
+        }
+        .input-group-custom {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        .input-group-custom .form-control, 
+        .input-group-custom .form-select {
+            border-radius: 14px;
+            padding: 0.8rem 1.2rem 0.8rem 3rem;
+            border: 2px solid transparent;
+            background-color: #f8fafc;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        .input-group-custom .form-control:focus, 
+        .input-group-custom .form-select:focus {
+            background-color: #ffffff;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.15);
+            outline: none;
+        }
+        .inline-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--primary);
+            z-index: 5;
+            pointer-events: none;
+            font-size: 1.2rem;
+            opacity: 0.7;
+        }
+        
+        /* TomSelect override */
+        .input-group-custom .ts-wrapper { padding-left: 0; }
+        .input-group-custom .ts-control {
+            border-radius: 14px;
+            padding: 0.8rem 1.2rem 0.8rem 3rem;
+            border: 2px solid transparent;
+            background-color: #f8fafc;
+        }
+        .input-group-custom .ts-wrapper.focus .ts-control {
+            background-color: #ffffff;
+            border-color: var(--primary-light);
+            box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.15);
+        }
+
+        /* Buttons Styling */
+        .btn-primary-custom {
+            background: linear-gradient(135deg, var(--accent) 0%, #f59e0b 100%);
+            border: none;
+            border-radius: 14px;
+            color: white;
+            font-weight: 700;
+            padding: 1rem 1.5rem;
+            font-size: 1.1rem;
+            letter-spacing: 0.5px;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 20px rgba(249, 115, 22, 0.25);
+        }
+        .btn-primary-custom:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(249, 115, 22, 0.35);
+            color: white;
+        }
+        .btn-primary-custom:active {
+            transform: translateY(1px);
+        }
+        .btn-outline-custom {
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            border-radius: 14px;
+            font-weight: 600;
+            padding: 0.8rem 1.5rem;
+            transition: all 0.3s;
+        }
+        .btn-outline-custom:hover {
+            background: var(--primary-light);
+        }
+
+        /* Loading Overlay */
+        #loading-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(5px);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.4s;
+        }
+        .spinner-custom {
+            color: var(--primary);
+            width: 3.5rem;
+            height: 3.5rem;
+            border-width: 0.3em;
+        }
+
+        /* Animations */
+        .fade-in { animation: fadeIn 0.6s ease-in-out; }
+        .slide-down { animation: slideDown 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideDown { 
+            from { opacity: 0; transform: translateY(-20px); } 
+            to { opacity: 1; transform: translateY(0); } 
+        }
+        
+        .hidden { display: none !important; }
+
+        /* Timer */
+        .timer-circle {
+            width: 90px; height: 90px;
+            border-radius: 50%;
+            background: var(--primary-light);
+            color: var(--primary);
+            font-size: 2.5rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            box-shadow: inset 0 4px 10px rgba(0,0,0,0.05);
+            border: 4px solid #fff;
+        }
+
+        /* Infak Radio styling */
+        .infak-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 1.5rem;
+        }
+        
+        /* Footer Footer */
+        .app-footer {
+            margin-top: auto;
+            padding: 2rem 0;
+            text-align: center;
+        }
+        .wadah-digital-link {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+        .wadah-digital-link:hover {
+            color: var(--accent);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- LOADING OVERLAY -->
+    <div id="loading-overlay">
+        <div class="spinner-border spinner-custom mb-3" role="status"></div>
+        <h4 class="page-title" style="color: var(--primary);">Memuat Sistem...</h4>
+    </div>
+
+    <div class="container py-4 fade-in flex-grow-1 d-flex flex-column justify-content-center" id="main-container" style="max-width: 750px;">
+        
+        <!-- ============================================== -->
+        <!-- VIEW: FORM REGISTRASI (PUBLIK) -->
+        <!-- ============================================== -->
+        <div id="view-form" class="card-custom p-4 p-md-5 mb-3">
+            <div class="text-center mb-4 pb-2 border-bottom">
+                <img src="logo_wahdah_islamiyah.png" alt="Logo Wahdah Islamiyah" width="90" class="mb-3" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/e/ec/Logo_Wahdah_Islamiyah.png';">
+                <h3 class="page-title">Registrasi Upgrading Pengurus</h3>
+                <p class="page-subtitle">DPW & DPD Wahdah Islamiyah</p>
+            </div>
+
+            <form id="regForm" onsubmit="handleFormSubmit(event)">
+                <input type="text" name="website" class="hidden" id="website_hp"> <!-- Anti-Spam -->
+
+                <!-- STEP 1: WhatsApp Input Only -->
+                <div id="step-1-wa">
+                    <label class="form-label text-center d-block mb-3" style="font-size: 1.1rem;">
+                        Masukkan Nomor WhatsApp Anda untuk memulai
+                    </label>
+                    <div class="input-group-custom mb-4">
+                        <i class="bi bi-whatsapp inline-icon text-success"></i>
+                        <input type="tel" class="form-control form-control-lg" id="noWa" required placeholder="Contoh: 62812345678" oninput="formatWA(this)" style="font-size: 1.2rem; font-weight: 600; text-align: center; padding-left: 2rem;">
+                    </div>
+                    
+                    <button type="button" id="btnCekWA" class="btn btn-primary-custom w-100 mb-2" onclick="processWA()">
+                        <i class="bi bi-search me-2"></i> CEK NOMOR & LANJUT
+                    </button>
+                    <div class="text-center">
+                        <small id="waStatus" class="fw-bold"></small>
+                    </div>
+                </div>
+
+                <!-- STEP 2: Full Form (Hidden Initially) -->
+                <div id="step-2-details" class="hidden mt-4 pt-3 border-top">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
+                            <div class="input-group-custom">
+                                <i class="bi bi-person inline-icon"></i>
+                                <input type="text" class="form-control" id="nama" required placeholder="Nama Lengkap Anda" oninput="this.value = this.value.toUpperCase()">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Email Aktif <span class="text-danger">*</span></label>
+                            <div class="input-group-custom">
+                                <i class="bi bi-envelope inline-icon"></i>
+                                <input type="email" class="form-control" id="email" required placeholder="email@contoh.com">
+                            </div>
+                        </div>
+                    </div>
+
+                    <label class="form-label mt-2">Tingkat Kepengurusan <span class="text-danger">*</span></label>
+                    <div class="input-group-custom">
+                        <i class="bi bi-diagram-3 inline-icon"></i>
+                        <select class="form-select" id="tingkat" required onchange="handleTingkatChange()">
+                            <option value="" disabled selected>-- Pilih Tingkat --</option>
+                            <option value="DPP">Pengurus Pusat (DPP)</option>
+                            <option value="DPW">Pengurus Wilayah (DPW)</option>
+                            <option value="DPD">Pengurus Daerah (DPD)</option>
+                        </select>
+                    </div>
+
+                    <div id="instansi-container" class="hidden slide-down">
+                        <label class="form-label" id="label-instansi">Pilih Instansi <span class="text-danger">*</span></label>
+                        <div class="input-group-custom">
+                            <i class="bi bi-geo-alt inline-icon" style="z-index: 10;"></i>
+                            <select id="instansi" class="form-control" required>
+                                <option value="">-- Pilih --</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="infak-card mt-4 mb-4">
+                        <label class="form-label mb-3 d-block text-center" style="font-size: 1.1rem;">Kesediaan Infak Kegiatan <span class="text-danger">*</span></label>
+                        <div class="d-flex justify-content-center gap-4 mb-3">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="infakRadio" id="infakYa" value="Ya bersedia" onchange="handleInfakChange()" required>
+                                <label class="form-check-label fw-bold" for="infakYa">Ya, Bersedia</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="infakRadio" id="infakTidak" value="Belum bersedia" onchange="handleInfakChange()">
+                                <label class="form-check-label fw-bold" for="infakTidak">Belum Bersedia</label>
+                            </div>
+                        </div>
+
+                        <div id="nominal-container" class="hidden slide-down">
+                            <label class="form-label text-muted small text-center d-block">Nominal Infak (Rp)</label>
+                            <div class="input-group-custom mb-0 mx-auto" style="max-width: 300px;">
+                                <i class="bi bi-wallet2 inline-icon"></i>
+                                <input type="number" class="form-control text-center" id="nominalInfak" placeholder="20000" min="1000">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="btnSubmit" class="btn btn-primary-custom w-100">
+                        <i class="bi bi-send-fill me-2"></i> DAFTAR SEKARANG
+                    </button>
+                    
+                    <button type="button" class="btn btn-link w-100 mt-2 text-muted" onclick="resetForm()">
+                        <i class="bi bi-arrow-counterclockwise"></i> Ganti Nomor WA
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- VIEW: SUKSES -->
+        <!-- ============================================== -->
+        <div id="view-success" class="card-custom p-5 text-center hidden fade-in">
+            <i class="bi bi-check-circle-fill text-success" style="font-size: 5rem;"></i>
+            <h2 class="page-title mt-3">Alhamdulillah, Terdaftar!</h2>
+            <p class="page-subtitle mb-4">Jazakumullahu khairan. Data antum telah masuk ke dalam sistem kami.</p>
+            
+            <div class="alert alert-info rounded-3 shadow-sm border-0" role="alert">
+                Anda akan diarahkan ke Grup WhatsApp dalam waktu:
+            </div>
+            
+            <div class="timer-circle" id="timerDisplay">5</div>
+            
+            <p class="text-muted small">Jika tidak terarah otomatis, klik tombol di bawah ini:</p>
+            <a href="#" id="waLinkBtn" class="btn btn-primary-custom mt-2" target="_blank">
+                <i class="bi bi-whatsapp me-2"></i> Masuk Grup WA
+            </a>
+        </div>
+        
+    </div>
+
+    <!-- FOOTER WADAH DIGITAL -->
+    <footer class="app-footer fade-in">
+        <span class="text-muted small">Dibuat oleh </span>
+        <a onclick="showWadahDigital()" class="wadah-digital-link small">Wadah Digital</a>
+        <br>
+        <a href="#" onclick="openAdmin()" class="text-decoration-none text-muted mt-2 d-inline-block" style="opacity: 0.3; font-size: 0.8rem;">
+            <i class="bi bi-shield-lock-fill"></i> Admin
+        </a>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+    
+    <script>
+        /**
+         * ==========================================
+         * JAVASCRIPT FRONTEND LOGIC
+         * ==========================================
+         */
+
+        // URL WebApp (Untuk Github Pages / Frontend External)
+        const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbwSsA_rLAUTsoUMtU6AP9oJGLJ6Q8qUFDYmrr3lQknKAi8UykMj9blvSxQkz0VSEbZT/exec";
+        
+        let db = { master: { dpp: [], dpw: [], dpd: [], config: {} } };
+        let instansiSelect;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            initTomSelect();
+            loadMasterData();
+        });
+
+        // ----------------------------------------------------
+        // UTILS & API WRAPPER
+        // ----------------------------------------------------
+        function startLoading() { document.getElementById('loading-overlay').style.opacity = '1'; document.getElementById('loading-overlay').style.display = 'flex'; }
+        function endLoading() { 
+            document.getElementById('loading-overlay').style.opacity = '0';
+            setTimeout(() => document.getElementById('loading-overlay').style.display = 'none', 400);
+        }
+
+        async function apiCall(action, payload = null) {
+            if (typeof google !== 'undefined') {
+                // Berjalan di dalam ekosistem Google Apps Script
+                return new Promise((resolve, reject) => {
+                    google.script.run
+                        .withSuccessHandler(resolve)
+                        .withFailureHandler(reject)
+                        [action](payload);
+                });
+            } else {
+                // Berjalan di Github Pages (atau server lain), Fetch API ke WebApp
+                const response = await fetch(WEBAPP_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // text/plain untuk hindari CORS preflight error
+                    body: JSON.stringify({ action: action, payload: payload })
+                });
+                const result = await response.json();
+                if (result.status === 'success') return result.data;
+                else throw new Error(result.message);
+            }
+        }
+
+        // ----------------------------------------------------
+        // INITIALIZATION
+        // ----------------------------------------------------
+        function initTomSelect() {
+            instansiSelect = new TomSelect("#instansi", {
+                create: false,
+                sortField: { field: "text", direction: "asc" },
+                placeholder: "-- Pilih Instansi --"
+            });
+        }
+
+        async function loadMasterData() {
+            startLoading();
+            try {
+                db.master = await apiCall('getMasterData');
+                if(db.master.config.WA_GROUP_LINK) {
+                    document.getElementById('waLinkBtn').href = db.master.config.WA_GROUP_LINK;
+                }
+            } catch (err) {
+                console.error("Gagal memuat data", err);
+                Swal.fire('Koneksi Gagal', 'Gagal memuat data sistem. Coba segarkan halaman.', 'error');
+            } finally {
+                endLoading();
+            }
+        }
+
+        // ----------------------------------------------------
+        // LOGIKA WHATSAPP (STEP 1)
+        // ----------------------------------------------------
+        function formatWA(input) {
+            // Hapus karakter selain angka
+            let val = input.value.replace(/\D/g, '');
+            // Otomatis ubah 08 menjadi 628
+            if (val.startsWith('08')) {
+                val = '628' + val.substring(2);
+            }
+            input.value = val;
+        }
+
+        async function processWA() {
+            const noWaInput = document.getElementById('noWa');
+            const noWa = noWaInput.value;
+            const statusEl = document.getElementById('waStatus');
+            const btnCek = document.getElementById('btnCekWA');
+            
+            if (!noWa || noWa.length < 10 || !noWa.startsWith('628')) {
+                Swal.fire('Format Salah', 'Masukkan Nomor WA yang valid (minimal 10 digit, diawali 628 / 08).', 'warning');
+                return;
+            }
+
+            btnCek.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Mengecek...';
+            btnCek.disabled = true;
+            noWaInput.readOnly = true;
+
+            try {
+                const data = await apiCall('checkWA', noWa);
+                if (data) {
+                    statusEl.innerHTML = '<span class="text-success"><i class="bi bi-check-circle"></i> Data lama ditemukan!</span>';
+                    applyAutoFill(data);
+                } else {
+                    statusEl.innerHTML = '<span class="text-primary"><i class="bi bi-info-circle"></i> Nomor baru, silakan lengkapi form.</span>';
+                }
+                
+                // Show Step 2
+                document.getElementById('step-1-wa').classList.add('hidden');
+                document.getElementById('step-2-details').classList.remove('hidden');
+                document.getElementById('step-2-details').classList.add('slide-down');
+
+            } catch (err) {
+                console.error(err);
+                Swal.fire('Gagal', 'Terjadi kesalahan saat mengecek data.', 'error');
+                btnCek.innerHTML = '<i class="bi bi-search me-2"></i> CEK NOMOR & LANJUT';
+                btnCek.disabled = false;
+                noWaInput.readOnly = false;
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('regForm').reset();
+            document.getElementById('step-1-wa').classList.remove('hidden');
+            document.getElementById('step-2-details').classList.add('hidden');
+            document.getElementById('noWa').readOnly = false;
+            document.getElementById('btnCekWA').disabled = false;
+            document.getElementById('btnCekWA').innerHTML = '<i class="bi bi-search me-2"></i> CEK NOMOR & LANJUT';
+            document.getElementById('waStatus').innerHTML = '';
+            document.getElementById('instansi-container').classList.add('hidden');
+            document.getElementById('nominal-container').classList.add('hidden');
+            instansiSelect.clear();
+        }
+
+        function applyAutoFill(data) {
+            document.getElementById('nama').value = data.nama || '';
+            document.getElementById('email').value = data.email || '';
+            document.getElementById('tingkat').value = data.tingkat || '';
+            handleTingkatChange(); // render child dropdown
+            
+            setTimeout(() => {
+                if(data.instansi) instansiSelect.setValue(data.instansi);
+            }, 100);
+
+            if(data.kesediaanInfak === "Ya bersedia") {
+                document.getElementById('infakYa').checked = true;
+                document.getElementById('nominalInfak').value = data.nominalInfak;
+            } else if (data.kesediaanInfak) {
+                document.getElementById('infakTidak').checked = true;
+            }
+            handleInfakChange();
+        }
+
+        // ----------------------------------------------------
+        // LOGIKA DROPDOWN & INFAK (STEP 2)
+        // ----------------------------------------------------
+        function handleTingkatChange() {
+            const val = document.getElementById('tingkat').value;
+            const container = document.getElementById('instansi-container');
+            const label = document.getElementById('label-instansi');
+            
+            if(!val) {
+                container.classList.add('hidden');
+                return;
+            }
+
+            container.classList.remove('hidden');
+            container.classList.add('slide-down');
+            let options = [];
+            
+            if (val === 'DPP') { label.innerHTML = 'Pilih SKUO DPP <span class="text-danger">*</span>'; options = db.master.dpp; }
+            else if (val === 'DPW') { label.innerHTML = 'Pilih Provinsi <span class="text-danger">*</span>'; options = db.master.dpw; }
+            else if (val === 'DPD') { label.innerHTML = 'Pilih Kabupaten/Kota <span class="text-danger">*</span>'; options = db.master.dpd; }
+
+            instansiSelect.clear();
+            instansiSelect.clearOptions();
+            options.forEach(opt => { instansiSelect.addOption({value: opt, text: opt}); });
+            instansiSelect.refreshOptions(false);
+        }
+
+        function handleInfakChange() {
+            const isBersedia = document.getElementById('infakYa').checked;
+            const container = document.getElementById('nominal-container');
+            const input = document.getElementById('nominalInfak');
+
+            if (isBersedia) {
+                container.classList.remove('hidden');
+                container.classList.add('slide-down');
+                input.setAttribute('required', 'required');
+                if(!input.value) input.value = 20000;
+            } else {
+                container.classList.add('hidden');
+                input.removeAttribute('required');
+                input.value = '';
+            }
+        }
+
+        // ----------------------------------------------------
+        // SUBMIT & SUCCESS
+        // ----------------------------------------------------
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            if(document.getElementById('website_hp').value !== '') return false; // Spam bot detected
+            if(!instansiSelect.getValue()) {
+                Swal.fire('Perhatian', 'Silakan pilih Instansi (SKUO/Provinsi/Daerah).', 'warning');
+                return;
+            }
+
+            const btn = document.getElementById('btnSubmit');
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>MENGIRIM...';
+            startLoading();
+
+            const formData = {
+                noWa: document.getElementById('noWa').value,
+                nama: document.getElementById('nama').value,
+                email: document.getElementById('email').value,
+                tingkat: document.getElementById('tingkat').value,
+                instansi: instansiSelect.getValue(),
+                kesediaanInfak: document.getElementById('infakYa').checked ? "Ya bersedia" : "Belum bersedia",
+                nominalInfak: document.getElementById('nominalInfak').value || 0
+            };
+
+            try {
+                await apiCall('saveRegistration', formData);
+                showSuccess();
+            } catch (err) {
+                console.error(err);
+                Swal.fire('Gagal', 'Terjadi kesalahan sistem saat menyimpan data.', 'error');
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-send-fill me-2"></i> DAFTAR SEKARANG';
+                endLoading();
+            }
+        }
+
+        function showSuccess() {
+            endLoading();
+            document.getElementById('view-form').classList.add('hidden');
+            document.getElementById('view-success').classList.remove('hidden');
+            
+            let time = 5;
+            const timerEl = document.getElementById('timerDisplay');
+            
+            const interval = setInterval(() => {
+                time--;
+                timerEl.innerText = time;
+                if(time <= 0) {
+                    clearInterval(interval);
+                    window.location.href = document.getElementById('waLinkBtn').href;
+                }
+            }, 1000);
+        }
+
+        // ----------------------------------------------------
+        // WADAH DIGITAL POPUP
+        // ----------------------------------------------------
+        function showWadahDigital() {
+            Swal.fire({
+                title: '<span style="color:var(--primary); font-weight:bold;">Wadah Digital</span>',
+                html: '<p style="font-size:1.05rem; color:#475569;">Ingin membuat aplikasi sederhana untuk registrasi, monitoring, dan semisalnya?</p><p class="fw-bold">Konsultasikan bersama kami!</p>',
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonColor: '#0284c7',
+                cancelButtonColor: '#94a3b8',
+                confirmButtonText: '<i class="bi bi-whatsapp"></i> Hubungi Sekarang',
+                cancelButtonText: 'Tutup',
+                customClass: { popup: 'rounded-4' }
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    let link = db.master.config.WADAH_DIGITAL_WA || "https://wa.me/6281234567890";
+                    window.open(link, '_blank');
+                }
+            });
+        }
+
+        function openAdmin() {
+            Swal.fire({
+                title: 'Info Admin',
+                text: 'Untuk rekapitulasi data, silakan buka Spreadsheet Google Apps Script yang terhubung dengan WebApp ini.',
+                icon: 'info'
+            });
+        }
+
+    </script>
+</body>
+</html>
