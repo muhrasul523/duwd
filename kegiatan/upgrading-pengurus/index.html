@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrasi Upgrading Wahdah Islamiyah</title>
     
+    <!-- Favicon & Link Preview -->
+    <link rel="icon" href="logo_wahdah_islamiyah.png" type="image/png">
+    <meta property="og:title" content="Registrasi Upgrading Pengurus DPW DPD Wahdah Islamiyah">
+    <meta property="og:description" content="Formulir Pendaftaran Online Upgrading Pengurus DPW DPD Wahdah Islamiyah.">
+    <meta property="og:image" content="logo_wahdah_islamiyah.png">
+    
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -44,10 +50,13 @@
         }
 
         /* Typography & Hierarchy */
+        html { font-size: 16px; } 
+        
         .page-title {
             color: var(--primary);
             font-weight: 800;
             letter-spacing: -0.5px;
+            line-height: 1.3;
         }
         .page-subtitle {
             color: var(--text-muted);
@@ -56,7 +65,7 @@
 
         /* Glassmorphism Card Style */
         .card-custom {
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.5);
@@ -70,7 +79,7 @@
         .form-label {
             font-weight: 600;
             color: var(--text-dark);
-            font-size: 0.95rem;
+            font-size: 1rem;
             margin-bottom: 0.4rem;
         }
         .input-group-custom {
@@ -78,17 +87,19 @@
             margin-bottom: 1.5rem;
         }
         .input-group-custom .form-control, 
-        .input-group-custom .form-select {
+        .input-group-custom .form-select,
+        .input-group-custom .ts-control {
             border-radius: 14px;
             padding: 0.8rem 1.2rem 0.8rem 3rem;
             border: 2px solid transparent;
             background-color: #f8fafc;
             box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
             transition: all 0.3s ease;
-            font-size: 1rem;
+            font-size: 1.05rem;
         }
         .input-group-custom .form-control:focus, 
-        .input-group-custom .form-select:focus {
+        .input-group-custom .form-select:focus,
+        .input-group-custom .ts-wrapper.focus .ts-control {
             background-color: #ffffff;
             border-color: var(--primary-light);
             box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.15);
@@ -108,17 +119,6 @@
         
         /* TomSelect override */
         .input-group-custom .ts-wrapper { padding-left: 0; }
-        .input-group-custom .ts-control {
-            border-radius: 14px;
-            padding: 0.8rem 1.2rem 0.8rem 3rem;
-            border: 2px solid transparent;
-            background-color: #f8fafc;
-        }
-        .input-group-custom .ts-wrapper.focus .ts-control {
-            background-color: #ffffff;
-            border-color: var(--primary-light);
-            box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.15);
-        }
 
         /* Buttons Styling */
         .btn-primary-custom {
@@ -138,9 +138,7 @@
             box-shadow: 0 12px 25px rgba(249, 115, 22, 0.35);
             color: white;
         }
-        .btn-primary-custom:active {
-            transform: translateY(1px);
-        }
+        .btn-primary-custom:active { transform: translateY(1px); }
         .btn-outline-custom {
             background: transparent;
             border: 2px solid var(--primary);
@@ -150,9 +148,7 @@
             padding: 0.8rem 1.5rem;
             transition: all 0.3s;
         }
-        .btn-outline-custom:hover {
-            background: var(--primary-light);
-        }
+        .btn-outline-custom:hover { background: var(--primary-light); }
 
         /* Loading Overlay */
         #loading-overlay {
@@ -182,7 +178,6 @@
             from { opacity: 0; transform: translateY(-20px); } 
             to { opacity: 1; transform: translateY(0); } 
         }
-        
         .hidden { display: none !important; }
 
         /* Timer */
@@ -209,7 +204,36 @@
             padding: 1.5rem;
         }
         
-        /* Footer Footer */
+        /* Admin View Styling */
+        #view-admin { max-width: 1200px; margin: 0 auto; }
+        .stat-card {
+            background: linear-gradient(135deg, var(--primary) 0%, #0369a1 100%);
+            color: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 20px rgba(2, 132, 199, 0.2);
+            height: 100%;
+        }
+        .stat-card.accent {
+            background: linear-gradient(135deg, var(--accent) 0%, #ea580c 100%);
+            box-shadow: 0 10px 20px rgba(249, 115, 22, 0.2);
+        }
+        .stat-title { font-size: 0.9rem; opacity: 0.9; text-transform: uppercase; letter-spacing: 1px; }
+        .stat-value { font-size: 2.2rem; font-weight: 800; margin-top: 0.5rem; }
+        
+        .table-custom { font-size: 0.95rem; white-space: nowrap; }
+        .table-custom thead th {
+            background-color: var(--primary-light);
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+            cursor: pointer;
+            user-select: none;
+        }
+        .table-custom thead th:hover { background-color: #bae6fd; }
+        .table-custom tbody tr:nth-of-type(odd) { background-color: rgba(2, 132, 199, 0.03); }
+        .table-custom tbody tr:hover { background-color: rgba(2, 132, 199, 0.08); }
+        
+        /* Footer */
         .app-footer {
             margin-top: auto;
             padding: 2rem 0;
@@ -222,9 +246,7 @@
             transition: color 0.3s;
             cursor: pointer;
         }
-        .wadah-digital-link:hover {
-            color: var(--accent);
-        }
+        .wadah-digital-link:hover { color: var(--accent); }
     </style>
 </head>
 <body>
@@ -235,16 +257,16 @@
         <h4 class="page-title" style="color: var(--primary);">Memuat Sistem...</h4>
     </div>
 
-    <div class="container py-4 fade-in flex-grow-1 d-flex flex-column justify-content-center" id="main-container" style="max-width: 750px;">
+    <!-- MAIN APP CONTAINER -->
+    <div class="container py-4 fade-in flex-grow-1 d-flex flex-column justify-content-center" id="main-container" style="max-width: 800px;">
         
         <!-- ============================================== -->
         <!-- VIEW: FORM REGISTRASI (PUBLIK) -->
         <!-- ============================================== -->
         <div id="view-form" class="card-custom p-4 p-md-5 mb-3">
             <div class="text-center mb-4 pb-2 border-bottom">
-                <img src="logo_wahdah_islamiyah.png" alt="Logo Wahdah Islamiyah" width="90" class="mb-3" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/e/ec/Logo_Wahdah_Islamiyah.png';">
-                <h3 class="page-title">Registrasi Upgrading Pengurus</h3>
-                <p class="page-subtitle">DPW & DPD Wahdah Islamiyah</p>
+                <img src="logo_wahdah_islamiyah.png" alt="Logo Wahdah Islamiyah" width="100" class="mb-3" style="cursor: pointer; transition: transform 0.3s;" onclick="promptAdmin()" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/e/ec/Logo_Wahdah_Islamiyah.png';">
+                <h3 class="page-title fs-4">FORM REGISTRASI<br>UPGRADING PENGURUS<br>DPW DPD WAHDAH ISLAMIYAH</h3>
             </div>
 
             <form id="regForm" onsubmit="handleFormSubmit(event)">
@@ -325,7 +347,8 @@
                             <label class="form-label text-muted small text-center d-block">Nominal Infak (Rp)</label>
                             <div class="input-group-custom mb-0 mx-auto" style="max-width: 300px;">
                                 <i class="bi bi-wallet2 inline-icon"></i>
-                                <input type="number" class="form-control text-center" id="nominalInfak" placeholder="20000" min="1000">
+                                <input type="text" class="form-control text-center fw-bold" id="nominalInfakDisplay" placeholder="20.000" oninput="formatNominalInput(this)">
+                                <input type="hidden" id="nominalInfak"> <!-- Nilai asli integer -->
                             </div>
                         </div>
                     </div>
@@ -345,6 +368,8 @@
         <!-- VIEW: SUKSES -->
         <!-- ============================================== -->
         <div id="view-success" class="card-custom p-5 text-center hidden fade-in">
+            <img src="logo_wahdah_islamiyah.png" alt="Logo Wahdah Islamiyah" width="80" class="mb-3" onclick="promptAdmin()" style="cursor: pointer;" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/e/ec/Logo_Wahdah_Islamiyah.png';">
+            <br>
             <i class="bi bi-check-circle-fill text-success" style="font-size: 5rem;"></i>
             <h2 class="page-title mt-3">Alhamdulillah, Terdaftar!</h2>
             <p class="page-subtitle mb-4">Jazakumullahu khairan. Data antum telah masuk ke dalam sistem kami.</p>
@@ -361,14 +386,132 @@
             </a>
         </div>
         
-    </div>
+    </div> <!-- End Main Container -->
+
+    <!-- ============================================== -->
+    <!-- VIEW: ADMIN (REKAPITULASI) -->
+    <!-- ============================================== -->
+    <div id="view-admin" class="container py-4 fade-in hidden flex-grow-1 flex-column">
+        <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <img src="logo_wahdah_islamiyah.png" alt="Logo" width="60" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/e/ec/Logo_Wahdah_Islamiyah.png';">
+                <div>
+                    <h2 class="page-title mb-0">Dasbor Rekapitulasi</h2>
+                    <p class="page-subtitle mb-0">Data Pendaftar Upgrading Wahdah Islamiyah</p>
+                </div>
+            </div>
+            <button class="btn btn-outline-danger" onclick="logoutAdmin()"><i class="bi bi-box-arrow-right"></i> Keluar</button>
+        </div>
+
+        <!-- Dashboard Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-3">
+                <div class="stat-card">
+                    <div class="stat-title">Total Peserta</div>
+                    <div class="stat-value" id="stat-total">0</div>
+                </div>
+            </div>
+            <div class="col-md-5">
+                <div class="stat-card">
+                    <div class="stat-title">Kategori Kepengurusan</div>
+                    <div class="d-flex justify-content-between mt-2 fs-5 fw-bold">
+                        <div>DPP: <span id="stat-dpp" class="text-warning">0</span></div>
+                        <div>DPW: <span id="stat-dpw" class="text-warning">0</span></div>
+                        <div>DPD: <span id="stat-dpd" class="text-warning">0</span></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="stat-card accent">
+                    <div class="stat-title">Statistik Infak</div>
+                    <div class="d-flex flex-column mt-2 small fw-bold">
+                        <div>= 20.000 : <span id="stat-infak-pas">0</span> Org</div>
+                        <div>> 20.000 : <span id="stat-infak-lebih">0</span> Org</div>
+                        <div>< 20.000 : <span id="stat-infak-kurang">0</span> Org</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Action Buttons Rekap -->
+        <div class="d-flex gap-2 flex-wrap mb-4">
+            <button class="btn btn-outline-custom bg-white flex-grow-1" onclick="showRekapInstansi('DPP')"><i class="bi bi-pie-chart-fill me-1"></i> Rekap SKUO DPP</button>
+            <button class="btn btn-outline-custom bg-white flex-grow-1" onclick="showRekapInstansi('DPW')"><i class="bi bi-pie-chart-fill me-1"></i> Rekap Provinsi</button>
+            <button class="btn btn-outline-custom bg-white flex-grow-1" onclick="showRekapInstansi('DPD')"><i class="bi bi-pie-chart-fill me-1"></i> Rekap Kab/Kota</button>
+        </div>
+
+        <!-- Table Card -->
+        <div class="card-custom p-4">
+            <!-- Toolbar -->
+            <div class="row g-3 mb-3 align-items-center">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-search"></i></span>
+                        <input type="text" id="searchAdmin" class="form-control border-start-0 ps-0" placeholder="Cari nama, WA, atau instansi..." oninput="handleAdminSearch()">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <select id="filterTingkat" class="form-select" onchange="handleAdminSearch()">
+                        <option value="">Semua Tingkat</option>
+                        <option value="DPP">Hanya DPP</option>
+                        <option value="DPW">Hanya DPW</option>
+                        <option value="DPD">Hanya DPD</option>
+                    </select>
+                </div>
+                <div class="col-md-5 text-md-end text-start">
+                    <button class="btn btn-success me-1 shadow-sm" onclick="exportExcel()"><i class="bi bi-file-earmark-excel-fill"></i> Excel</button>
+                    <button class="btn btn-danger shadow-sm" onclick="exportPDF()"><i class="bi bi-file-earmark-pdf-fill"></i> PDF</button>
+                </div>
+            </div>
+
+            <div class="table-responsive mb-3 rounded border">
+                <table class="table table-custom table-hover mb-0" id="adminTable">
+                    <thead>
+                        <tr>
+                            <th onclick="sortAdminData('Waktu')">Waktu <i class="bi bi-arrow-down-up small"></i></th>
+                            <th onclick="sortAdminData('Nama Lengkap')">Nama Lengkap <i class="bi bi-arrow-down-up small"></i></th>
+                            <th onclick="sortAdminData('No WA')">No WA <i class="bi bi-arrow-down-up small"></i></th>
+                            <th onclick="sortAdminData('Tingkat')">Tingkat <i class="bi bi-arrow-down-up small"></i></th>
+                            <th onclick="sortAdminData('Instansi')">Instansi <i class="bi bi-arrow-down-up small"></i></th>
+                            <th onclick="sortAdminData('Kesediaan Infak')">Kesediaan <i class="bi bi-arrow-down-up small"></i></th>
+                            <th onclick="sortAdminData('Nominal Infak')">Nominal <i class="bi bi-arrow-down-up small"></i></th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminTableBody">
+                        <!-- Data will be injected here -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination Controls -->
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div class="d-flex align-items-center gap-2">
+                    <label class="small text-muted mb-0">Tampilkan:</label>
+                    <select class="form-select form-select-sm" id="pageSize" style="width: auto;" onchange="changePageSize()">
+                        <option value="5">5</option>
+                        <option value="10" selected>10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="500">500</option>
+                        <option value="All">Semua</option>
+                    </select>
+                </div>
+                <div class="small text-muted" id="pageInfo">Menampilkan 0-0 dari 0</div>
+                <div class="btn-group">
+                    <button class="btn btn-outline-primary btn-sm" onclick="changePage(-1)" id="btnPrevPage">Sebelumnya</button>
+                    <button class="btn btn-outline-primary btn-sm" onclick="changePage(1)" id="btnNextPage">Selanjutnya</button>
+                </div>
+            </div>
+        </div>
+    </div> <!-- End Admin Container -->
 
     <!-- FOOTER WADAH DIGITAL -->
     <footer class="app-footer fade-in">
         <span class="text-muted small">Dibuat oleh </span>
         <a onclick="showWadahDigital()" class="wadah-digital-link small">Wadah Digital</a>
         <br>
-        <a href="#" onclick="openAdmin()" class="text-decoration-none text-muted mt-2 d-inline-block" style="opacity: 0.3; font-size: 0.8rem;">
+        <a href="#" onclick="promptAdmin()" class="text-decoration-none text-muted mt-2 d-inline-block" style="opacity: 0.3; font-size: 0.8rem;">
             <i class="bi bi-shield-lock-fill"></i> Admin
         </a>
     </footer>
@@ -377,6 +520,11 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
     
+    <!-- Libraries for Excel and PDF Export -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
     <script>
         /**
          * ==========================================
@@ -406,7 +554,6 @@
 
         async function apiCall(action, payload = null) {
             if (typeof google !== 'undefined') {
-                // Berjalan di dalam ekosistem Google Apps Script
                 return new Promise((resolve, reject) => {
                     google.script.run
                         .withSuccessHandler(resolve)
@@ -414,10 +561,9 @@
                         [action](payload);
                 });
             } else {
-                // Berjalan di Github Pages (atau server lain), Fetch API ke WebApp
                 const response = await fetch(WEBAPP_URL, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'text/plain;charset=utf-8' }, // text/plain untuk hindari CORS preflight error
+                    headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify({ action: action, payload: payload })
                 });
                 const result = await response.json();
@@ -453,16 +599,27 @@
         }
 
         // ----------------------------------------------------
-        // LOGIKA WHATSAPP (STEP 1)
+        // LOGIKA WHATSAPP & FORMATTING
         // ----------------------------------------------------
         function formatWA(input) {
-            // Hapus karakter selain angka
             let val = input.value.replace(/\D/g, '');
-            // Otomatis ubah 08 menjadi 628
-            if (val.startsWith('08')) {
-                val = '628' + val.substring(2);
-            }
+            if (val.startsWith('08')) val = '628' + val.substring(2);
             input.value = val;
+        }
+
+        function formatNominalInput(input) {
+            let val = input.value.replace(/[^0-9]/g, ''); // Ambil hanya angka
+            document.getElementById('nominalInfak').value = val; // Set hidden input
+            if(val !== '') {
+                input.value = new Intl.NumberFormat('id-ID').format(val); // Format dengan titik
+            } else {
+                input.value = '';
+            }
+        }
+
+        function toRupiahFormat(angka) {
+            if(!angka) return '0';
+            return new Intl.NumberFormat('id-ID').format(angka);
         }
 
         async function processWA() {
@@ -472,7 +629,7 @@
             const btnCek = document.getElementById('btnCekWA');
             
             if (!noWa || noWa.length < 10 || !noWa.startsWith('628')) {
-                Swal.fire('Format Salah', 'Masukkan Nomor WA yang valid (minimal 10 digit, diawali 628 / 08).', 'warning');
+                Swal.fire('Format Salah', 'Masukkan Nomor WA yang valid (minimal 10 digit, diawali 628).', 'warning');
                 return;
             }
 
@@ -529,8 +686,11 @@
             if(data.kesediaanInfak === "Ya bersedia") {
                 document.getElementById('infakYa').checked = true;
                 document.getElementById('nominalInfak').value = data.nominalInfak;
+                document.getElementById('nominalInfakDisplay').value = toRupiahFormat(data.nominalInfak);
             } else if (data.kesediaanInfak) {
                 document.getElementById('infakTidak').checked = true;
+                document.getElementById('nominalInfak').value = '';
+                document.getElementById('nominalInfakDisplay').value = '';
             }
             handleInfakChange();
         }
@@ -565,17 +725,22 @@
         function handleInfakChange() {
             const isBersedia = document.getElementById('infakYa').checked;
             const container = document.getElementById('nominal-container');
-            const input = document.getElementById('nominalInfak');
+            const inputVal = document.getElementById('nominalInfak');
+            const inputDisp = document.getElementById('nominalInfakDisplay');
 
             if (isBersedia) {
                 container.classList.remove('hidden');
                 container.classList.add('slide-down');
-                input.setAttribute('required', 'required');
-                if(!input.value) input.value = 20000;
+                inputDisp.setAttribute('required', 'required');
+                if(!inputVal.value) {
+                    inputVal.value = 20000;
+                    inputDisp.value = '20.000';
+                }
             } else {
                 container.classList.add('hidden');
-                input.removeAttribute('required');
-                input.value = '';
+                inputDisp.removeAttribute('required');
+                inputVal.value = '';
+                inputDisp.value = '';
             }
         }
 
@@ -658,14 +823,243 @@
             });
         }
 
-        function openAdmin() {
+        // ----------------------------------------------------
+        // LOGIKA ADMIN & TABEL REKAP
+        // ----------------------------------------------------
+        let rawAdminData = [];
+        let filteredAdminData = [];
+        let currentPage = 1;
+        let rowsPerPage = 10;
+        let sortCol = '';
+        let sortAsc = true;
+
+        async function promptAdmin() {
+            const { value: code } = await Swal.fire({
+                title: 'Akses Admin',
+                input: 'password',
+                inputLabel: 'Masukkan kode akses untuk melihat rekapitulasi',
+                inputPlaceholder: 'Kode Akses',
+                showCancelButton: true,
+                confirmButtonColor: 'var(--primary)',
+            });
+
+            if (code) {
+                if (code === db.master.config.ADMIN_CODE || code === 'duwd1404') {
+                    openAdminView();
+                } else {
+                    Swal.fire('Gagal', 'Kode Akses Salah!', 'error');
+                }
+            }
+        }
+
+        async function openAdminView() {
+            startLoading();
+            try {
+                rawAdminData = await apiCall('getAdminData');
+                filteredAdminData = [...rawAdminData];
+                
+                // Ganti view
+                document.getElementById('main-container').style.display = 'none'; 
+                document.getElementById('view-admin').classList.remove('hidden');
+                document.getElementById('view-admin').style.display = 'flex';
+                
+                updateDashboardStats();
+                renderAdminTable();
+            } catch(e) {
+                console.error(e);
+                Swal.fire('Gagal', 'Tidak dapat mengambil data admin.', 'error');
+            } finally {
+                endLoading();
+            }
+        }
+
+        function logoutAdmin() {
+            document.getElementById('view-admin').classList.add('hidden');
+            document.getElementById('view-admin').style.display = 'none';
+            document.getElementById('main-container').style.display = 'flex';
+            resetForm();
+        }
+
+        function updateDashboardStats() {
+            document.getElementById('stat-total').innerText = rawAdminData.length;
+            
+            let cDpp = 0, cDpw = 0, cDpd = 0;
+            let iPas = 0, iLebih = 0, iKurang = 0;
+
+            rawAdminData.forEach(d => {
+                if(d.Tingkat === 'DPP') cDpp++;
+                else if(d.Tingkat === 'DPW') cDpw++;
+                else if(d.Tingkat === 'DPD') cDpd++;
+
+                let infak = Number(d['Nominal Infak']) || 0;
+                if(infak === 20000) iPas++;
+                else if(infak > 20000) iLebih++;
+                else if(infak > 0 && infak < 20000) iKurang++;
+            });
+
+            document.getElementById('stat-dpp').innerText = cDpp;
+            document.getElementById('stat-dpw').innerText = cDpw;
+            document.getElementById('stat-dpd').innerText = cDpd;
+            document.getElementById('stat-infak-pas').innerText = iPas;
+            document.getElementById('stat-infak-lebih').innerText = iLebih;
+            document.getElementById('stat-infak-kurang').innerText = iKurang;
+        }
+
+        function handleAdminSearch() {
+            const query = document.getElementById('searchAdmin').value.toLowerCase();
+            const tingkatFilter = document.getElementById('filterTingkat').value;
+            
+            filteredAdminData = rawAdminData.filter(d => {
+                const matchQuery = Object.values(d).join(' ').toLowerCase().includes(query);
+                const matchTingkat = tingkatFilter ? (d.Tingkat === tingkatFilter) : true;
+                return matchQuery && matchTingkat;
+            });
+            
+            currentPage = 1;
+            renderAdminTable();
+        }
+
+        function sortAdminData(col) {
+            if(sortCol === col) sortAsc = !sortAsc;
+            else { sortCol = col; sortAsc = true; }
+
+            filteredAdminData.sort((a, b) => {
+                let valA = a[col] || '';
+                let valB = b[col] || '';
+                
+                if(col === 'Nominal Infak') {
+                    valA = Number(valA); valB = Number(valB);
+                } else {
+                    valA = String(valA).toLowerCase(); valB = String(valB).toLowerCase();
+                }
+
+                if(valA < valB) return sortAsc ? -1 : 1;
+                if(valA > valB) return sortAsc ? 1 : -1;
+                return 0;
+            });
+            renderAdminTable();
+        }
+
+        function changePageSize() {
+            let val = document.getElementById('pageSize').value;
+            rowsPerPage = val === 'All' ? filteredAdminData.length + 1 : parseInt(val);
+            currentPage = 1;
+            renderAdminTable();
+        }
+
+        function changePage(dir) {
+            const maxPage = Math.ceil(filteredAdminData.length / rowsPerPage);
+            currentPage += dir;
+            if(currentPage < 1) currentPage = 1;
+            if(currentPage > maxPage) currentPage = maxPage;
+            renderAdminTable();
+        }
+
+        function renderAdminTable() {
+            const tbody = document.getElementById('adminTableBody');
+            tbody.innerHTML = '';
+            
+            if(filteredAdminData.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted py-3">Tidak ada data ditemukan.</td></tr>';
+                document.getElementById('pageInfo').innerText = `Menampilkan 0-0 dari 0`;
+                return;
+            }
+
+            const startIndex = (currentPage - 1) * rowsPerPage;
+            const endIndex = Math.min(startIndex + rowsPerPage, filteredAdminData.length);
+            
+            const pageData = filteredAdminData.slice(startIndex, endIndex);
+
+            pageData.forEach(d => {
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${d.Waktu || '-'}</td>
+                    <td class="fw-bold">${d['Nama Lengkap'] || '-'}</td>
+                    <td><a href="https://wa.me/${d['No WA']}" target="_blank" class="text-decoration-none"><i class="bi bi-whatsapp text-success"></i> ${d['No WA']}</a></td>
+                    <td><span class="badge bg-primary">${d.Tingkat || '-'}</span></td>
+                    <td>${d.Instansi || '-'}</td>
+                    <td>${d['Kesediaan Infak'] || '-'}</td>
+                    <td class="text-end fw-bold">Rp ${toRupiahFormat(d['Nominal Infak'])}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('pageInfo').innerText = `Menampilkan ${startIndex + 1}-${endIndex} dari ${filteredAdminData.length}`;
+            
+            document.getElementById('btnPrevPage').disabled = currentPage === 1;
+            document.getElementById('btnNextPage').disabled = endIndex >= filteredAdminData.length;
+        }
+
+        function showRekapInstansi(tingkat) {
+            const dataFiltered = rawAdminData.filter(d => d.Tingkat === tingkat);
+            const countMap = {};
+            dataFiltered.forEach(d => {
+                const inst = d.Instansi || 'Lainnya';
+                countMap[inst] = (countMap[inst] || 0) + 1;
+            });
+
+            const sortedCounts = Object.entries(countMap)
+                .map(([name, count]) => ({name, count}))
+                .sort((a, b) => b.count - a.count);
+
+            let tableHtml = `<table class="table table-sm table-striped text-start mt-3" style="font-size:0.95rem;">
+                <thead><tr><th>Nama Instansi (${tingkat})</th><th class="text-end">Jumlah</th></tr></thead><tbody>`;
+            
+            if(sortedCounts.length === 0) {
+                tableHtml += `<tr><td colspan="2" class="text-center text-muted">Belum ada data</td></tr>`;
+            } else {
+                sortedCounts.forEach(item => {
+                    tableHtml += `<tr><td>${item.name}</td><td class="text-end fw-bold">${item.count}</td></tr>`;
+                });
+            }
+            tableHtml += `</tbody></table>`;
+
             Swal.fire({
-                title: 'Info Admin',
-                text: 'Untuk rekapitulasi data, silakan buka Spreadsheet Google Apps Script yang terhubung dengan WebApp ini.',
-                icon: 'info'
+                title: `Rekapitulasi ${tingkat}`,
+                html: tableHtml,
+                width: '600px',
+                confirmButtonColor: 'var(--primary)',
+                confirmButtonText: 'Tutup'
             });
         }
 
+        // Export Functions
+        function exportExcel() {
+            if(filteredAdminData.length === 0) return;
+            const ws = XLSX.utils.json_to_sheet(filteredAdminData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Rekap Pendaftar");
+            XLSX.writeFile(wb, "Rekap_Pendaftar_Upgrading.xlsx");
+        }
+
+        function exportPDF() {
+            if(filteredAdminData.length === 0 || !window.jspdf) return;
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('landscape'); 
+            
+            doc.text("Rekapitulasi Pendaftar Upgrading Wahdah Islamiyah", 14, 15);
+            
+            const columns = ["Waktu", "Nama Lengkap", "No WA", "Tingkat", "Instansi", "Kesediaan Infak", "Nominal Infak"];
+            const rows = filteredAdminData.map(d => [
+                d.Waktu, 
+                d['Nama Lengkap'], 
+                d['No WA'], 
+                d.Tingkat, 
+                d.Instansi, 
+                d['Kesediaan Infak'], 
+                toRupiahFormat(d['Nominal Infak'])
+            ]);
+
+            doc.autoTable({
+                head: [columns],
+                body: rows,
+                startY: 20,
+                styles: { fontSize: 8 },
+                headStyles: { fillColor: [2, 132, 199] }
+            });
+
+            doc.save("Rekap_Pendaftar_Upgrading.pdf");
+        }
     </script>
 </body>
 </html>
