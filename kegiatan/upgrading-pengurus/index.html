@@ -277,9 +277,9 @@
                     <label class="form-label text-center d-block mb-3" style="font-size: 1.1rem;">
                         Masukkan Nomor WhatsApp Anda untuk memulai
                     </label>
-                    <div class="input-group-custom mb-4">
+                    <div class="input-group-custom mb-4 mx-auto" style="max-width: 320px;">
                         <i class="bi bi-whatsapp inline-icon text-success"></i>
-                        <input type="tel" class="form-control form-control-lg" id="noWa" required placeholder="Contoh: 62812345678" oninput="formatWA(this)" style="font-size: 1.2rem; font-weight: 600; text-align: center; padding-left: 2rem;">
+                        <input type="tel" class="form-control form-control-lg" id="noWa" required placeholder="Contoh: 62812345678" maxlength="16" oninput="formatWA(this)" style="font-size: 1.2rem; font-weight: 600; text-align: center; padding-left: 2rem;">
                     </div>
                     
                     <button type="button" id="btnCekWA" class="btn btn-primary-custom w-100 mb-2" onclick="processWA()">
@@ -405,29 +405,29 @@
 
         <!-- Dashboard Cards -->
         <div class="row g-3 mb-4">
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <div class="stat-card">
                     <div class="stat-title">Total Peserta</div>
-                    <div class="stat-value" id="stat-total">0</div>
+                    <div class="stat-value text-center" id="stat-total" style="font-size: 3.5rem; margin-top: 0.5rem;">0</div>
                 </div>
             </div>
-            <div class="col-md-5">
+            <div class="col-md-4">
                 <div class="stat-card">
                     <div class="stat-title">Kategori Kepengurusan</div>
-                    <div class="d-flex justify-content-between mt-2 fs-5 fw-bold">
-                        <div>DPP: <span id="stat-dpp" class="text-warning">0</span></div>
-                        <div>DPW: <span id="stat-dpw" class="text-warning">0</span></div>
-                        <div>DPD: <span id="stat-dpd" class="text-warning">0</span></div>
+                    <div class="d-flex flex-column mt-3 fs-6 fw-bold">
+                        <div class="mb-2">DPP: <span id="stat-dpp" class="text-warning float-end">0</span></div>
+                        <div class="mb-2">DPW: <span id="stat-dpw" class="text-warning float-end">0</span></div>
+                        <div>DPD: <span id="stat-dpd" class="text-warning float-end">0</span></div>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
                 <div class="stat-card accent">
                     <div class="stat-title">Statistik Infak</div>
-                    <div class="d-flex flex-column mt-2 small fw-bold">
-                        <div>= 20.000 : <span id="stat-infak-pas">0</span> Org</div>
-                        <div>> 20.000 : <span id="stat-infak-lebih">0</span> Org</div>
-                        <div>< 20.000 : <span id="stat-infak-kurang">0</span> Org</div>
+                    <div class="d-flex flex-column mt-3 fs-6 fw-bold">
+                        <div class="mb-2">= 20.000 : <span id="stat-infak-pas" class="float-end">0 Org</span></div>
+                        <div class="mb-2">> 20.000 : <span id="stat-infak-lebih" class="float-end">0 Org</span></div>
+                        <div>< 20.000 : <span id="stat-infak-kurang" class="float-end">0 Org</span></div>
                     </div>
                 </div>
             </div>
@@ -578,7 +578,7 @@
         function initTomSelect() {
             instansiSelect = new TomSelect("#instansi", {
                 create: false,
-                sortField: { field: "text", direction: "asc" },
+                sortField: [], // Mengosongkan sortField agar dropdown menggunakan urutan asli dari sheet
                 placeholder: "-- Pilih Instansi --"
             });
         }
@@ -662,6 +662,10 @@
 
         function resetForm() {
             document.getElementById('regForm').reset();
+            // Tampilkan kembali form dan sembunyikan view sukses
+            document.getElementById('view-form').classList.remove('hidden');
+            document.getElementById('view-success').classList.add('hidden');
+            
             document.getElementById('step-1-wa').classList.remove('hidden');
             document.getElementById('step-2-details').classList.add('hidden');
             document.getElementById('noWa').readOnly = false;
