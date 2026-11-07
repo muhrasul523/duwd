@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Presensi Upgrading Wahdah Islamiyah</title>
     
+    <!-- URL Relatif Logo Sesuai Instruksi (muncul di tab dan whatsapp preview) -->
+    <link rel="icon" href="../../../logo_wahdah_islamiyah.png" type="image/png">
+    <meta property="og:title" content="Presensi Upgrading Pengurus">
+    <meta property="og:description" content="Formulir Presensi Online Upgrading Pengurus Wahdah Islamiyah.">
+    <meta property="og:image" content="../../../logo_wahdah_islamiyah.png">
+    
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -14,7 +20,7 @@
         :root {
             --primary: #0284c7; 
             --primary-light: #e0f2fe;
-            --accent: #10b981; /* Green accent for attendance */
+            --accent: #10b981; 
             --bg-grad-1: #f0f9ff;
             --bg-grad-2: #eef2ff;
             --text-dark: #1e293b;
@@ -57,10 +63,11 @@
             border-color: var(--primary-light);
             box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.15);
         }
-        .input-group-custom .form-control[readonly] {
+        .input-group-custom .form-control[readonly], .input-group-custom .form-select[readonly], .input-group-custom select[disabled] {
             background-color: #e2e8f0;
             opacity: 0.8;
             cursor: not-allowed;
+            pointer-events: none;
         }
         .inline-icon {
             position: absolute;
@@ -130,6 +137,16 @@
         
         .logo-img { cursor: pointer; transition: transform 0.3s; }
         .logo-img:hover { transform: scale(1.05); }
+
+        /* Checkbox Sesi Styles */
+        .sesi-check-card {
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            padding: 10px 15px;
+            transition: all 0.2s;
+        }
+        .sesi-check-card:hover { border-color: var(--primary); }
+        .sesi-check-card.disabled { background-color: #f1f5f9; opacity: 0.65; pointer-events: none; }
     </style>
 </head>
 <body>
@@ -146,7 +163,6 @@
         <!-- ============================================== -->
         <div id="view-form" class="card-custom p-4 p-md-5 mb-3 fade-in">
             <div class="text-center mb-4 pb-2 border-bottom">
-                <!-- Sesuai request: logo dari folder utama duwd -->
                 <img src="../../../logo_wahdah_islamiyah.png" alt="Logo" width="90" class="mb-3 logo-img" onclick="promptAdmin()" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/e/ec/Logo_Wahdah_Islamiyah.png';">
                 <h3 class="page-title fs-4">PRESENSI KEGIATAN<br>UPGRADING PENGURUS</h3>
             </div>
@@ -155,64 +171,70 @@
                 
                 <!-- STEP 1: Cek WA -->
                 <div id="step-1">
-                    <label class="form-label text-center d-block mb-3">Masukkan No WhatsApp Terdaftar</label>
+                    <label class="form-label text-center d-block mb-3">Masukkan No WhatsApp</label>
                     <div class="input-group-custom mb-3">
                         <i class="bi bi-whatsapp inline-icon text-success"></i>
                         <input type="tel" class="form-control" id="noWa" required placeholder="Contoh: 62812345678" oninput="formatWA(this)">
                     </div>
                     <button type="button" id="btnCek" class="btn btn-primary-custom w-100" onclick="checkWA()">
-                        <i class="bi bi-search me-2"></i> Cek Data
+                        <i class="bi bi-arrow-right-circle me-2"></i> LANJUTKAN
                     </button>
-                    <div id="waMsg" class="text-center mt-2 small fw-bold"></div>
                 </div>
 
                 <!-- STEP 2: Detail Presensi -->
-                <div id="step-2" class="hidden mt-4 pt-3 border-top fade-in">
-                    <div class="alert alert-info py-2 small mb-3" id="infoAuto"><i class="bi bi-info-circle me-1"></i> Data di bawah dimuat otomatis sesuai pendaftaran.</div>
+                <div id="step-2" class="hidden fade-in">
+                    <div class="alert alert-info py-2 small mb-3" id="infoAuto"><i class="bi bi-info-circle me-1"></i> Data di bawah dimuat otomatis.</div>
                     
                     <div class="input-group-custom">
                         <i class="bi bi-person inline-icon"></i>
-                        <input type="text" class="form-control" id="nama" required placeholder="Nama Lengkap Tanpa Gelar" readonly>
+                        <!-- Autocapslock via style dan oninput -->
+                        <input type="text" class="form-control" id="nama" required placeholder="Nama Lengkap Tanpa Gelar" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()">
                     </div>
                     
                     <div class="input-group-custom">
                         <i class="bi bi-envelope inline-icon"></i>
-                        <input type="email" class="form-control" id="email" required placeholder="Email" readonly>
+                        <!-- Type email menjamin validasi email default HTML -->
+                        <input type="email" class="form-control" id="email" required placeholder="Alamat Email">
                     </div>
 
                     <div class="row">
                         <div class="col-6">
+                            <label class="form-label small">Tingkat</label>
                             <div class="input-group-custom">
                                 <i class="bi bi-diagram-3 inline-icon"></i>
-                                <input type="text" class="form-control" id="tingkat" required placeholder="Unit (DPP/DPW/dll)" readonly>
+                                <select class="form-select" id="tingkat" required onchange="handleTingkatChange()">
+                                    <!-- Diisi dinamis -->
+                                </select>
                             </div>
                         </div>
                         <div class="col-6">
+                            <label class="form-label small">Instansi</label>
                             <div class="input-group-custom">
                                 <i class="bi bi-geo-alt inline-icon"></i>
-                                <input type="text" class="form-control" id="instansi" required placeholder="Asal Daerah" readonly>
+                                <select class="form-select" id="instansi" required>
+                                    <option value="">-- Pilih --</option>
+                                </select>
                             </div>
                         </div>
                     </div>
 
-                    <label class="form-label mt-2">Pilih Sesi/Materi Saat Ini <span class="text-danger">*</span></label>
-                    <div class="input-group-custom">
-                        <i class="bi bi-book inline-icon"></i>
-                        <select class="form-select" id="sesi" required>
-                            <option value="">-- Pilih Sesi --</option>
-                            <!-- Dimuat dinamis -->
-                        </select>
+                    <!-- Materi Checkbox -->
+                    <label class="form-label mt-2">Pilih Materi yang Diikuti <span class="text-danger">*</span></label>
+                    <div id="sesiContainer" class="mb-3">
+                        <!-- Checkbox daftar materi dirender dinamis via JS -->
                     </div>
 
-                    <!-- Tambahan Fitur Konfirmasi Infak -->
+                    <!-- Status Infak Radio -->
                     <label class="form-label mt-2">Sudah berinfak? <span class="text-danger">*</span></label>
-                    <div class="input-group-custom mb-2">
-                        <i class="bi bi-wallet2 inline-icon"></i>
-                        <select class="form-select" id="statusInfak" required onchange="handleInfakPresensi()">
-                            <option value="">-- Pilih Status Infak --</option>
-                            <option value="Sudah">Sudah</option>
-                            <option value="Belum">Belum</option>
-                        </select>
+                    <div class="d-flex gap-4 mb-2 mt-1 px-2">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="statusInfak" id="infakSudah" value="Sudah" required onchange="handleInfakPresensi()">
+                            <label class="form-check-label fw-bold" for="infakSudah">Sudah</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="statusInfak" id="infakBelum" value="Belum" required onchange="handleInfakPresensi()">
+                            <label class="form-check-label fw-bold" for="infakBelum">Belum</label>
+                        </div>
                     </div>
                     
                     <div id="rekeningInfo" class="alert alert-warning py-2 small mb-3 hidden">
@@ -221,9 +243,9 @@
                     </div>
 
                     <button type="submit" id="btnSubmit" class="btn btn-success-custom w-100 mt-3">
-                        <i class="bi bi-check2-square me-2"></i> HADIR
+                        <i class="bi bi-check2-square me-2"></i> KIRIM PRESENSI
                     </button>
-                    <button type="button" class="btn btn-link text-muted w-100 mt-1 small" onclick="resetForm()">Batal</button>
+                    <button type="button" class="btn btn-link text-muted w-100 mt-1 small" onclick="resetForm()">Kembali ke Awal</button>
                 </div>
             </form>
         </div>
@@ -291,7 +313,7 @@
          * ==========================================
          */
 
-        let db = { pendaftar: [], presensi: [], sesi: [], config: {} };
+        let db = { pendaftar: [], presensi: [], masterMap: {}, sesi: [], config: {} };
         const isSimulation = typeof google === 'undefined';
 
         document.addEventListener("DOMContentLoaded", loadData);
@@ -302,16 +324,19 @@
         function loadDummyData() {
             db = {
                 pendaftar: [
-                    {'No WA': '628123456789', 'Nama Lengkap': 'AHMAD FULAN', 'Email': 'ahmad@mail.com', 'Tingkat': 'DPD', 'Instansi': 'Makassar'},
-                    {'No WA': '628987654321', 'Nama Lengkap': 'BUDI SANTOSO', 'Email': 'budi@mail.com', 'Tingkat': 'DPW', 'Instansi': 'Sulsel'}
+                    {'No WA': '628123456789', 'Nama Lengkap': 'AHMAD FULAN', 'Email': 'ahmad@mail.com', 'Tingkat': 'DPD', 'Instansi': 'Makassar'}
                 ],
                 presensi: [
-                    {'No WA': '628123456789', 'Sesi/Materi': 'Materi 1: Visi Misi Organisasi', 'Status Infak': 'Sudah'}
+                    {'No WA': '628123456789', 'Nama Lengkap': 'AHMAD FULAN', 'Email': 'ahmad@mail.com', 'Tingkat': 'DPD', 'Instansi': 'Makassar', 'Sesi/Materi': 'Materi 1: Visi Misi Organisasi', 'Status Infak': 'Sudah'}
                 ],
+                masterMap: {
+                    'DPP': ['BPH DPP', 'Departemen Dakwah'],
+                    'DPW': ['Sulawesi Selatan', 'DKI Jakarta'],
+                    'DPD': ['Makassar', 'Bandung']
+                },
                 sesi: [
-                    'Materi 1: Visi Misi Organisasi', 'Materi 2: Manajemen Kesekretariatan', 
-                    'Materi 3: Strategi Dakwah Digital', 'Materi 4: Pengelolaan Keuangan',
-                    'Materi 5: Problem Solving Kepengurusan', 'Materi 6: Evaluasi'
+                    { nama: 'Materi 1: Visi Misi Organisasi', mulai: '2020-01-01 00:00', selesai: '2030-01-01 00:00' }, // Selalu buka untuk simulasi
+                    { nama: 'Materi 2: Manajemen Kesekretariatan', mulai: '2030-01-01 00:00', selesai: '2031-01-01 00:00' } // Selalu tutup untuk simulasi
                 ],
                 config: { 'WADAH_DIGITAL_WA': 'https://wa.me/6281234567890', 'ADMIN_CODE': 'duwd1404' }
             };
@@ -320,37 +345,49 @@
         function loadData() {
             startLoading();
             if (isSimulation) {
-                console.log("Menjalankan Mode Simulasi");
                 loadDummyData();
-                renderSesi();
+                renderTingkat();
                 endLoading();
             } else {
                 google.script.run
                     .withSuccessHandler(res => {
                         db = res;
-                        renderSesi();
+                        renderTingkat();
                         endLoading();
                     })
                     .withFailureHandler(err => {
                         console.error(err);
-                        Swal.fire('Error', 'Gagal memuat data.', 'error');
+                        Swal.fire('Error', 'Gagal memuat data sistem.', 'error');
                         endLoading();
                     })
                     .getAllData();
             }
         }
 
-        function renderSesi() {
-            const select = document.getElementById('sesi');
-            select.innerHTML = '<option value="">-- Pilih Sesi/Materi --</option>';
-            db.sesi.forEach(s => {
-                select.innerHTML += `<option value="${s}">${s}</option>`;
+        // Render Tingkat dari Master_Data
+        function renderTingkat() {
+            const select = document.getElementById('tingkat');
+            select.innerHTML = '<option value="">-- Pilih Tingkat --</option>';
+            Object.keys(db.masterMap).forEach(t => {
+                select.innerHTML += `<option value="${t}">${t}</option>`;
             });
         }
 
-        // Perbaikan formatWA: hanya angka dan otomatis 08 jadi 628
+        // Render Instansi berdasarkan pilihan Tingkat
+        function handleTingkatChange() {
+            const val = document.getElementById('tingkat').value;
+            const instSelect = document.getElementById('instansi');
+            instSelect.innerHTML = '<option value="">-- Pilih Instansi --</option>';
+            if (val && db.masterMap[val]) {
+                db.masterMap[val].forEach(inst => {
+                    instSelect.innerHTML += `<option value="${inst}">${inst}</option>`;
+                });
+            }
+        }
+
+        // Format WA: Hanya angka, 08 jadi 628
         function formatWA(input) {
-            let val = input.value.replace(/\D/g, ''); // Hapus semua karakter selain angka
+            let val = input.value.replace(/\D/g, ''); 
             if (val.startsWith('08')) {
                 val = '628' + val.substring(2);
             }
@@ -358,65 +395,111 @@
         }
 
         function handleInfakPresensi() {
-            const val = document.getElementById('statusInfak').value;
-            if(val === 'Belum') {
+            const isBelum = document.getElementById('infakBelum').checked;
+            if(isBelum) {
                 document.getElementById('rekeningInfo').classList.remove('hidden');
             } else {
                 document.getElementById('rekeningInfo').classList.add('hidden');
             }
         }
 
-        // --- STEP 1: Cek WA di Pendaftar ---
+        // Render Sesi Checkbox dengan Cek Waktu Aktif
+        function renderSesi() {
+            const container = document.getElementById('sesiContainer');
+            container.innerHTML = '';
+            
+            const now = new Date(); // Waktu saat ini (sistem user)
+
+            db.sesi.forEach((s, index) => {
+                // Parsing format YYYY-MM-DD HH:mm dengan Date JS aman jika format standar
+                const start = new Date(s.mulai.replace(/-/g, '/')); 
+                const end = new Date(s.selesai.replace(/-/g, '/'));
+                
+                const isOpen = now >= start && now <= end;
+                
+                // Pisah string hanya untuk display jam (opsional, menyesuaikan)
+                let timeStr = `${s.mulai} s/d ${s.selesai.split(' ')[1] || s.selesai}`;
+
+                container.innerHTML += `
+                    <div class="sesi-check-card form-check mb-2 ${isOpen ? 'bg-white' : 'disabled'}">
+                        <input class="form-check-input ms-1" type="checkbox" name="sesiCheck" value="${s.nama}" id="sesi${index}" ${isOpen ? '' : 'disabled'}>
+                        <label class="form-check-label ms-2 d-block w-100" for="sesi${index}">
+                            <strong class="d-block text-dark">${s.nama}</strong>
+                            <small class="text-muted" style="font-size:0.8rem;">
+                                ${timeStr} 
+                                ${isOpen ? '<span class="badge bg-success ms-1">Aktif</span>' : '<span class="badge bg-secondary ms-1">Tutup</span>'}
+                            </small>
+                        </label>
+                    </div>
+                `;
+            });
+        }
+
+        // --- STEP 1: Cek WA Silang (Presensi lalu Pendaftar) ---
         function checkWA() {
             const noWa = document.getElementById('noWa').value;
-            const msg = document.getElementById('waMsg');
-            
             if(noWa.length < 10) {
-                msg.innerHTML = '<span class="text-danger">Nomor WA tidak valid</span>';
+                Swal.fire('Perhatian', 'Masukkan nomor WA yang valid (minimal 10 digit).', 'warning');
                 return;
             }
 
-            const pendaftar = db.pendaftar.find(p => String(p['No WA']) === String(noWa));
+            let foundData = null;
 
-            if(pendaftar) {
-                msg.innerHTML = '<span class="text-success"><i class="bi bi-check"></i> Data ditemukan!</span>';
-                
-                // Isi otomatis (Readonly)
-                document.getElementById('infoAuto').innerHTML = '<i class="bi bi-info-circle me-1"></i> Data di bawah dimuat otomatis sesuai pendaftaran.';
-                document.getElementById('nama').value = pendaftar['Nama Lengkap'] || '';
-                document.getElementById('email').value = pendaftar['Email'] || '';
-                document.getElementById('tingkat').value = pendaftar['Tingkat'] || '';
-                document.getElementById('instansi').value = pendaftar['Instansi'] || '';
-                
-                ['nama','email','tingkat','instansi'].forEach(id => document.getElementById(id).setAttribute('readonly', true));
+            // 1. Cek di Sheet Presensi (Cari dari baris paling bawah/terbaru)
+            for (let i = db.presensi.length - 1; i >= 0; i--) {
+                if (String(db.presensi[i]['No WA']) === String(noWa)) {
+                    foundData = db.presensi[i];
+                    break;
+                }
+            }
 
-                document.getElementById('step-1').classList.add('hidden');
-                document.getElementById('step-2').classList.remove('hidden');
+            // 2. Jika tidak ada di Presensi, cek di Sheet Pendaftar
+            if (!foundData) {
+                foundData = db.pendaftar.find(p => String(p['No WA']) === String(noWa));
+            }
+
+            // Langsung buka form (Tanpa Alert)
+            document.getElementById('step-1').classList.add('hidden');
+            document.getElementById('step-2').classList.remove('hidden');
+
+            renderSesi(); // Render checkbox tiap buka form agar waktunya up-to-date
+
+            if (foundData) {
+                // Load data dan buat readonly
+                document.getElementById('infoAuto').innerHTML = '<i class="bi bi-info-circle me-1"></i> Data di bawah dimuat otomatis.';
+                document.getElementById('infoAuto').classList.remove('hidden');
+
+                document.getElementById('nama').value = foundData['Nama Lengkap'] || '';
+                document.getElementById('email').value = foundData['Email'] || '';
+                document.getElementById('tingkat').value = foundData['Tingkat'] || '';
+                
+                handleTingkatChange(); // Trigger agar dropdown instansi me-load daftar yang benar
+                
+                setTimeout(() => {
+                    document.getElementById('instansi').value = foundData['Instansi'] || '';
+                }, 50);
+                
+                // Tambahkan attribut readonly / disabled
+                document.getElementById('nama').setAttribute('readonly', true);
+                document.getElementById('email').setAttribute('readonly', true);
+                // Untuk select agar tidak bisa diganti tapi tetap mengirimkan value, gunakan trik css (pointer-events none ada di CSS) dan readonly
+                document.getElementById('tingkat').setAttribute('readonly', true);
+                document.getElementById('instansi').setAttribute('readonly', true);
+
             } else {
-                // Jika tidak ditemukan, form direset dan atribut readonly dihapus untuk input manual
-                Swal.fire({
-                    title: 'Data Tidak Ditemukan',
-                    text: 'Nomor WA ini belum terdaftar. Silakan isi data secara manual.',
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Isi Manual',
-                    cancelButtonText: 'Batal'
-                }).then((res) => {
-                    if(res.isConfirmed) {
-                        msg.innerHTML = '';
-                        document.getElementById('infoAuto').innerHTML = '<i class="bi bi-pencil-square me-1"></i> Silakan isi data Anda secara manual di bawah ini.';
-                        
-                        document.getElementById('nama').value = '';
-                        document.getElementById('email').value = '';
-                        document.getElementById('tingkat').value = '';
-                        document.getElementById('instansi').value = '';
-                        
-                        ['nama','email','tingkat','instansi'].forEach(id => document.getElementById(id).removeAttribute('readonly'));
-                        
-                        document.getElementById('step-1').classList.add('hidden');
-                        document.getElementById('step-2').classList.remove('hidden');
-                    }
-                });
+                // Tidak ditemukan, kosongkan agar isi manual
+                document.getElementById('infoAuto').classList.add('hidden'); // Sembunyikan alert otomatis
+                
+                document.getElementById('nama').value = '';
+                document.getElementById('email').value = '';
+                document.getElementById('tingkat').value = '';
+                handleTingkatChange();
+
+                // Hapus attribut readonly / disabled
+                document.getElementById('nama').removeAttribute('readonly');
+                document.getElementById('email').removeAttribute('readonly');
+                document.getElementById('tingkat').removeAttribute('readonly');
+                document.getElementById('instansi').removeAttribute('readonly');
             }
         }
 
@@ -426,19 +509,30 @@
             document.getElementById('step-2').classList.add('hidden');
             document.getElementById('view-form').classList.remove('hidden');
             document.getElementById('view-success').classList.add('hidden');
-            document.getElementById('waMsg').innerHTML = '';
-            document.getElementById('rekeningInfo').classList.add('hidden'); // Sembunyikan kembali info rekening
+            document.getElementById('rekeningInfo').classList.add('hidden');
             
-            // Kembalikan ke readonly
-            ['nama','email','tingkat','instansi'].forEach(id => document.getElementById(id).setAttribute('readonly', true));
+            // Reset readonly status
+            ['nama','email','tingkat','instansi'].forEach(id => document.getElementById(id).removeAttribute('readonly'));
         }
 
         // --- STEP 2: Submit Presensi ---
         function submitPresensi(e) {
             e.preventDefault();
+
+            // Validasi Checkbox Minimal 1
+            const checkedSesi = document.querySelectorAll('input[name="sesiCheck"]:checked');
+            if (checkedSesi.length === 0) {
+                Swal.fire('Perhatian', 'Pilih minimal satu materi yang sedang aktif untuk melakukan presensi.', 'warning');
+                return;
+            }
+
             const btn = document.getElementById('btnSubmit');
             btn.disabled = true;
             btn.innerHTML = 'Menyimpan...';
+
+            // Kumpulkan nilai checkbox
+            let sesiArr = [];
+            checkedSesi.forEach(cb => sesiArr.push(cb.value));
 
             const payload = {
                 noWa: document.getElementById('noWa').value,
@@ -446,48 +540,52 @@
                 email: document.getElementById('email').value,
                 tingkat: document.getElementById('tingkat').value,
                 instansi: document.getElementById('instansi').value,
-                sesi: document.getElementById('sesi').value,
-                statusInfak: document.getElementById('statusInfak').value // Tambahan payload status infak
+                sesiList: sesiArr, // Kirim sebagai Array
+                statusInfak: document.querySelector('input[name="statusInfak"]:checked').value
             };
 
             if(isSimulation) {
-                // Simulasi Simpan & Hitung Progress
-                db.presensi.push({
-                    'Waktu': new Date().toLocaleString(), 'No WA': payload.noWa, 
-                    'Nama Lengkap': payload.nama, 'Tingkat': payload.tingkat, 
-                    'Instansi': payload.instansi, 'Sesi/Materi': payload.sesi,
-                    'Status Infak': payload.statusInfak
+                // Simulasi
+                payload.sesiList.forEach(s => {
+                    db.presensi.push({
+                        'Waktu': new Date().toLocaleString(), 'No WA': payload.noWa, 
+                        'Nama Lengkap': payload.nama, 'Tingkat': payload.tingkat, 
+                        'Instansi': payload.instansi, 'Sesi/Materi': s,
+                        'Status Infak': payload.statusInfak
+                    });
                 });
                 
                 const attendedSet = new Set(db.presensi.filter(p => p['No WA'] === payload.noWa).map(p => p['Sesi/Materi']));
                 const result = {
                     nama: payload.nama, tingkat: payload.tingkat, instansi: payload.instansi,
                     attendedList: Array.from(attendedSet),
-                    allSessions: db.sesi,
+                    allSessions: db.sesi.map(s => s.nama),
                     totalAttended: attendedSet.size,
                     totalSessions: db.sesi.length,
                     percentage: Math.round((attendedSet.size / db.sesi.length) * 100)
                 };
                 
-                setTimeout(() => { showSuccessPage(result); btn.disabled = false; btn.innerHTML = '<i class="bi bi-check2-square me-2"></i> HADIR'; }, 500);
+                setTimeout(() => { showSuccessPage(result); btn.disabled = false; btn.innerHTML = '<i class="bi bi-check2-square me-2"></i> KIRIM PRESENSI'; }, 500);
             } else {
                 google.script.run
                     .withSuccessHandler(res => {
-                        // Refresh data presensi lokal agar admin view update
-                        db.presensi.push({
-                            'Waktu': new Date().toLocaleString(), 'No WA': payload.noWa, 
-                            'Nama Lengkap': payload.nama, 'Tingkat': payload.tingkat, 
-                            'Instansi': payload.instansi, 'Sesi/Materi': payload.sesi,
-                            'Status Infak': payload.statusInfak
+                        // Refresh data presensi lokal
+                        payload.sesiList.forEach(s => {
+                            db.presensi.push({
+                                'Waktu': new Date().toLocaleString(), 'No WA': payload.noWa, 
+                                'Nama Lengkap': payload.nama, 'Tingkat': payload.tingkat, 
+                                'Instansi': payload.instansi, 'Sesi/Materi': s,
+                                'Status Infak': payload.statusInfak
+                            });
                         });
                         showSuccessPage(res);
                         btn.disabled = false;
-                        btn.innerHTML = '<i class="bi bi-check2-square me-2"></i> HADIR';
+                        btn.innerHTML = '<i class="bi bi-check2-square me-2"></i> KIRIM PRESENSI';
                     })
                     .withFailureHandler(err => {
                         Swal.fire('Gagal', 'Terjadi kesalahan jaringan.', 'error');
                         btn.disabled = false;
-                        btn.innerHTML = '<i class="bi bi-check2-square me-2"></i> HADIR';
+                        btn.innerHTML = '<i class="bi bi-check2-square me-2"></i> KIRIM PRESENSI';
                     })
                     .savePresensi(payload);
             }
@@ -504,22 +602,20 @@
             document.getElementById('succ-count').innerText = `${data.totalAttended}/${data.totalSessions}`;
             document.getElementById('progressText').innerText = `${data.percentage}%`;
             
-            // CSS Conic Gradient animation (360deg = 100%)
             let deg = (data.percentage / 100) * 360;
             document.getElementById('progressCircle').style.setProperty('--progress', `${deg}deg`);
 
-            // List Materi
             let listHtml = '';
-            data.allSessions.forEach(sesi => {
-                const isAttended = data.attendedList.includes(sesi);
+            data.allSessions.forEach(sesiName => {
+                const isAttended = data.attendedList.includes(sesiName);
                 const icon = isAttended ? '<i class="bi bi-check-circle-fill text-success me-2"></i>' : '<i class="bi bi-circle text-muted me-2 opacity-50"></i>';
                 const style = isAttended ? 'fw-bold' : 'text-muted';
-                listHtml += `<div class="session-item ${style}">${icon} ${sesi}</div>`;
+                listHtml += `<div class="session-item ${style}">${icon} ${sesiName}</div>`;
             });
             document.getElementById('sessionListHtml').innerHTML = listHtml;
         }
 
-        // --- ADMIN WADAH DIGITAL ---
+        // --- ADMIN ---
         function showWadahDigital() {
             let link = db.config.WADAH_DIGITAL_WA || "https://wa.me/6281234567890";
             window.open(link, '_blank');
