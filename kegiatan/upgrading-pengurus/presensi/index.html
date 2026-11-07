@@ -274,12 +274,20 @@
     <!-- ============================================== -->
     <!-- VIEW: ADMIN -->
     <!-- ============================================== -->
-    <div id="view-admin" class="container py-4 fade-in hidden" style="max-width: 900px;">
-        <div class="d-flex justify-content-between align-items-center mb-3">
-            <h3 class="page-title m-0">Data Presensi</h3>
-            <button class="btn btn-sm btn-danger" onclick="logoutAdmin()">Keluar Admin</button>
+    <div id="view-admin" class="container py-4 fade-in hidden" style="max-width: 1000px;">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3 class="page-title m-0">Dashboard Admin</h3>
+            <button class="btn btn-sm btn-danger" onclick="logoutAdmin()"><i class="bi bi-box-arrow-right"></i> Keluar</button>
         </div>
         
+        <!-- Recap Dashboard Section -->
+        <h5 class="fw-bold text-dark mb-3"><i class="bi bi-bar-chart-fill text-primary"></i> Rekapitulasi Kehadiran per Materi</h5>
+        <div class="row mb-4" id="admin-recap-cards">
+            <!-- Recap cards injected via JS -->
+        </div>
+
+        <!-- Table Section -->
+        <h5 class="fw-bold text-dark mb-3"><i class="bi bi-list-columns text-primary"></i> Rincian Presensi</h5>
         <div class="card-custom p-3 overflow-auto">
             <table class="table table-hover table-sm" style="font-size: 0.9rem;">
                 <thead class="table-light">
@@ -313,13 +321,43 @@
          * ==========================================
          */
 
+        const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzFnNUUkbs8LILC0WAcaXM6xA5MP0-gACTh1kJVEKT8kGnFD2C6qob2y0vaowjfUTQS/exec";
+        
         let db = { pendaftar: [], presensi: [], masterMap: {}, sesi: [], config: {} };
-        const isSimulation = typeof google === 'undefined';
+        const isSimulation = typeof google === 'undefined' && window.location.hostname !== "muhrasul523.github.io" && window.location.hostname !== ""; // Adjust condition based on execution environment
 
         document.addEventListener("DOMContentLoaded", loadData);
 
         function startLoading() { document.getElementById('loading-overlay').style.display = 'flex'; setTimeout(()=>document.getElementById('loading-overlay').style.opacity = '1',10); }
         function endLoading() { document.getElementById('loading-overlay').style.opacity = '0'; setTimeout(()=>document.getElementById('loading-overlay').style.display = 'none', 300); }
+
+        // --- API CALL WRAPPER UNTUK GITHUB PAGES / GAS ---
+        async function apiCall(action, payload = null) {
+            // Jika dijalankan langsung di environment Google Apps Script
+            if (typeof google !== 'undefined' && google.script) {
+                return new Promise((resolve, reject) => {
+                    google.script.run
+                        .withSuccessHandler(resolve)
+                        .withFailureHandler(reject)
+                        [action](payload);
+                });
+            } 
+            // Jika dijalankan dari GitHub Pages
+            else {
+                try {
+                    const response = await fetch(WEBAPP_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                        body: JSON.stringify({ action: action, payload: payload })
+                    });
+                    const result = await response.json();
+                    if (result.status === 'success') return result.data;
+                    else throw new Error(result.message || 'Error dari server');
+                } catch (error) {
+                    throw error;
+                }
+            }
+        }
 
         function loadDummyData() {
             db = {
@@ -342,25 +380,25 @@
             };
         }
 
-        function loadData() {
+        async function loadData() {
             startLoading();
-            if (isSimulation) {
+            // Cek sederhana jika domain bukan localhost atau github, jalankan simulation hanya jika benar-benar butuh dummy
+            // Namun karena kita sudah force pakai WEBAPP_URL, kita prioritaskan fetch()
+            if (isSimulation && window.location.protocol === 'file:') {
+                console.log("Local Mode - Loading Dummy Data");
                 loadDummyData();
                 renderTingkat();
                 endLoading();
             } else {
-                google.script.run
-                    .withSuccessHandler(res => {
-                        db = res;
-                        renderTingkat();
-                        endLoading();
-                    })
-                    .withFailureHandler(err => {
-                        console.error(err);
-                        Swal.fire('Error', 'Gagal memuat data sistem.', 'error');
-                        endLoading();
-                    })
-                    .getAllData();
+                try {
+                    db = await apiCall('getAllData');
+                    renderTingkat();
+                    endLoading();
+                } catch (err) {
+                    console.error(err);
+                    Swal.fire('Error', 'Gagal memuat data dari server. Pastikan URL WebApp benar.', 'error');
+                    endLoading();
+                }
             }
         }
 
@@ -368,9 +406,11 @@
         function renderTingkat() {
             const select = document.getElementById('tingkat');
             select.innerHTML = '<option value="">-- Pilih Tingkat --</option>';
-            Object.keys(db.masterMap).forEach(t => {
-                select.innerHTML += `<option value="${t}">${t}</option>`;
-            });
+            if(db.masterMap) {
+                Object.keys(db.masterMap).forEach(t => {
+                    select.innerHTML += `<option value="${t}">${t}</option>`;
+                });
+            }
         }
 
         // Render Instansi berdasarkan pilihan Tingkat
@@ -410,29 +450,32 @@
             
             const now = new Date(); // Waktu saat ini (sistem user)
 
-            db.sesi.forEach((s, index) => {
-                // Parsing format YYYY-MM-DD HH:mm dengan Date JS aman jika format standar
-                const start = new Date(s.mulai.replace(/-/g, '/')); 
-                const end = new Date(s.selesai.replace(/-/g, '/'));
-                
-                const isOpen = now >= start && now <= end;
-                
-                // Pisah string hanya untuk display jam (opsional, menyesuaikan)
-                let timeStr = `${s.mulai} s/d ${s.selesai.split(' ')[1] || s.selesai}`;
+            if(db.sesi && db.sesi.length > 0) {
+                db.sesi.forEach((s, index) => {
+                    // Parsing format YYYY-MM-DD HH:mm dengan Date JS
+                    const start = new Date(s.mulai.replace(/-/g, '/')); 
+                    const end = new Date(s.selesai.replace(/-/g, '/'));
+                    
+                    const isOpen = now >= start && now <= end;
+                    
+                    let timeStr = `${s.mulai} s/d ${s.selesai.split(' ')[1] || s.selesai}`;
 
-                container.innerHTML += `
-                    <div class="sesi-check-card form-check mb-2 ${isOpen ? 'bg-white' : 'disabled'}">
-                        <input class="form-check-input ms-1" type="checkbox" name="sesiCheck" value="${s.nama}" id="sesi${index}" ${isOpen ? '' : 'disabled'}>
-                        <label class="form-check-label ms-2 d-block w-100" for="sesi${index}">
-                            <strong class="d-block text-dark">${s.nama}</strong>
-                            <small class="text-muted" style="font-size:0.8rem;">
-                                ${timeStr} 
-                                ${isOpen ? '<span class="badge bg-success ms-1">Aktif</span>' : '<span class="badge bg-secondary ms-1">Tutup</span>'}
-                            </small>
-                        </label>
-                    </div>
-                `;
-            });
+                    container.innerHTML += `
+                        <div class="sesi-check-card form-check mb-2 ${isOpen ? 'bg-white shadow-sm' : 'disabled'}">
+                            <input class="form-check-input ms-1 mt-2" type="checkbox" name="sesiCheck" value="${s.nama}" id="sesi${index}" ${isOpen ? '' : 'disabled'}>
+                            <label class="form-check-label ms-2 d-block w-100" for="sesi${index}">
+                                <strong class="d-block text-dark">${s.nama}</strong>
+                                <small class="text-muted" style="font-size:0.8rem;">
+                                    ${timeStr} 
+                                    ${isOpen ? '<span class="badge bg-success ms-1">Aktif</span>' : '<span class="badge bg-secondary ms-1">Tutup</span>'}
+                                </small>
+                            </label>
+                        </div>
+                    `;
+                });
+            } else {
+                container.innerHTML = '<div class="alert alert-warning small">Data sesi belum tersedia.</div>';
+            }
         }
 
         // --- STEP 1: Cek WA Silang (Presensi lalu Pendaftar) ---
@@ -446,15 +489,17 @@
             let foundData = null;
 
             // 1. Cek di Sheet Presensi (Cari dari baris paling bawah/terbaru)
-            for (let i = db.presensi.length - 1; i >= 0; i--) {
-                if (String(db.presensi[i]['No WA']) === String(noWa)) {
-                    foundData = db.presensi[i];
-                    break;
+            if(db.presensi) {
+                for (let i = db.presensi.length - 1; i >= 0; i--) {
+                    if (String(db.presensi[i]['No WA']) === String(noWa)) {
+                        foundData = db.presensi[i];
+                        break;
+                    }
                 }
             }
 
             // 2. Jika tidak ada di Presensi, cek di Sheet Pendaftar
-            if (!foundData) {
+            if (!foundData && db.pendaftar) {
                 foundData = db.pendaftar.find(p => String(p['No WA']) === String(noWa));
             }
 
@@ -482,7 +527,6 @@
                 // Tambahkan attribut readonly / disabled
                 document.getElementById('nama').setAttribute('readonly', true);
                 document.getElementById('email').setAttribute('readonly', true);
-                // Untuk select agar tidak bisa diganti tapi tetap mengirimkan value, gunakan trik css (pointer-events none ada di CSS) dan readonly
                 document.getElementById('tingkat').setAttribute('readonly', true);
                 document.getElementById('instansi').setAttribute('readonly', true);
 
@@ -516,7 +560,7 @@
         }
 
         // --- STEP 2: Submit Presensi ---
-        function submitPresensi(e) {
+        async function submitPresensi(e) {
             e.preventDefault();
 
             // Validasi Checkbox Minimal 1
@@ -540,12 +584,14 @@
                 email: document.getElementById('email').value,
                 tingkat: document.getElementById('tingkat').value,
                 instansi: document.getElementById('instansi').value,
-                sesiList: sesiArr, // Kirim sebagai Array
+                sesiList: sesiArr,
                 statusInfak: document.querySelector('input[name="statusInfak"]:checked').value
             };
 
-            if(isSimulation) {
-                // Simulasi
+            try {
+                const res = await apiCall('savePresensi', payload);
+                
+                // Refresh data presensi lokal (agar tidak perlu ambil dari DB lagi saat login admin)
                 payload.sesiList.forEach(s => {
                     db.presensi.push({
                         'Waktu': new Date().toLocaleString(), 'No WA': payload.noWa, 
@@ -554,40 +600,14 @@
                         'Status Infak': payload.statusInfak
                     });
                 });
-                
-                const attendedSet = new Set(db.presensi.filter(p => p['No WA'] === payload.noWa).map(p => p['Sesi/Materi']));
-                const result = {
-                    nama: payload.nama, tingkat: payload.tingkat, instansi: payload.instansi,
-                    attendedList: Array.from(attendedSet),
-                    allSessions: db.sesi.map(s => s.nama),
-                    totalAttended: attendedSet.size,
-                    totalSessions: db.sesi.length,
-                    percentage: Math.round((attendedSet.size / db.sesi.length) * 100)
-                };
-                
-                setTimeout(() => { showSuccessPage(result); btn.disabled = false; btn.innerHTML = '<i class="bi bi-check2-square me-2"></i> KIRIM PRESENSI'; }, 500);
-            } else {
-                google.script.run
-                    .withSuccessHandler(res => {
-                        // Refresh data presensi lokal
-                        payload.sesiList.forEach(s => {
-                            db.presensi.push({
-                                'Waktu': new Date().toLocaleString(), 'No WA': payload.noWa, 
-                                'Nama Lengkap': payload.nama, 'Tingkat': payload.tingkat, 
-                                'Instansi': payload.instansi, 'Sesi/Materi': s,
-                                'Status Infak': payload.statusInfak
-                            });
-                        });
-                        showSuccessPage(res);
-                        btn.disabled = false;
-                        btn.innerHTML = '<i class="bi bi-check2-square me-2"></i> KIRIM PRESENSI';
-                    })
-                    .withFailureHandler(err => {
-                        Swal.fire('Gagal', 'Terjadi kesalahan jaringan.', 'error');
-                        btn.disabled = false;
-                        btn.innerHTML = '<i class="bi bi-check2-square me-2"></i> KIRIM PRESENSI';
-                    })
-                    .savePresensi(payload);
+
+                showSuccessPage(res);
+            } catch (err) {
+                console.error(err);
+                Swal.fire('Gagal', 'Terjadi kesalahan sistem/jaringan saat menyimpan data.', 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="bi bi-check2-square me-2"></i> KIRIM PRESENSI';
             }
         }
 
@@ -617,7 +637,7 @@
 
         // --- ADMIN ---
         function showWadahDigital() {
-            let link = db.config.WADAH_DIGITAL_WA || "https://wa.me/6281234567890";
+            let link = (db.config && db.config.WADAH_DIGITAL_WA) ? db.config.WADAH_DIGITAL_WA : "https://wa.me/6281234567890";
             window.open(link, '_blank');
         }
 
@@ -631,7 +651,8 @@
             });
 
             if (code) {
-                if (code === db.config.ADMIN_CODE || code === 'duwd1404') {
+                const adminCode = (db.config && db.config.ADMIN_CODE) ? db.config.ADMIN_CODE : 'duwd1404';
+                if (code === adminCode) {
                     openAdmin();
                 } else {
                     Swal.fire('Gagal', 'Kode Akses Salah!', 'error');
@@ -643,9 +664,56 @@
             document.getElementById('main-container').classList.add('hidden');
             document.getElementById('view-admin').classList.remove('hidden');
             
+            renderAdminDashboard();
+            renderAdminTable();
+        }
+
+        // Fitur Baru: Render Admin Dashboard (Rekap per sesi)
+        function renderAdminDashboard() {
+            const recapContainer = document.getElementById('admin-recap-cards');
+            recapContainer.innerHTML = '';
+
+            // Hitung total kehadiran per sesi materi
+            let sessionCounts = {};
+            if(db.presensi) {
+                db.presensi.forEach(p => {
+                    let sesiName = p['Sesi/Materi'];
+                    if (sesiName) {
+                        sessionCounts[sesiName] = (sessionCounts[sesiName] || 0) + 1;
+                    }
+                });
+            }
+
+            // Tampilkan masing-masing materi
+            if(db.sesi && db.sesi.length > 0) {
+                db.sesi.forEach(s => {
+                    let count = sessionCounts[s.nama] || 0;
+                    recapContainer.innerHTML += `
+                        <div class="col-md-4 col-sm-6 mb-3">
+                            <div class="card-custom p-3 bg-white h-100 shadow-sm border-0 d-flex flex-column justify-content-between">
+                                <h6 class="text-muted small fw-bold lh-base mb-2">${s.nama}</h6>
+                                <div class="d-flex align-items-center">
+                                    <h3 class="text-primary mb-0 fw-bold me-2">${count}</h3>
+                                    <span class="small text-muted">Hadir</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                recapContainer.innerHTML = '<div class="col-12"><div class="alert alert-secondary">Belum ada data sesi/materi.</div></div>';
+            }
+        }
+
+        function renderAdminTable() {
             const tbody = document.getElementById('adminTableBody');
             tbody.innerHTML = '';
             
+            if(!db.presensi || db.presensi.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center text-muted">Belum ada data presensi.</td></tr>';
+                return;
+            }
+
             const dataReversed = [...db.presensi].reverse(); // Terkini di atas
             dataReversed.forEach(d => {
                 tbody.innerHTML += `
