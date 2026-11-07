@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -8,7 +7,7 @@
     
     <!-- URL Relatif Logo Sesuai Instruksi (muncul di tab dan whatsapp preview) -->
     <link rel="icon" href="../../../logo_wahdah_islamiyah.png" type="image/png">
-    <meta property="og:title" content="Presensi Upgrading Pengurus">
+    <meta property="og:title" content="Presensi Upgrading Pengurus DPW DPD Wahdah Islamiyah">
     <meta property="og:description" content="Formulir Presensi Online Upgrading Pengurus Wahdah Islamiyah.">
     <meta property="og:image" content="../../../logo_wahdah_islamiyah.png">
     
@@ -16,6 +15,8 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- TomSelect CSS untuk Autosearch Dropdown -->
+    <link href="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/css/tom-select.bootstrap5.min.css" rel="stylesheet">
     
     <style>
         :root {
@@ -52,24 +53,22 @@
         .form-label { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.4rem; }
         
         .input-group-custom { position: relative; margin-bottom: 1.2rem; }
-        .input-group-custom .form-control, .input-group-custom .form-select {
+        .input-group-custom .form-control, .input-group-custom .form-select, .input-group-custom .ts-control {
             border-radius: 14px;
             padding: 0.7rem 1.2rem 0.7rem 2.8rem;
             border: 2px solid #e2e8f0;
             background-color: #f8fafc;
             font-size: 1rem;
+            transition: all 0.3s ease;
         }
-        .input-group-custom .form-control:focus, .input-group-custom .form-select:focus {
+        .input-group-custom .form-control:focus, .input-group-custom .form-select:focus, .input-group-custom .ts-wrapper.focus .ts-control {
             background-color: #ffffff;
             border-color: var(--primary-light);
             box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.15);
+            outline: none;
         }
-        .input-group-custom .form-control[readonly], .input-group-custom .form-select[readonly], .input-group-custom select[disabled] {
-            background-color: #e2e8f0;
-            opacity: 0.8;
-            cursor: not-allowed;
-            pointer-events: none;
-        }
+        .input-group-custom .ts-wrapper { padding-left: 0; }
+        
         .inline-icon {
             position: absolute;
             left: 15px;
@@ -77,6 +76,7 @@
             transform: translateY(-50%);
             color: var(--primary);
             z-index: 5;
+            pointer-events: none; /* Supaya icon tidak menghalangi klik input/TomSelect */
             font-size: 1.1rem;
             opacity: 0.7;
         }
@@ -165,7 +165,8 @@
         <div id="view-form" class="card-custom p-4 p-md-5 mb-3 fade-in">
             <div class="text-center mb-4 pb-2 border-bottom">
                 <img src="../../../logo_wahdah_islamiyah.png" alt="Logo" width="90" class="mb-3 logo-img" onclick="promptAdmin()" onerror="this.src='https://upload.wikimedia.org/wikipedia/commons/e/ec/Logo_Wahdah_Islamiyah.png';">
-                <h3 class="page-title fs-4">PRESENSI KEGIATAN<br>UPGRADING PENGURUS</h3>
+                <!-- Pembaruan Judul sesuai permintaan -->
+                <h3 class="page-title fs-4">PRESENSI KEGIATAN<br>UPGRADING PENGURUS<br>DPW DPD WAHDAH ISLAMIYAH</h3>
             </div>
 
             <form id="presensiForm" onsubmit="submitPresensi(event)">
@@ -186,37 +187,33 @@
                 <div id="step-2" class="hidden fade-in">
                     <div class="alert alert-info py-2 small mb-3" id="infoAuto"><i class="bi bi-info-circle me-1"></i> Data di bawah dimuat otomatis.</div>
                     
+                    <label class="form-label small">Nama Lengkap</label>
                     <div class="input-group-custom">
                         <i class="bi bi-person inline-icon"></i>
-                        <!-- Autocapslock via style dan oninput -->
                         <input type="text" class="form-control" id="nama" required placeholder="Nama Lengkap Tanpa Gelar" style="text-transform: uppercase;" oninput="this.value = this.value.toUpperCase()">
                     </div>
                     
+                    <label class="form-label small">Alamat Email</label>
                     <div class="input-group-custom">
                         <i class="bi bi-envelope inline-icon"></i>
-                        <!-- Type email menjamin validasi email default HTML -->
-                        <input type="email" class="form-control" id="email" required placeholder="Alamat Email">
+                        <input type="email" class="form-control" id="email" required placeholder="email@contoh.com">
                     </div>
 
-                    <div class="row">
-                        <div class="col-6">
-                            <label class="form-label small">Tingkat</label>
-                            <div class="input-group-custom">
-                                <i class="bi bi-diagram-3 inline-icon"></i>
-                                <select class="form-select" id="tingkat" required onchange="handleTingkatChange()">
-                                    <!-- Diisi dinamis -->
-                                </select>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <label class="form-label small">Instansi</label>
-                            <div class="input-group-custom">
-                                <i class="bi bi-geo-alt inline-icon"></i>
-                                <select class="form-select" id="instansi" required>
-                                    <option value="">-- Pilih --</option>
-                                </select>
-                            </div>
-                        </div>
+                    <!-- Pembaruan Susunan Tingkat dan Instansi (Vertikal & TomSelect) -->
+                    <label class="form-label small">Tingkat Kepengurusan</label>
+                    <div class="input-group-custom">
+                        <i class="bi bi-diagram-3 inline-icon" style="z-index: 10;"></i>
+                        <select id="tingkat" required>
+                            <option value="">-- Pilih Tingkat --</option>
+                        </select>
+                    </div>
+
+                    <label class="form-label small">Asal Instansi/Daerah</label>
+                    <div class="input-group-custom">
+                        <i class="bi bi-geo-alt inline-icon" style="z-index: 10;"></i>
+                        <select id="instansi" required>
+                            <option value="">-- Pilih Instansi --</option>
+                        </select>
                     </div>
 
                     <!-- Materi Checkbox -->
@@ -267,7 +264,8 @@
                 <!-- Injected via JS -->
             </div>
 
-            <button class="btn btn-outline-secondary w-100 mt-4" onclick="resetForm()">Tutup / Presensi Peserta Lain</button>
+            <!-- Pembaruan teks tombol menjadi "Tutup" -->
+            <button class="btn btn-outline-secondary w-100 mt-4" onclick="resetForm()">Tutup</button>
         </div>
 
     </div>
@@ -315,6 +313,8 @@
 
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.2.2/dist/js/tom-select.complete.min.js"></script>
+
     <script>
         /**
          * ==========================================
@@ -325,16 +325,37 @@
         const WEBAPP_URL = "https://script.google.com/macros/s/AKfycbzFnNUUkbs8LILC0WAcaXM6xA5MP0-gACTh1kJVEKT8kGnFD2C6qob2y0vaowjfUTQS/exec";
         
         let db = { pendaftar: [], presensi: [], masterMap: {}, sesi: [], config: {} };
-        const isSimulation = typeof google === 'undefined' && window.location.hostname !== "muhrasul523.github.io" && window.location.hostname !== ""; // Adjust condition based on execution environment
+        const isSimulation = typeof google === 'undefined' && window.location.hostname !== "muhrasul523.github.io" && window.location.hostname !== ""; 
 
-        document.addEventListener("DOMContentLoaded", loadData);
+        // Variabel untuk menyimpan instance TomSelect
+        let tingkatSelect, instansiSelect;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            initTomSelect();
+            loadData();
+        });
 
         function startLoading() { document.getElementById('loading-overlay').style.display = 'flex'; setTimeout(()=>document.getElementById('loading-overlay').style.opacity = '1',10); }
         function endLoading() { document.getElementById('loading-overlay').style.opacity = '0'; setTimeout(()=>document.getElementById('loading-overlay').style.display = 'none', 300); }
 
+        // Inisialisasi awal TomSelect
+        function initTomSelect() {
+            tingkatSelect = new TomSelect("#tingkat", {
+                create: false, 
+                sortField: [], 
+                placeholder: "-- Pilih Tingkat --",
+                onChange: function() { handleTingkatChange(); }
+            });
+            
+            instansiSelect = new TomSelect("#instansi", {
+                create: false, 
+                sortField: [], 
+                placeholder: "-- Pilih Instansi --"
+            });
+        }
+
         // --- API CALL WRAPPER UNTUK GITHUB PAGES / GAS ---
         async function apiCall(action, payload = null) {
-            // Jika dijalankan langsung di environment Google Apps Script
             if (typeof google !== 'undefined' && google.script) {
                 return new Promise((resolve, reject) => {
                     google.script.run
@@ -342,9 +363,7 @@
                         .withFailureHandler(reject)
                         [action](payload);
                 });
-            } 
-            // Jika dijalankan dari GitHub Pages
-            else {
+            } else {
                 try {
                     const response = await fetch(WEBAPP_URL, {
                         method: 'POST',
@@ -374,8 +393,8 @@
                     'DPD': ['Makassar', 'Bandung']
                 },
                 sesi: [
-                    { nama: 'Materi 1: Visi Misi Organisasi', mulai: '2020-01-01 00:00', selesai: '2030-01-01 00:00' }, // Selalu buka untuk simulasi
-                    { nama: 'Materi 2: Manajemen Kesekretariatan', mulai: '2030-01-01 00:00', selesai: '2031-01-01 00:00' } // Selalu tutup untuk simulasi
+                    { nama: 'Materi 1: Visi Misi Organisasi', mulai: '2020-01-01 00:00', selesai: '2030-01-01 00:00' }, 
+                    { nama: 'Materi 2: Manajemen Kesekretariatan', mulai: '2030-01-01 00:00', selesai: '2031-01-01 00:00' } 
                 ],
                 config: { 'WADAH_DIGITAL_WA': 'https://wa.me/6281234567890', 'ADMIN_CODE': 'duwd1404' }
             };
@@ -383,8 +402,6 @@
 
         async function loadData() {
             startLoading();
-            // Cek sederhana jika domain bukan localhost atau github, jalankan simulation hanya jika benar-benar butuh dummy
-            // Namun karena kita sudah force pakai WEBAPP_URL, kita prioritaskan fetch()
             if (isSimulation && window.location.protocol === 'file:') {
                 console.log("Local Mode - Loading Dummy Data");
                 loadDummyData();
@@ -403,30 +420,33 @@
             }
         }
 
-        // Render Tingkat dari Master_Data
+        // Render Tingkat dari Master_Data ke TomSelect
         function renderTingkat() {
-            const select = document.getElementById('tingkat');
-            select.innerHTML = '<option value="">-- Pilih Tingkat --</option>';
-            if(db.masterMap) {
+            if(tingkatSelect && db.masterMap) {
+                tingkatSelect.clear();
+                tingkatSelect.clearOptions();
                 Object.keys(db.masterMap).forEach(t => {
-                    select.innerHTML += `<option value="${t}">${t}</option>`;
+                    tingkatSelect.addOption({value: t, text: t});
                 });
+                tingkatSelect.refreshOptions(false);
             }
         }
 
-        // Render Instansi berdasarkan pilihan Tingkat
+        // Render Instansi berdasarkan pilihan Tingkat ke TomSelect
         function handleTingkatChange() {
             const val = document.getElementById('tingkat').value;
-            const instSelect = document.getElementById('instansi');
-            instSelect.innerHTML = '<option value="">-- Pilih Instansi --</option>';
-            if (val && db.masterMap[val]) {
-                db.masterMap[val].forEach(inst => {
-                    instSelect.innerHTML += `<option value="${inst}">${inst}</option>`;
-                });
+            if(instansiSelect) {
+                instansiSelect.clear();
+                instansiSelect.clearOptions();
+                if (val && db.masterMap[val]) {
+                    db.masterMap[val].forEach(inst => {
+                        instansiSelect.addOption({value: inst, text: inst});
+                    });
+                }
+                instansiSelect.refreshOptions(false);
             }
         }
 
-        // Format WA: Hanya angka, 08 jadi 628
         function formatWA(input) {
             let val = input.value.replace(/\D/g, ''); 
             if (val.startsWith('08')) {
@@ -444,28 +464,26 @@
             }
         }
 
-        // Render Sesi Checkbox dengan Cek Waktu Aktif
+        // Render Sesi Checkbox (Diperbarui dengan margin-start/ms-3 untuk meregangkan label)
         function renderSesi() {
             const container = document.getElementById('sesiContainer');
             container.innerHTML = '';
             
-            const now = new Date(); // Waktu saat ini (sistem user)
+            const now = new Date();
 
             if(db.sesi && db.sesi.length > 0) {
                 db.sesi.forEach((s, index) => {
-                    // Parsing format YYYY-MM-DD HH:mm dengan Date JS
                     const start = new Date(s.mulai.replace(/-/g, '/')); 
                     const end = new Date(s.selesai.replace(/-/g, '/'));
                     
                     const isOpen = now >= start && now <= end;
-                    
                     let timeStr = `${s.mulai} s/d ${s.selesai.split(' ')[1] || s.selesai}`;
 
                     container.innerHTML += `
                         <div class="sesi-check-card form-check mb-2 ${isOpen ? 'bg-white shadow-sm' : 'disabled'}">
-                            <input class="form-check-input ms-1 mt-2" type="checkbox" name="sesiCheck" value="${s.nama}" id="sesi${index}" ${isOpen ? '' : 'disabled'}>
-                            <label class="form-check-label ms-2 d-block w-100" for="sesi${index}">
-                                <strong class="d-block text-dark">${s.nama}</strong>
+                            <input class="form-check-input ms-1" style="transform: scale(1.15); margin-top: 0.35rem;" type="checkbox" name="sesiCheck" value="${s.nama}" id="sesi${index}" ${isOpen ? '' : 'disabled'}>
+                            <label class="form-check-label ms-3 d-block w-100" for="sesi${index}">
+                                <strong class="d-block text-dark lh-sm mb-1">${s.nama}</strong>
                                 <small class="text-muted" style="font-size:0.8rem;">
                                     ${timeStr} 
                                     ${isOpen ? '<span class="badge bg-success ms-1">Aktif</span>' : '<span class="badge bg-secondary ms-1">Tutup</span>'}
@@ -479,7 +497,7 @@
             }
         }
 
-        // --- STEP 1: Cek WA Silang (Presensi lalu Pendaftar) ---
+        // --- STEP 1: Cek WA (Sekarang data bisa diedit dan tidak readonly) ---
         function checkWA() {
             const noWa = document.getElementById('noWa').value;
             if(noWa.length < 10) {
@@ -489,7 +507,6 @@
 
             let foundData = null;
 
-            // 1. Cek di Sheet Presensi (Cari dari baris paling bawah/terbaru)
             if(db.presensi) {
                 for (let i = db.presensi.length - 1; i >= 0; i--) {
                     if (String(db.presensi[i]['No WA']) === String(noWa)) {
@@ -499,52 +516,39 @@
                 }
             }
 
-            // 2. Jika tidak ada di Presensi, cek di Sheet Pendaftar
             if (!foundData && db.pendaftar) {
                 foundData = db.pendaftar.find(p => String(p['No WA']) === String(noWa));
             }
 
-            // Langsung buka form (Tanpa Alert)
             document.getElementById('step-1').classList.add('hidden');
             document.getElementById('step-2').classList.remove('hidden');
 
-            renderSesi(); // Render checkbox tiap buka form agar waktunya up-to-date
+            renderSesi();
 
             if (foundData) {
-                // Load data dan buat readonly
-                document.getElementById('infoAuto').innerHTML = '<i class="bi bi-info-circle me-1"></i> Data di bawah dimuat otomatis.';
+                document.getElementById('infoAuto').innerHTML = '<i class="bi bi-info-circle me-1"></i> Data ditemukan. Silakan periksa atau ubah jika perlu.';
                 document.getElementById('infoAuto').classList.remove('hidden');
 
                 document.getElementById('nama').value = foundData['Nama Lengkap'] || '';
                 document.getElementById('email').value = foundData['Email'] || '';
-                document.getElementById('tingkat').value = foundData['Tingkat'] || '';
                 
-                handleTingkatChange(); // Trigger agar dropdown instansi me-load daftar yang benar
-                
+                if(tingkatSelect) {
+                    tingkatSelect.setValue(foundData['Tingkat'] || '');
+                }
+
+                // Beri jeda sebentar agar handleTingkatChange tereksekusi sebelum setting nilai Instansi
                 setTimeout(() => {
-                    document.getElementById('instansi').value = foundData['Instansi'] || '';
+                    if(instansiSelect) {
+                        instansiSelect.setValue(foundData['Instansi'] || '');
+                    }
                 }, 50);
-                
-                // Tambahkan attribut readonly / disabled
-                document.getElementById('nama').setAttribute('readonly', true);
-                document.getElementById('email').setAttribute('readonly', true);
-                document.getElementById('tingkat').setAttribute('readonly', true);
-                document.getElementById('instansi').setAttribute('readonly', true);
 
             } else {
-                // Tidak ditemukan, kosongkan agar isi manual
-                document.getElementById('infoAuto').classList.add('hidden'); // Sembunyikan alert otomatis
+                document.getElementById('infoAuto').classList.add('hidden'); 
                 
                 document.getElementById('nama').value = '';
                 document.getElementById('email').value = '';
-                document.getElementById('tingkat').value = '';
-                handleTingkatChange();
-
-                // Hapus attribut readonly / disabled
-                document.getElementById('nama').removeAttribute('readonly');
-                document.getElementById('email').removeAttribute('readonly');
-                document.getElementById('tingkat').removeAttribute('readonly');
-                document.getElementById('instansi').removeAttribute('readonly');
+                if(tingkatSelect) tingkatSelect.clear();
             }
         }
 
@@ -556,15 +560,17 @@
             document.getElementById('view-success').classList.add('hidden');
             document.getElementById('rekeningInfo').classList.add('hidden');
             
-            // Reset readonly status
-            ['nama','email','tingkat','instansi'].forEach(id => document.getElementById(id).removeAttribute('readonly'));
+            if(tingkatSelect) tingkatSelect.clear();
+            if(instansiSelect) {
+                instansiSelect.clear();
+                instansiSelect.clearOptions();
+            }
         }
 
         // --- STEP 2: Submit Presensi ---
         async function submitPresensi(e) {
             e.preventDefault();
 
-            // Validasi Checkbox Minimal 1
             const checkedSesi = document.querySelectorAll('input[name="sesiCheck"]:checked');
             if (checkedSesi.length === 0) {
                 Swal.fire('Perhatian', 'Pilih minimal satu materi yang sedang aktif untuk melakukan presensi.', 'warning');
@@ -575,7 +581,6 @@
             btn.disabled = true;
             btn.innerHTML = 'Menyimpan...';
 
-            // Kumpulkan nilai checkbox
             let sesiArr = [];
             checkedSesi.forEach(cb => sesiArr.push(cb.value));
 
@@ -583,8 +588,8 @@
                 noWa: document.getElementById('noWa').value,
                 nama: document.getElementById('nama').value,
                 email: document.getElementById('email').value,
-                tingkat: document.getElementById('tingkat').value,
-                instansi: document.getElementById('instansi').value,
+                tingkat: document.getElementById('tingkat').value, // TomSelect akan mengupdate original select ini
+                instansi: document.getElementById('instansi').value, // TomSelect akan mengupdate original select ini
                 sesiList: sesiArr,
                 statusInfak: document.querySelector('input[name="statusInfak"]:checked').value
             };
@@ -592,7 +597,6 @@
             try {
                 const res = await apiCall('savePresensi', payload);
                 
-                // Refresh data presensi lokal (agar tidak perlu ambil dari DB lagi saat login admin)
                 payload.sesiList.forEach(s => {
                     db.presensi.push({
                         'Waktu': new Date().toLocaleString(), 'No WA': payload.noWa, 
@@ -669,12 +673,10 @@
             renderAdminTable();
         }
 
-        // Fitur Baru: Render Admin Dashboard (Rekap per sesi)
         function renderAdminDashboard() {
             const recapContainer = document.getElementById('admin-recap-cards');
             recapContainer.innerHTML = '';
 
-            // Hitung total kehadiran per sesi materi
             let sessionCounts = {};
             if(db.presensi) {
                 db.presensi.forEach(p => {
@@ -685,7 +687,6 @@
                 });
             }
 
-            // Tampilkan masing-masing materi
             if(db.sesi && db.sesi.length > 0) {
                 db.sesi.forEach(s => {
                     let count = sessionCounts[s.nama] || 0;
@@ -715,7 +716,7 @@
                 return;
             }
 
-            const dataReversed = [...db.presensi].reverse(); // Terkini di atas
+            const dataReversed = [...db.presensi].reverse();
             dataReversed.forEach(d => {
                 tbody.innerHTML += `
                     <tr>
