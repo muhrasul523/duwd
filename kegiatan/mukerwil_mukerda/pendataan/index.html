@@ -3,370 +3,559 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sistem Manajemen Mukerwil & Mukerda</title>
+  <title>Sistem Manajemen Mukerwil & Mukerda Wahdah Islamiyah</title>
+  
+  <!-- CSS & Fonts -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- SweetAlert2 -->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@400;500;600;700&display=swap');
-    body {
-      background: radial-gradient(circle at top, #ffffff, #f0f4f8 100%);
-      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
-      color: #333; min-height: 100vh; overflow-x: hidden;
+    body { 
+      background: radial-gradient(circle at top left, #f3f8ff, #eef2f6 100%);
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif; 
+      color: #1a202c; min-height: 100vh; overflow-x: hidden; scroll-behavior: smooth;
     }
-    .glass-apple {
-      background: rgba(255, 255, 255, 0.7);
-      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+    .glass-premium { 
+      background: rgba(255, 255, 255, 0.85); 
+      backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.6); 
+      box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.08); 
     }
-    .input-apple {
-      width: 100%; padding: 0.8rem 1rem; border-radius: 12px;
-      background: rgba(255,255,255,0.8); border: 1px solid #e0e5ea;
+    .input-premium { 
+      width: 100%; padding: 0.875rem 1.25rem; border-radius: 1rem; 
+      background: #f8fafc; border: 1.5px solid #e2e8f0; 
       outline: none; transition: all 0.3s ease; font-size: 0.95rem; font-weight: 500;
-      box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
     }
-    .input-apple:focus {
-      border-color: #007aff; background: #ffffff;
-      box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+    .input-premium:focus { 
+      border-color: #3b82f6; background: #ffffff;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.15);
     }
-    .btn-apple {
-      background: linear-gradient(180deg, #288cff 0%, #007aff 100%);
-      color: white; border-radius: 12px; font-weight: 600;
-      transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+    .btn-premium { 
+      background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); color: white; 
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4);
     }
-    .btn-apple:hover { transform: scale(1.02); box-shadow: 0 6px 16px rgba(0, 122, 255, 0.4); }
+    .btn-premium:hover { transform: translateY(-3px); box-shadow: 0 15px 35px -5px rgba(37, 99, 235, 0.5); }
     
-    .radio-card { display: none; }
-    .radio-card:checked + label {
-      border-color: #007aff; background: #f0f8ff; color: #007aff; font-weight: 600;
+    /* Modern Radio / Checkbox */
+    .modern-radio:checked + div { border-color: #3b82f6; background-color: #eff6ff; color: #1d4ed8; font-weight: 700; }
+    .modern-radio:checked + div svg { opacity: 1; transform: scale(1); }
+    .modern-check:checked + div { border-color: #10b981; background-color: #ecfdf5; color: #047857; font-weight: 700; }
+    
+    /* Loading Overlay */
+    #loadingOverlay {
+        position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(5px);
+        z-index: 9999; display: flex; flex-direction: column; justify-content: center; items-center; transition: 0.3s;
     }
-    .radio-label {
-      border: 1px solid #e0e5ea; border-radius: 12px; padding: 0.8rem; text-align: center;
-      cursor: pointer; transition: all 0.2s; background: white; color: #666;
+    .spinner {
+        width: 50px; height: 50px; border: 5px solid #e2e8f0; border-top-color: #3b82f6;
+        border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 15px auto;
     }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
-<body class="p-4 md:p-8 flex justify-center items-start pb-20">
+<body class="p-4 md:p-8 flex justify-center items-start pb-20 relative min-h-screen">
 
-  <div id="appView" class="max-w-3xl w-full space-y-6 mt-4 animate-fade-in">
-    <div class="glass-apple p-6 md:p-10 rounded-3xl">
-      <div class="text-center flex flex-col items-center mb-8">
-        <!-- Logo diklik buka Admin -->
-        <img src="https://wahdah.or.id/wp-content/uploads/2021/10/Logo-WI-2021.png" alt="Logo WI" class="w-24 h-24 mb-4 object-contain cursor-pointer transition transform hover:scale-110" onclick="openAdmin()">
-        <h1 class="text-2xl md:text-3xl font-bold tracking-tight mb-2">Manajemen Mukerwil & Mukerda</h1>
-        <p class="text-gray-500 font-medium text-sm">Departemen Urusan Wilayah dan Daerah</p>
+  <!-- LOADING OVERLAY -->
+  <div id="loadingOverlay">
+      <div class="spinner"></div>
+      <div class="text-center font-bold text-slate-600 text-lg">Memuat Data...</div>
+  </div>
+
+  <!-- ================= APP VIEW (FORM) ================= -->
+  <div id="appView" class="max-w-4xl w-full space-y-6 mt-2 md:mt-6 animate-fade-in pb-10 hidden">
+    <div class="glass-premium p-6 md:p-10 rounded-[2rem]">
+      
+      <!-- HEADER -->
+      <div class="mb-10 text-center flex flex-col items-center">
+        <div class="relative group cursor-pointer" onclick="openAdmin()" title="Buka Dashboard Admin">
+          <div class="absolute inset-0 bg-blue-500 rounded-full blur-2xl opacity-20 group-hover:opacity-50 transition duration-500"></div>
+          <!-- Ganti URL logo jika punya aset sendiri -->
+          <div class="w-24 h-24 mb-4 bg-white rounded-full flex items-center justify-center shadow-xl border border-slate-100 group-hover:scale-110 transition duration-300">
+             <i class="bi bi-shield-check text-4xl text-blue-600"></i>
+          </div>
+        </div>
+        <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-2 text-slate-800">Manajemen <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">Muker</span></h1>
+        <p class="text-slate-500 font-medium text-sm md:text-base">Pendataan Mukerwil & Mukerda Wahdah Islamiyah</p>
       </div>
-
-      <div class="space-y-6" id="mainForm">
-        <!-- WA Input -->
+      
+      <!-- FORM -->
+      <form id="mainForm" onsubmit="submitForm(event)" class="space-y-8">
+          
+        <!-- 1. WA PJ -->
         <div>
-          <label class="block text-xs font-semibold text-gray-500 mb-1">WA Penanggung Jawab</label>
-          <input type="text" id="waInput" class="input-apple" placeholder="Mulai dengan angka 08..." oninput="formatWA(this)">
+            <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">WA Penanggung Jawab</label>
+            <input type="text" id="waPJ" class="input-premium" placeholder="Contoh: 0853..." required oninput="formatWA(this)">
+            <p class="text-xs text-slate-400 mt-1">*Hanya angka. Awalan 08 akan otomatis menjadi 628</p>
         </div>
 
-        <!-- Kegiatan -->
+        <!-- 2. PILIH KEGIATAN -->
         <div>
-          <label class="block text-xs font-semibold text-gray-500 mb-2">Pilih Kegiatan</label>
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <input type="radio" name="kegiatan" id="optMukerwil" value="Mukerwil" class="radio-card" onchange="toggleKegiatan()">
-              <label for="optMukerwil" class="block radio-label">Mukerwil</label>
+            <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Jenis Kegiatan</label>
+            <div class="grid grid-cols-2 gap-4">
+                <label class="cursor-pointer relative">
+                    <input type="radio" name="kegiatan" value="Mukerwil" class="modern-radio sr-only" onchange="updateFormUI()" required>
+                    <div class="p-4 rounded-xl border-2 border-slate-200 text-center transition flex items-center justify-center gap-2 text-slate-500">
+                        <i class="bi bi-building"></i> Mukerwil
+                    </div>
+                </label>
+                <label class="cursor-pointer relative">
+                    <input type="radio" name="kegiatan" value="Mukerda" class="modern-radio sr-only" onchange="updateFormUI()">
+                    <div class="p-4 rounded-xl border-2 border-slate-200 text-center transition flex items-center justify-center gap-2 text-slate-500">
+                        <i class="bi bi-house"></i> Mukerda
+                    </div>
+                </label>
             </div>
-            <div>
-              <input type="radio" name="kegiatan" id="optMukerda" value="Mukerda" class="radio-card" onchange="toggleKegiatan()">
-              <label for="optMukerda" class="block radio-label">Mukerda</label>
-            </div>
-          </div>
         </div>
 
-        <!-- DPW / DPD -->
-        <div id="wilayahContainer" class="hidden">
-          <label class="block text-xs font-semibold text-gray-500 mb-1" id="lblWilayah">Pilih Wilayah</label>
-          <select id="selWilayah" class="input-apple"></select>
+        <!-- 3. PILIH WILAYAH -->
+        <div>
+            <label id="labelWilayah" class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Pilih DPW / DPD</label>
+            <select id="wilayahSelect" class="input-premium" required disabled>
+                <option value="">-- Pilih Kegiatan Terlebih Dahulu --</option>
+            </select>
         </div>
 
-        <!-- Jadwal -->
-        <div class="grid grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-semibold text-gray-500 mb-1">Jadwal Mulai</label>
-            <input type="datetime-local" id="jadwalMulai" class="input-apple">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-gray-500 mb-1">Jadwal Selesai</label>
-            <input type="datetime-local" id="jadwalSelesai" class="input-apple">
-          </div>
-        </div>
-
-        <!-- Model Pelaksanaan & Kehadiran -->
+        <!-- 4. JADWAL -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label class="block text-xs font-semibold text-gray-500 mb-2">Pelaksanaan</label>
-            <div class="grid grid-cols-3 gap-2">
-              <div><input type="radio" name="pelaksanaan" id="pl1" value="Full Offline" class="radio-card"><label for="pl1" class="block radio-label text-xs">Offline</label></div>
-              <div><input type="radio" name="pelaksanaan" id="pl2" value="Full Online" class="radio-card"><label for="pl2" class="block radio-label text-xs">Online</label></div>
-              <div><input type="radio" name="pelaksanaan" id="pl3" value="Hybrid" class="radio-card"><label for="pl3" class="block radio-label text-xs">Hybrid</label></div>
+            <div>
+                <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Mulai</label>
+                <input type="datetime-local" id="jadwalMulai" class="input-premium" required>
             </div>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-gray-500 mb-2">Kehadiran Pendamping</label>
-            <div class="grid grid-cols-3 gap-2">
-              <div><input type="radio" name="kehadiran" id="kh1" value="Full Offline" class="radio-card"><label for="kh1" class="block radio-label text-xs">Offline</label></div>
-              <div><input type="radio" name="kehadiran" id="kh2" value="Full Online" class="radio-card"><label for="kh2" class="block radio-label text-xs">Online</label></div>
-              <div><input type="radio" name="kehadiran" id="kh3" value="Hybrid" class="radio-card"><label for="kh3" class="block radio-label text-xs">Hybrid</label></div>
+            <div>
+                <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Selesai</label>
+                <input type="datetime-local" id="jadwalSelesai" class="input-premium" required>
             </div>
-          </div>
         </div>
 
-        <!-- Tanggungan -->
+        <!-- 5. MODEL PELAKSANAAN -->
         <div>
-          <label class="block text-xs font-semibold text-gray-500 mb-2">Tanggungan</label>
-          <div class="space-y-2">
-            <label class="flex items-center space-x-3 text-sm cursor-pointer"><input type="checkbox" id="chkHonor" value="Honorarium/Uang Saku" class="w-4 h-4 rounded text-blue-500" onchange="toggleHonor()"> <span>Honorarium / Uang Saku</span></label>
-            <label class="flex items-center space-x-3 text-sm cursor-pointer"><input type="checkbox" id="chkTiket" value="Tiket/Transportasi" class="w-4 h-4 rounded text-blue-500"> <span>Tiket / Dana Transportasi</span></label>
-            <label class="flex items-center space-x-3 text-sm cursor-pointer"><input type="checkbox" id="chkInap" value="Penginapan" class="w-4 h-4 rounded text-blue-500"> <span>Penginapan</span></label>
-          </div>
+            <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Model Pelaksanaan</label>
+            <div class="grid grid-cols-3 gap-3">
+                <label class="cursor-pointer relative"><input type="radio" name="pelaksanaan" value="Full Offline" class="modern-radio sr-only" required><div class="p-3 text-sm rounded-xl border-2 border-slate-200 text-center text-slate-500 transition">Full Offline</div></label>
+                <label class="cursor-pointer relative"><input type="radio" name="pelaksanaan" value="Full Online" class="modern-radio sr-only"><div class="p-3 text-sm rounded-xl border-2 border-slate-200 text-center text-slate-500 transition">Full Online</div></label>
+                <label class="cursor-pointer relative"><input type="radio" name="pelaksanaan" value="Hybrid" class="modern-radio sr-only"><div class="p-3 text-sm rounded-xl border-2 border-slate-200 text-center text-slate-500 transition">Hybrid</div></label>
+            </div>
         </div>
 
-        <!-- Nominal -->
-        <div id="nominalContainer" class="hidden">
-          <label class="block text-xs font-semibold text-gray-500 mb-1">Nominal (Rp)</label>
-          <input type="text" id="inpNominal" class="input-apple" placeholder="Rp 0" oninput="formatRupiah(this)">
-          <input type="hidden" id="realNominal" value="0">
-        </div>
-
-        <!-- Usulan Pendamping -->
-        <div class="space-y-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
-          <h3 class="font-semibold text-sm text-gray-700">Usulan Pendamping</h3>
-          <div id="usulanContainer"></div>
-        </div>
-
-        <!-- Hal Dikuatkan -->
+        <!-- 6. MODEL KEHADIRAN PENDAMPING -->
         <div>
-          <label class="block text-xs font-semibold text-gray-500 mb-1">Hal yang perlu dikuatkan</label>
-          <textarea id="inpFokus" class="input-apple" rows="2" placeholder="Tuliskan poin penting..."></textarea>
+            <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Kehadiran Pendamping</label>
+            <div class="grid grid-cols-3 gap-3">
+                <label class="cursor-pointer relative"><input type="radio" name="kehadiran" value="Full Offline" class="modern-radio sr-only" required><div class="p-3 text-sm rounded-xl border-2 border-slate-200 text-center text-slate-500 transition">Full Offline</div></label>
+                <label class="cursor-pointer relative"><input type="radio" name="kehadiran" value="Full Online" class="modern-radio sr-only"><div class="p-3 text-sm rounded-xl border-2 border-slate-200 text-center text-slate-500 transition">Full Online</div></label>
+                <label class="cursor-pointer relative"><input type="radio" name="kehadiran" value="Hybrid" class="modern-radio sr-only"><div class="p-3 text-sm rounded-xl border-2 border-slate-200 text-center text-slate-500 transition">Hybrid</div></label>
+            </div>
         </div>
 
-        <!-- Keterangan -->
+        <!-- 7. TANGGUNGAN -->
+        <div class="bg-blue-50/50 p-6 rounded-2xl border border-blue-100">
+            <label class="block text-sm font-bold text-slate-700 mb-3 uppercase tracking-wide">Tanggungan Panitia</label>
+            <div class="space-y-3">
+                <label class="flex items-center gap-3 cursor-pointer">
+                    <input type="checkbox" id="checkHonor" value="Honorarium" class="w-5 h-5 text-blue-600 rounded" onchange="toggleHonor()">
+                    <span class="font-medium text-slate-700">Honorarium / Uang Saku</span>
+                </label>
+                <div id="honorContainer" class="hidden pl-8">
+                    <input type="text" id="nominalHonor" class="input-premium py-2 text-sm max-w-xs" placeholder="Nominal (Rp)" oninput="formatRupiah(this)">
+                </div>
+                <label class="flex items-center gap-3 cursor-pointer">
+                    <input type="checkbox" id="checkTiket" value="Tiket/Transportasi" class="w-5 h-5 text-blue-600 rounded">
+                    <span class="font-medium text-slate-700">Tiket / Dana Transportasi</span>
+                </label>
+                <label class="flex items-center gap-3 cursor-pointer">
+                    <input type="checkbox" id="checkInap" value="Penginapan" class="w-5 h-5 text-blue-600 rounded">
+                    <span class="font-medium text-slate-700">Penginapan</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- 8. USULAN PENDAMPING -->
+        <div class="space-y-6" id="containerPendamping">
+            <!-- Rendered by JS -->
+        </div>
+
+        <!-- 9. HAL DIKUATKAN -->
         <div>
-          <label class="block text-xs font-semibold text-gray-500 mb-1">Keterangan Lainnya (Opsional)</label>
-          <textarea id="inpKet" class="input-apple" rows="2" placeholder="Catatan tambahan..."></textarea>
+            <label id="labelDikuatkan" class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Hal yang perlu dikuatkan</label>
+            <textarea id="halDikuatkan" class="input-premium" rows="3" placeholder="Tuliskan fokus evaluasi/penguatan..."></textarea>
         </div>
 
-        <button onclick="submitData()" id="btnSubmit" class="w-full py-4 btn-apple text-lg mt-4 shadow-lg flex justify-center items-center gap-2">
-          Simpan Data
+        <!-- 10. KETERANGAN -->
+        <div>
+            <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Keterangan Lainnya (Opsional)</label>
+            <textarea id="keterangan" class="input-premium" rows="2" placeholder="Catatan tambahan..."></textarea>
+        </div>
+
+        <button type="submit" id="btnSubmit" class="w-full py-4 btn-premium font-bold rounded-2xl text-lg mt-5 flex justify-center items-center gap-3">
+          <i class="bi bi-send-fill"></i> Simpan Data Kegiatan
         </button>
-      </div>
+      </form>
     </div>
   </div>
 
-  <!-- ADMIN VIEW -->
-  <div id="adminView" class="hidden w-full max-w-6xl glass-apple rounded-3xl p-6 md:p-8 mt-4 mx-auto animate-fade-in shadow-2xl">
-    <div class="flex justify-between items-center mb-6">
-      <h2 class="text-2xl font-bold flex items-center gap-3"><img src="https://wahdah.or.id/wp-content/uploads/2021/10/Logo-WI-2021.png" class="w-10"> Dashboard Admin</h2>
-      <button onclick="closeAdmin()" class="bg-gray-100 px-4 py-2 rounded-lg text-sm font-semibold hover:bg-gray-200 transition">✕ Tutup</button>
+  <!-- ================= ADMIN DASHBOARD ================= -->
+  <div id="adminView" class="hidden w-full max-w-[95%] bg-white/95 backdrop-blur-3xl rounded-[2rem] p-6 md:p-10 shadow-2xl min-h-[95vh] border border-white mt-4 animate-fade-in mx-auto">
+    <div class="flex justify-between items-center mb-10 border-b border-slate-200 pb-6">
+      <h2 class="text-2xl md:text-3xl font-extrabold text-slate-800 flex items-center gap-4">
+        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600"><i class="bi bi-shield-check text-2xl"></i></div> 
+        Dashboard Admin Rekap
+      </h2>
+      <button onclick="closeAdmin()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-6 py-3 rounded-xl text-sm font-bold transition shadow-sm"><i class="bi bi-x-lg"></i> Tutup</button>
+    </div>
+    
+    <!-- Rekap Atas -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-5 rounded-2xl border border-blue-200">
+        <div class="text-blue-600 text-xs font-bold uppercase tracking-widest mb-1">Total Data Input</div>
+        <div id="adTotal" class="text-3xl font-black text-slate-800">0</div>
+      </div>
+      <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 p-5 rounded-2xl border border-emerald-200">
+        <div class="text-emerald-600 text-xs font-bold uppercase tracking-widest mb-1">Total Mukerwil</div>
+        <div id="adMukerwil" class="text-3xl font-black text-slate-800">0</div>
+      </div>
+      <div class="bg-gradient-to-br from-orange-50 to-orange-100 p-5 rounded-2xl border border-orange-200">
+        <div class="text-orange-600 text-xs font-bold uppercase tracking-widest mb-1">Total Mukerda</div>
+        <div id="adMukerda" class="text-3xl font-black text-slate-800">0</div>
+      </div>
+      <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 p-5 rounded-2xl border border-indigo-200">
+        <div class="text-indigo-600 text-xs font-bold uppercase tracking-widest mb-1">Status Kesiapan</div>
+        <div class="text-xl font-black text-slate-800 mt-1">Aman</div>
+      </div>
+    </div>
+    
+    <div class="flex justify-between items-center mb-4">
+        <h3 class="font-extrabold text-xl text-slate-800">Tabel Rekapitulasi Data</h3>
+        <input type="text" id="searchTable" class="input-premium max-w-xs py-2 text-sm" placeholder="🔍 Cari Data..." oninput="filterTable()">
     </div>
 
-    <!-- Search & Filter -->
-    <div class="flex gap-4 mb-6">
-      <input type="text" id="adSearch" placeholder="Cari data..." class="input-apple w-1/3" onkeyup="filterAdmin()">
-      <select id="adFilterKeg" class="input-apple w-1/4" onchange="filterAdmin()">
-        <option value="">Semua Kegiatan</option>
-        <option value="Mukerwil">Mukerwil</option>
-        <option value="Mukerda">Mukerda</option>
-      </select>
-    </div>
-
-    <div class="overflow-x-auto bg-white rounded-xl border border-gray-100 shadow-inner">
-      <table class="w-full text-sm text-left">
-        <thead class="bg-gray-50 text-gray-500 font-semibold border-b">
+    <div class="overflow-x-auto bg-white rounded-3xl border border-slate-200 shadow-sm">
+      <table class="w-full text-left whitespace-nowrap" id="rekapTable">
+        <thead class="bg-slate-50 text-slate-500 uppercase text-xs font-bold tracking-wider border-b border-slate-200">
           <tr>
-            <th class="px-4 py-3 cursor-pointer" onclick="sortAdmin('tanggal')">Tanggal ⇅</th>
-            <th class="px-4 py-3 cursor-pointer" onclick="sortAdmin('pic')">PIC ⇅</th>
-            <th class="px-4 py-3 cursor-pointer" onclick="sortAdmin('kegiatan')">Kegiatan ⇅</th>
-            <th class="px-4 py-3 cursor-pointer" onclick="sortAdmin('wilayah')">Wilayah ⇅</th>
-            <th class="px-4 py-3 cursor-pointer" onclick="sortAdmin('pelaksanaan')">Pelaksanaan ⇅</th>
-            <th class="px-4 py-3 cursor-pointer" onclick="sortAdmin('usulan1')">Usulan 1 ⇅</th>
+            <th class="px-5 py-4 cursor-pointer hover:text-blue-600" onclick="sortTable(0)">Wilayah ↕</th>
+            <th class="px-5 py-4 cursor-pointer hover:text-blue-600" onclick="sortTable(1)">Kegiatan ↕</th>
+            <th class="px-5 py-4">Pelaksanaan</th>
+            <th class="px-5 py-4">Tanggal Mulai</th>
+            <th class="px-5 py-4">Pendamping 1</th>
+            <th class="px-5 py-4">Hal Dikuatkan</th>
           </tr>
         </thead>
-        <tbody id="adTableBody" class="divide-y"></tbody>
+        <tbody id="adminTableBody" class="divide-y divide-slate-100 text-sm"></tbody>
       </table>
     </div>
   </div>
 
   <!-- FOOTER -->
-  <footer class="absolute bottom-4 w-full text-center text-xs text-gray-400 font-medium">
-    &copy; 2026 App Dibuat oleh <a href="https://wa.me/6285342540658" target="_blank" class="text-blue-500 font-semibold hover:underline">Wadah Digital</a>
+  <footer class="absolute bottom-0 w-full text-center py-4 text-sm text-slate-500 font-medium">
+    2026 | Dibuat oleh <button onclick="window.open('https://wa.me/6285342540658','_blank')" class="font-bold text-blue-600 hover:text-blue-800 underline transition">Wadah Digital</button>
   </footer>
 
   <script>
-    const SCRIPT_URL = "URL_APPSCRIPT_ANDA_DISINI"; 
-    let masterData = {};
-    let sortAsc = true;
+    // ================= GLOBAL STATE =================
+    let db = { pendamping: [], wilayah: [], rekap: [] };
 
-    window.onload = async () => {
-      // Mock data jika AppScript belum dipasang URL nya
-      if(SCRIPT_URL === "https://script.google.com/macros/s/AKfycbwOs_PQC97QQcEb65pAD5q8sScf_rbDgED00inFJ3x7iLilWFJCk_DQUcKknnxJBDI-KQ/exec") {
-         masterData = { pendampingDPP: ["Ustadz A (Ketua)", "Ustadz B (Wasekjen)"], pendampingDPW: ["Ustadz C (Ketua)"], wilayahDPW: ["11 - Aceh"], wilayahDPD: ["11.01 - Banda Aceh"] };
-      } else {
-         const res = await fetch(SCRIPT_URL);
-         masterData = await res.json();
-      }
-      renderUsulan();
+    // ================= STARTUP / LOAD DATA =================
+    window.onload = () => {
+        loadData();
     };
 
-    function formatWA(el) {
-      el.value = el.value.replace(/\D/g, '');
-      if(el.value.startsWith('08')) el.value = '628' + el.value.substring(2);
+    function startLoading() { document.getElementById('loadingOverlay').style.display = 'flex'; }
+    function endLoading() { document.getElementById('loadingOverlay').style.display = 'none'; document.getElementById('appView').classList.remove('hidden'); }
+
+    function loadData() {
+        startLoading();
+        
+        if (typeof google === 'undefined') {
+            // SIMULATION MODE (Gemini Canvas / Local HTML)
+            setTimeout(() => {
+                db = {
+                    pendamping: [
+                        {'Nama Pendamping': 'Ust. Zaitun Rasmin', 'Jabatan': 'Pimpinan Umum'},
+                        {'Nama Pendamping': 'Ust. Rahmat Abdul Rahman', 'Jabatan': 'Ketua Harian'},
+                        {'Nama Pendamping': 'Ust. Syaibani Mujiono', 'Jabatan': 'Sekjen'}
+                    ],
+                    wilayah: [
+                        {'Kode': '11', 'Nama Wilayah': '11 Aceh', 'Status': 'DPW'},
+                        {'Kode': '11.01', 'Nama Wilayah': '11.01 Kab. Aceh Besar', 'Status': 'DPD'},
+                        {'Kode': '12', 'Nama Wilayah': '12 Sumut', 'Status': 'DPW'},
+                        {'Kode': '12.01', 'Nama Wilayah': '12.01 Medan', 'Status': 'DPD'}
+                    ],
+                    rekap: [
+                        {'Wilayah': '11 Aceh', 'Kegiatan': 'Mukerwil', 'Mulai': '2026-11-20T08:00', 'Pelaksanaan': 'Full Offline', 'Pendamping 1': 'Ust. Zaitun Rasmin', 'Hal Dikuatkan': 'Konsolidasi'}
+                    ]
+                };
+                renderUI();
+                endLoading();
+            }, 800);
+        } else {
+            // PRODUCTION MODE (Google Apps Script)
+            google.script.run
+                .withSuccessHandler(res => {
+                    db = res;
+                    renderUI();
+                    endLoading();
+                })
+                .withFailureHandler(err => {
+                    Swal.fire('Error', 'Gagal memuat data dari server.', 'error');
+                    endLoading();
+                })
+                .getAllData();
+        }
     }
 
-    function toggleKegiatan() {
-      const keg = document.querySelector('input[name="kegiatan"]:checked')?.value;
-      const wilC = document.getElementById("wilayahContainer");
-      const selW = document.getElementById("selWilayah");
-      const lbl = document.getElementById("lblWilayah");
-      
-      if(keg) {
-        wilC.classList.remove("hidden");
-        selW.innerHTML = "";
-        lbl.innerText = keg === "Mukerwil" ? "Pilih DPW" : "Pilih DPD";
-        let arr = keg === "Mukerwil" ? masterData.wilayahDPW : masterData.wilayahDPD;
-        (arr || []).forEach(x => { selW.innerHTML += `<option value="${x}">${x}</option>` });
-      }
-      renderUsulan();
+    function renderUI() {
+        buildPendampingUI();
+        renderAdminTable();
+    }
+
+    // ================= FORM LOGIC =================
+    function updateFormUI() {
+        const kegiatan = document.querySelector('input[name="kegiatan"]:checked')?.value;
+        const selWil = document.getElementById('wilayahSelect');
+        const lblWil = document.getElementById('labelWilayah');
+        const lblKuat = document.getElementById('labelDikuatkan');
+        
+        if(kegiatan) {
+            selWil.disabled = false;
+            selWil.innerHTML = `<option value="">-- Pilih ${kegiatan === 'Mukerwil' ? 'DPW' : 'DPD'} --</option>`;
+            
+            lblWil.innerText = `Pilih ${kegiatan === 'Mukerwil' ? 'DPW' : 'DPD'}`;
+            lblKuat.innerText = `Hal yang perlu dikuatkan di ${kegiatan === 'Mukerwil' ? 'DPW' : 'DPD'}`;
+
+            const filterStatus = kegiatan === 'Mukerwil' ? 'DPW' : 'DPD';
+            const filteredWilayah = db.wilayah.filter(w => w.Status === filterStatus);
+            
+            filteredWilayah.forEach(w => {
+                selWil.innerHTML += `<option value="${w['Nama Wilayah']}">${w['Nama Wilayah']}</option>`;
+            });
+
+            // Update block pendamping
+            for(let i=1; i<=3; i++) {
+                const radioBox = document.getElementById(`radioSumberP${i}`);
+                if (kegiatan === 'Mukerwil') {
+                    radioBox.classList.add('hidden'); // Selalu DPP
+                    document.querySelector(`input[name="sumberP${i}"][value="DPP"]`).checked = true;
+                    togglePendampingInput(i, 'DPP');
+                } else {
+                    radioBox.classList.remove('hidden'); // Bisa DPP / DPW
+                    // Reset
+                    document.querySelector(`input[name="sumberP${i}"][value="DPP"]`).checked = false;
+                    document.querySelector(`input[name="sumberP${i}"][value="DPW"]`).checked = false;
+                    document.getElementById(`inputBoxP${i}`).innerHTML = '';
+                }
+            }
+        }
+    }
+
+    function buildPendampingUI() {
+        const container = document.getElementById('containerPendamping');
+        container.innerHTML = '';
+        
+        for(let i=1; i<=3; i++) {
+            container.innerHTML += `
+            <div class="p-5 border border-slate-200 rounded-2xl bg-white">
+                <label class="block text-sm font-bold text-slate-700 mb-3 uppercase tracking-wide">Usulan Pendamping ${i}</label>
+                
+                <div id="radioSumberP${i}" class="grid grid-cols-2 gap-3 mb-3 hidden">
+                    <label class="cursor-pointer relative">
+                        <input type="radio" name="sumberP${i}" value="DPP" class="modern-radio sr-only" onchange="togglePendampingInput(${i}, 'DPP')">
+                        <div class="p-2 text-sm rounded-lg border-2 border-slate-200 text-center text-slate-500 transition">Dari DPP</div>
+                    </label>
+                    <label class="cursor-pointer relative">
+                        <input type="radio" name="sumberP${i}" value="DPW" class="modern-radio sr-only" onchange="togglePendampingInput(${i}, 'DPW')">
+                        <div class="p-2 text-sm rounded-lg border-2 border-slate-200 text-center text-slate-500 transition">Dari DPW</div>
+                    </label>
+                </div>
+                
+                <div id="inputBoxP${i}"></div>
+            </div>`;
+        }
+    }
+
+    function togglePendampingInput(index, sumber) {
+        const box = document.getElementById(`inputBoxP${index}`);
+        if(sumber === 'DPP') {
+            let options = `<option value="">-- Pilih Pendamping DPP --</option>`;
+            db.pendamping.forEach(p => {
+                options += `<option value="${p['Nama Pendamping']} - ${p['Jabatan']}">${p['Nama Pendamping']} (${p['Jabatan']})</option>`;
+            });
+            box.innerHTML = `<select id="pendamping${index}" class="input-premium" ${index===1 ? 'required' : ''}>${options}</select>`;
+        } else {
+            box.innerHTML = `<input type="text" id="pendamping${index}" class="input-premium uppercase" placeholder="Ketik Nama & Jabatan..." ${index===1 ? 'required' : ''} oninput="this.value = this.value.toUpperCase()">`;
+        }
     }
 
     function toggleHonor() {
-      const isChecked = document.getElementById("chkHonor").checked;
-      const c = document.getElementById("nominalContainer");
-      if(isChecked) c.classList.remove("hidden"); else { c.classList.add("hidden"); document.getElementById("inpNominal").value = ""; document.getElementById("realNominal").value = "0"; }
+        const isChecked = document.getElementById('checkHonor').checked;
+        const box = document.getElementById('honorContainer');
+        box.style.display = isChecked ? 'block' : 'none';
+        if(!isChecked) document.getElementById('nominalHonor').value = '';
+    }
+
+    // ================= HELPERS FORMATTER =================
+    function formatWA(el) {
+        let val = el.value.replace(/\D/g, ''); // hanya angka
+        if (val.startsWith('08')) {
+            val = '628' + val.substring(2);
+        }
+        el.value = val;
     }
 
     function formatRupiah(el) {
-      let num = el.value.replace(/\D/g, "");
-      document.getElementById("realNominal").value = num;
-      if(num) el.value = "Rp " + parseInt(num).toLocaleString('id-ID'); else el.value = "";
-    }
-
-    function renderUsulan() {
-      const keg = document.querySelector('input[name="kegiatan"]:checked')?.value;
-      const c = document.getElementById("usulanContainer");
-      c.innerHTML = "";
-      for(let i=1; i<=3; i++) {
-        let html = `<div class="mb-3"><label class="block text-xs text-gray-500 mb-1">Usulan ${i}</label>`;
-        if(!keg || keg === "Mukerwil") {
-          html += `<select id="usul${i}" class="input-apple"><option value="">-- Pilih Pendamping (Daftar) --</option>`;
-          (masterData.pendampingDPP || []).forEach(x => { html += `<option value="${x}">${x}</option>` });
-          html += `</select>`;
+        let val = el.value.replace(/\D/g, '');
+        if(val !== '') {
+            el.dataset.raw = val; 
+            el.value = "Rp " + parseInt(val).toLocaleString('id-ID');
         } else {
-          html += `<div class="flex gap-2 mb-2">
-            <select class="input-apple w-1/3" onchange="toggleSumberUsulan(this, ${i})">
-              <option value="DPP">Dari DPP</option><option value="DPW">Dari DPW</option>
-            </select>
-            <select id="usul${i}_sel" class="input-apple w-2/3"><option value="">-- Pilih Pendamping (Daftar DPP) --</option>`;
-          (masterData.pendampingDPP || []).forEach(x => { html += `<option value="${x}">${x}</option>` });
-          html += `</select><input type="text" id="usul${i}_txt" class="input-apple w-2/3 hidden" style="text-transform:uppercase" placeholder="Ketik Manual (Auto Capslock)...">
-          </div>`;
+            el.dataset.raw = "0";
+            el.value = "";
         }
-        html += `</div>`;
-        c.innerHTML += html;
-      }
     }
 
-    function toggleSumberUsulan(sel, idx) {
-      const v = sel.value;
-      const s = document.getElementById(`usul${idx}_sel`);
-      const t = document.getElementById(`usul${idx}_txt`);
-      if(v === "DPP") { s.classList.remove("hidden"); t.classList.add("hidden"); t.value = ""; }
-      else { s.classList.add("hidden"); t.classList.remove("hidden"); s.value = ""; }
-    }
+    // ================= SUBMIT DATA =================
+    function submitForm(e) {
+        e.preventDefault();
+        
+        const btn = document.getElementById('btnSubmit');
+        btn.innerHTML = `<div class="spinner w-5 h-5 border-2 border-white border-t-transparent mx-auto"></div> Menyimpan...`;
+        btn.disabled = true;
 
-    async function submitData() {
-      const keg = document.querySelector('input[name="kegiatan"]:checked')?.value;
-      if(!keg) return alert("Pilih kegiatan!");
-      
-      const payload = {
-        wa: document.getElementById("waInput").value,
-        kegiatan: keg,
-        wilayah: document.getElementById("selWilayah").value,
-        mulai: document.getElementById("jadwalMulai").value,
-        selesai: document.getElementById("jadwalSelesai").value,
-        pelaksanaan: document.querySelector('input[name="pelaksanaan"]:checked')?.value || "",
-        kehadiran: document.querySelector('input[name="kehadiran"]:checked')?.value || "",
-        tanggungan: Array.from(document.querySelectorAll('input[type="checkbox"]:checked')).map(c => c.value).join(", "),
-        nominal: document.getElementById("realNominal").value,
-        fokus: document.getElementById("inpFokus").value,
-        keterangan: document.getElementById("inpKet").value
-      };
+        // Kumpulkan Tanggungan
+        let tanggungan = [];
+        if(document.getElementById('checkHonor').checked) tanggungan.push('Honorarium');
+        if(document.getElementById('checkTiket').checked) tanggungan.push('Transportasi');
+        if(document.getElementById('checkInap').checked) tanggungan.push('Penginapan');
 
-      for(let i=1; i<=3; i++) {
-        if(keg === "Mukerwil") payload[`usulan${i}`] = document.getElementById(`usul${i}`).value;
-        else {
-          let s = document.getElementById(`usul${i}_sel`); let t = document.getElementById(`usul${i}_txt`);
-          payload[`usulan${i}`] = !s.classList.contains("hidden") ? s.value : t.value.toUpperCase();
+        const kegiatan = document.querySelector('input[name="kegiatan"]:checked').value;
+        const sP1 = kegiatan === 'Mukerwil' ? 'DPP' : document.querySelector('input[name="sumberP1"]:checked')?.value || '';
+        const sP2 = kegiatan === 'Mukerwil' ? 'DPP' : document.querySelector('input[name="sumberP2"]:checked')?.value || '';
+        const sP3 = kegiatan === 'Mukerwil' ? 'DPP' : document.querySelector('input[name="sumberP3"]:checked')?.value || '';
+
+        const payload = {
+            wa: document.getElementById('waPJ').value,
+            kegiatan: kegiatan,
+            wilayah: document.getElementById('wilayahSelect').value,
+            mulai: document.getElementById('jadwalMulai').value.replace('T', ' '),
+            selesai: document.getElementById('jadwalSelesai').value.replace('T', ' '),
+            pelaksanaan: document.querySelector('input[name="pelaksanaan"]:checked').value,
+            kehadiran: document.querySelector('input[name="kehadiran"]:checked').value,
+            tanggungan: tanggungan.join(', '),
+            nominal: document.getElementById('nominalHonor').dataset.raw || "0",
+            sumberP1: sP1, pendamping1: document.getElementById('pendamping1')?.value || '',
+            sumberP2: sP2, pendamping2: document.getElementById('pendamping2')?.value || '',
+            sumberP3: sP3, pendamping3: document.getElementById('pendamping3')?.value || '',
+            dikuatkan: document.getElementById('halDikuatkan').value,
+            keterangan: document.getElementById('keterangan').value
+        };
+
+        if (typeof google === 'undefined') {
+            // SIMULATION UPDATE
+            setTimeout(() => {
+                db.rekap.push({
+                    'Wilayah': payload.wilayah, 'Kegiatan': payload.kegiatan, 'Mulai': payload.mulai,
+                    'Pelaksanaan': payload.pelaksanaan, 'Pendamping 1': payload.pendamping1, 'Hal Dikuatkan': payload.dikuatkan
+                });
+                postSubmit(btn);
+            }, 1000);
+        } else {
+            google.script.run
+                .withSuccessHandler(() => {
+                    // Refresh data after save
+                    google.script.run.withSuccessHandler(res => { db = res; renderAdminTable(); postSubmit(btn); }).getAllData();
+                })
+                .withFailureHandler(err => {
+                    Swal.fire('Error', 'Gagal menyimpan.', 'error');
+                    btn.disabled = false; btn.innerHTML = `<i class="bi bi-send-fill"></i> Simpan Data Kegiatan`;
+                })
+                .saveData(payload);
         }
-      }
-
-      document.getElementById("btnSubmit").innerText = "Menyimpan...";
-      try {
-        if(SCRIPT_URL === "URL_APPSCRIPT_ANDA_DISINI") { alert("Harap isi URL AppScript di source code!"); document.getElementById("btnSubmit").innerText = "Simpan Data"; return; }
-        await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
-        alert("Data Berhasil Disimpan!"); location.reload();
-      } catch(e) { alert("Error"); document.getElementById("btnSubmit").innerText = "Simpan Data"; }
     }
 
-    async function openAdmin() {
-      document.getElementById("appView").classList.add("hidden");
-      document.getElementById("adminView").classList.remove("hidden");
-      document.getElementById("adTableBody").innerHTML = `<tr><td colspan="6" class="text-center py-4 text-gray-400">Loading...</td></tr>`;
-      try {
-        const res = await fetch(SCRIPT_URL + "?action=get_admin");
-        const data = await res.json();
-        window.adminData = data.riwayat || [];
-        filterAdmin();
-      } catch(e) { document.getElementById("adTableBody").innerHTML = `<tr><td colspan="6" class="text-center text-red-500 py-4">Gagal terhubung ke AppScript.</td></tr>`; }
+    function postSubmit(btn) {
+        Swal.fire({
+            title: 'Berhasil!', text: 'Data kegiatan telah tersimpan.', icon: 'success', confirmButtonColor: '#3b82f6'
+        }).then(() => {
+            document.getElementById('mainForm').reset();
+            buildPendampingUI();
+            btn.disabled = false; btn.innerHTML = `<i class="bi bi-send-fill"></i> Simpan Data Kegiatan`;
+        });
     }
 
-    function closeAdmin() { document.getElementById("adminView").classList.add("hidden"); document.getElementById("appView").classList.remove("hidden"); }
-
-    function filterAdmin() {
-      const search = document.getElementById("adSearch").value.toLowerCase();
-      const keg = document.getElementById("adFilterKeg").value;
-      const tbody = document.getElementById("adTableBody"); tbody.innerHTML = "";
-      
-      window.filteredData = (window.adminData || []).filter(r => 
-        (r.pic.toLowerCase().includes(search) || r.wilayah.toLowerCase().includes(search)) &&
-        (keg === "" || r.kegiatan === keg)
-      );
-
-      renderTable();
+    // ================= ADMIN & TABLE =================
+    function openAdmin() {
+        document.getElementById("appView").classList.add("hidden"); 
+        document.getElementById("adminView").classList.remove("hidden");
+    }
+    
+    function closeAdmin() { 
+        document.getElementById("adminView").classList.add("hidden"); 
+        document.getElementById("appView").classList.remove("hidden"); 
     }
 
-    function sortAdmin(col) {
-      sortAsc = !sortAsc;
-      window.filteredData.sort((a, b) => {
-        let valA = a[col].toLowerCase();
-        let valB = b[col].toLowerCase();
-        if (valA < valB) return sortAsc ? -1 : 1;
-        if (valA > valB) return sortAsc ? 1 : -1;
-        return 0;
-      });
-      renderTable();
+    function renderAdminTable() {
+        const tbody = document.getElementById('adminTableBody');
+        tbody.innerHTML = '';
+        
+        document.getElementById('adTotal').innerText = db.rekap.length;
+        document.getElementById('adMukerwil').innerText = db.rekap.filter(r => r.Kegiatan === 'Mukerwil').length;
+        document.getElementById('adMukerda').innerText = db.rekap.filter(r => r.Kegiatan === 'Mukerda').length;
+
+        db.rekap.forEach(r => {
+            if(!r.Wilayah) return;
+            let theme = r.Kegiatan === 'Mukerwil' ? 'text-blue-600 bg-blue-50' : 'text-orange-600 bg-orange-50';
+            tbody.innerHTML += `
+                <tr class="hover:bg-slate-50 transition">
+                    <td class="px-5 py-4 font-bold text-slate-800">${r.Wilayah}</td>
+                    <td class="px-5 py-4"><span class="px-3 py-1 rounded-full text-xs font-bold ${theme}">${r.Kegiatan}</span></td>
+                    <td class="px-5 py-4 font-medium text-slate-600">${r.Pelaksanaan || '-'}</td>
+                    <td class="px-5 py-4 text-xs text-slate-500">${r.Mulai || '-'}</td>
+                    <td class="px-5 py-4 text-sm font-semibold text-slate-700 max-w-[200px] truncate" title="${r['Pendamping 1']}">${r['Pendamping 1'] || '-'}</td>
+                    <td class="px-5 py-4 text-sm text-slate-500 max-w-[250px] truncate" title="${r['Hal Dikuatkan']}">${r['Hal Dikuatkan'] || '-'}</td>
+                </tr>
+            `;
+        });
     }
 
-    function renderTable() {
-      const tbody = document.getElementById("adTableBody"); tbody.innerHTML = "";
-      window.filteredData.forEach(r => {
-        tbody.innerHTML += `
-          <tr class="hover:bg-gray-50 transition">
-            <td class="px-4 py-3">${r.tanggal}</td>
-            <td class="px-4 py-3 font-medium">${r.pic}</td>
-            <td class="px-4 py-3 font-semibold text-blue-600">${r.kegiatan}</td>
-            <td class="px-4 py-3">${r.wilayah}</td>
-            <td class="px-4 py-3 text-xs">${r.pelaksanaan}</td>
-            <td class="px-4 py-3 text-xs text-gray-500">${r.usulan1}</td>
-          </tr>
-        `;
-      });
-      if(!window.filteredData.length) tbody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-gray-400">Data tidak ditemukan.</td></tr>`;
+    function filterTable() {
+        const query = document.getElementById("searchTable").value.toLowerCase();
+        const rows = document.querySelectorAll("#adminTableBody tr");
+        rows.forEach(row => {
+            row.style.display = row.innerText.toLowerCase().includes(query) ? "" : "none";
+        });
+    }
+
+    function sortTable(n) {
+        let table = document.getElementById("rekapTable");
+        let rows = table.rows;
+        let switching = true;
+        let dir = "asc", switchcount = 0;
+        
+        while (switching) {
+            switching = false;
+            for (let i = 1; i < (rows.length - 1); i++) {
+                let shouldSwitch = false;
+                let x = rows[i].getElementsByTagName("TD")[n];
+                let y = rows[i + 1].getElementsByTagName("TD")[n];
+                if (dir == "asc") {
+                    if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) { shouldSwitch = true; break; }
+                } else if (dir == "desc") {
+                    if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) { shouldSwitch = true; break; }
+                }
+            }
+            if (shouldSwitch) {
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+                switchcount++;
+            } else {
+                if (switchcount == 0 && dir == "asc") { dir = "desc"; switching = true; }
+            }
+        }
     }
   </script>
 </body>
