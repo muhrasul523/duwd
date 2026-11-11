@@ -117,6 +117,7 @@
                 <input type="text" id="searchWilayah" class="input-premium bg-white font-bold text-slate-700 pr-10" placeholder="Pilih jenis kegiatan dahulu..." autocomplete="off" disabled required>
                 <i class="bi bi-search absolute right-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
                 <input type="hidden" id="wilayahSelect" required>
+                <input type="hidden" id="kodeWilayahSelect" required>
             </div>
             <!-- Dropdown List -->
             <div id="dropdownWilayah" class="hidden absolute w-full mt-2 bg-white/95 backdrop-blur-xl border border-slate-200 rounded-2xl shadow-2xl max-h-60 overflow-y-auto z-50"></div>
@@ -346,6 +347,7 @@
       <p id="penetapanWilayahText" class="text-sm font-bold text-slate-500 mb-6 uppercase tracking-wider text-blue-600"></p>
       
       <input type="hidden" id="penetapanWilayahId">
+      <input type="hidden" id="penetapanKodeWilayah">
       <input type="hidden" id="penetapanKegiatan">
       
       <div id="penetapanContainer" class="space-y-4 mb-4">
@@ -408,7 +410,7 @@
                 ],
                 rekap: [
                     {
-                        'Wilayah': 'Aceh', 'Kegiatan': 'Mukerwil', 'Mulai': '2026-11-20 08:00:00', 'Selesai': '2026-11-22 17:00:00',
+                        'Kode Wilayah': '11', 'Wilayah': 'Aceh', 'Kegiatan': 'Mukerwil', 'Mulai': '2026-11-20 08:00:00', 'Selesai': '2026-11-22 17:00:00',
                         'Model Pelaksanaan': 'Full Offline', 'Model Kehadiran': 'Offline', 
                         'Tanggungan': 'Honorarium, Tiket Pergi, Penginapan', 'Nominal Uang Saku': '1500000',
                         'Sumber P1': 'DPP', 'Pendamping 1': 'Ust. Dr. Muhammad Zaitun Rasmin, Lc., M.A. - Pemimpin Umum',
@@ -468,8 +470,9 @@
                     div.onclick = () => {
                         searchInput.value = w['Nama Wilayah'];
                         document.getElementById('wilayahSelect').value = w['Nama Wilayah'];
+                        document.getElementById('kodeWilayahSelect').value = w['Kode'];
                         dropdown.classList.add('hidden');
-                        checkAutofill(w['Nama Wilayah']);
+                        checkAutofill(w['Kode'], w['Nama Wilayah']);
                     };
                     dropdown.appendChild(div);
                 });
@@ -508,10 +511,10 @@
         return d.toISOString().slice(0,16);
     }
 
-    function checkAutofill(wilayahName) {
+    function checkAutofill(kodeWilayah, wilayahName) {
         document.getElementById('formLanjutan').classList.remove('hidden');
         
-        const existing = db.rekap.find(r => r.Wilayah && r.Wilayah.trim() === wilayahName.trim());
+        const existing = db.rekap.find(r => r['Kode Wilayah'] == kodeWilayah);
         
         if(existing) {
             document.getElementById('waPJ').value = existing['WA PJ'] || '';
@@ -673,6 +676,7 @@
         const payload = {
             wa: document.getElementById('waPJ').value,
             kegiatan: kegiatan,
+            kodeWilayah: document.getElementById('kodeWilayahSelect').value,
             wilayah: document.getElementById('wilayahSelect').value,
             mulai: document.getElementById('jadwalMulai').value.replace('T', ' '),
             selesai: document.getElementById('jadwalSelesai').value.replace('T', ' '),
@@ -710,8 +714,8 @@
         document.getElementById('btnKonfirmasiWA').href = `https://wa.me/6281277778448?text=${encodeURIComponent(waText)}`;
 
         // Update local memory
-        const i = db.rekap.findIndex(r => r.Wilayah === payload.wilayah);
-        const obj = { 'Wilayah': payload.wilayah, 'Kegiatan': payload.kegiatan, 'Mulai': payload.mulai, 'Selesai': payload.selesai, 'Model Pelaksanaan': payload.pelaksanaan, 'Model Kehadiran': payload.kehadiran, 'Tanggungan': payload.tanggungan, 'Nominal Uang Saku': payload.nominal, 'Pendamping 1': payload.pendamping1, 'Pendamping 2': payload.pendamping2, 'Pendamping 3': payload.pendamping3, 'Hal Dikuatkan': payload.dikuatkan };
+        const i = db.rekap.findIndex(r => r['Kode Wilayah'] == payload.kodeWilayah);
+        const obj = { 'Kode Wilayah': payload.kodeWilayah, 'Wilayah': payload.wilayah, 'Kegiatan': payload.kegiatan, 'Mulai': payload.mulai, 'Selesai': payload.selesai, 'Model Pelaksanaan': payload.pelaksanaan, 'Model Kehadiran': payload.kehadiran, 'Tanggungan': payload.tanggungan, 'Nominal Uang Saku': payload.nominal, 'Pendamping 1': payload.pendamping1, 'Pendamping 2': payload.pendamping2, 'Pendamping 3': payload.pendamping3, 'Hal Dikuatkan': payload.dikuatkan };
         if(i > -1) db.rekap[i] = obj; else db.rekap.push(obj);
         
         renderAdminTable();
@@ -771,7 +775,7 @@
         let countBelum = 0;
         
         let processedRekap = validRekap.map(r => {
-            const pen = db.penetapan ? db.penetapan.find(p => p.Wilayah === r.Wilayah) : null;
+            const pen = db.penetapan ? db.penetapan.find(p => p['Kode Wilayah'] == r['Kode Wilayah']) : null;
             r._ditetapkan = pen && (pen['Pendamping 1'] || pen['Pendamping 2'] || pen['Pendamping 3']);
             r._penData = pen;
             if(r._ditetapkan) countDitetapkan++; else countBelum++;
@@ -848,7 +852,7 @@
                     <td class="px-5 py-4 text-xs">${tanggunganHTML}</td>
                     <td class="px-5 py-4 text-xs text-slate-600 max-w-[250px] whitespace-normal italic">${halDievaluasi}</td>
                     <td class="px-5 py-4 text-center">
-                        <button onclick="openPenetapan('${r.Wilayah}', '${r.Kegiatan}')" class="bg-blue-100 hover:bg-blue-600 text-blue-600 hover:text-white transition w-10 h-10 rounded-full flex items-center justify-center shadow-sm text-lg mx-auto" title="Tetapkan Pendamping">🎯</button>
+                        <button onclick="openPenetapan('${r['Kode Wilayah']}', '${r.Wilayah}', '${r.Kegiatan}')" class="bg-blue-100 hover:bg-blue-600 text-blue-600 hover:text-white transition w-10 h-10 rounded-full flex items-center justify-center shadow-sm text-lg mx-auto" title="Tetapkan Pendamping">🎯</button>
                     </td>
                 </tr>
             `;
@@ -857,9 +861,10 @@
 
     let penetapanRowCount = 0;
 
-    function openPenetapan(wilayah, kegiatan) {
+    function openPenetapan(kode, wilayah, kegiatan) {
         document.getElementById('penetapanWilayahText').innerText = wilayah;
         document.getElementById('penetapanWilayahId').value = wilayah;
+        document.getElementById('penetapanKodeWilayah').value = kode;
         document.getElementById('penetapanKegiatan').value = kegiatan;
         
         const container = document.getElementById('penetapanContainer');
@@ -867,7 +872,7 @@
         penetapanRowCount = 0;
         
         // Set existing if any
-        let p = db.penetapan ? db.penetapan.find(x => x.Wilayah === wilayah) : null;
+        let p = db.penetapan ? db.penetapan.find(x => x['Kode Wilayah'] == kode) : null;
         let count = 0;
         if (p) {
             if (p['Pendamping 1']) { addPenetapanRow(p['Pendamping 1'], kegiatan); count++; }
@@ -998,6 +1003,7 @@
 
     async function simpanPenetapan() {
         const wilayah = document.getElementById('penetapanWilayahId').value;
+        const kodeWilayah = document.getElementById('penetapanKodeWilayah').value;
         const rows = document.querySelectorAll('#penetapanContainer .penetapan-row');
         
         let p1 = '', p2 = '', p3 = '';
@@ -1020,6 +1026,7 @@
         
         const payload = {
             action: 'set_pendamping',
+            kodeWilayah: kodeWilayah,
             wilayah: wilayah,
             penetapan1: p1,
             penetapan2: p2,
@@ -1031,8 +1038,8 @@
             const result = await res.json();
             if(result.status === 'success') {
                 if(!db.penetapan) db.penetapan = [];
-                const idx = db.penetapan.findIndex(x => x.Wilayah === wilayah);
-                const obj = { 'Wilayah': wilayah, 'Pendamping 1': p1, 'Pendamping 2': p2, 'Pendamping 3': p3 };
+                const idx = db.penetapan.findIndex(x => x['Kode Wilayah'] == kodeWilayah);
+                const obj = { 'Kode Wilayah': kodeWilayah, 'Wilayah': wilayah, 'Pendamping 1': p1, 'Pendamping 2': p2, 'Pendamping 3': p3 };
                 if (idx > -1) db.penetapan[idx] = obj; else db.penetapan.push(obj);
                 
                 renderAdminTable();
@@ -1042,8 +1049,8 @@
         } catch(e) {
             // Simulasi lokal
             if(!db.penetapan) db.penetapan = [];
-            const idx = db.penetapan.findIndex(x => x.Wilayah === wilayah);
-            const obj = { 'Wilayah': wilayah, 'Pendamping 1': p1, 'Pendamping 2': p2, 'Pendamping 3': p3 };
+            const idx = db.penetapan.findIndex(x => x['Kode Wilayah'] == kodeWilayah);
+            const obj = { 'Kode Wilayah': kodeWilayah, 'Wilayah': wilayah, 'Pendamping 1': p1, 'Pendamping 2': p2, 'Pendamping 3': p3 };
             if (idx > -1) db.penetapan[idx] = obj; else db.penetapan.push(obj);
             
             renderAdminTable();
