@@ -340,27 +340,21 @@
 
   <!-- ================= MODAL PENETAPAN PENDAMPING ================= -->
   <div id="modalPenetapan" class="hidden fixed inset-0 z-[110] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm animate-fade-in">
-    <div class="bg-white p-8 rounded-3xl max-w-md w-full mx-4 shadow-2xl relative border border-slate-100">
+    <div class="bg-white p-8 rounded-3xl max-w-md w-full mx-4 shadow-2xl relative border border-slate-100 max-h-[90vh] overflow-y-auto">
       <button onclick="closePenetapan()" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 font-bold text-xl"><i class="bi bi-x-circle-fill"></i></button>
       <h3 class="font-extrabold text-xl text-slate-800 mb-1"><i class="bi bi-person-check-fill text-blue-500 mr-2"></i>Tetapkan Pendamping</h3>
       <p id="penetapanWilayahText" class="text-sm font-bold text-slate-500 mb-6 uppercase tracking-wider text-blue-600"></p>
       
       <input type="hidden" id="penetapanWilayahId">
+      <input type="hidden" id="penetapanKegiatan">
       
-      <div class="space-y-4 mb-6">
-          <div>
-              <label class="block text-xs font-bold text-slate-500 mb-1">Pendamping Utama (1)</label>
-              <select id="setPendamping1" class="input-premium py-2 bg-slate-50"></select>
-          </div>
-          <div>
-              <label class="block text-xs font-bold text-slate-500 mb-1">Pendamping 2 (Opsional)</label>
-              <select id="setPendamping2" class="input-premium py-2 bg-slate-50"></select>
-          </div>
-          <div>
-              <label class="block text-xs font-bold text-slate-500 mb-1">Pendamping 3 (Opsional)</label>
-              <select id="setPendamping3" class="input-premium py-2 bg-slate-50"></select>
-          </div>
+      <div id="penetapanContainer" class="space-y-4 mb-4">
+          <!-- Dynamic Rows Injected Here -->
       </div>
+      
+      <button onclick="addPenetapanRow()" class="text-sm font-bold text-blue-600 hover:text-blue-800 transition mb-6 flex items-center gap-1">
+          <i class="bi bi-plus-circle-fill"></i> Tambah Pendamping
+      </button>
       
       <button onclick="simpanPenetapan()" id="btnSimpanPenetapan" class="w-full py-3.5 btn-premium font-bold rounded-xl flex items-center justify-center gap-2">
           <i class="bi bi-save"></i> Simpan Penetapan
@@ -624,7 +618,7 @@
             });
             box.innerHTML = `<select id="pendamping${index}" class="input-premium bg-slate-50 font-semibold" ${isRequired}>${options}</select>`;
         } else {
-            box.innerHTML = `<input type="text" id="pendamping${index}" class="input-premium bg-slate-50 font-semibold uppercase" placeholder="Ketik Nama atau Jabatan pengurus DPW..." ${isRequired} oninput="this.value = this.value.toUpperCase()">`;
+            box.innerHTML = `<input type="text" id="pendamping${index}" class="input-premium bg-slate-50 font-semibold uppercase" placeholder="Ketik Nama atau Jabatannya ..." ${isRequired} oninput="this.value = this.value.toUpperCase()">`;
         }
     }
 
@@ -749,18 +743,8 @@
     }
 
     function extractName(fullName) {
-        if(!fullName) return "-";
+        if(!fullName || fullName === "DPW") return fullName || "-";
         return fullName.split(' - ')[0]; // Ambil nama saja sebelum tanda "-"
-    }
-
-    function populatePendampingDropdowns() {
-        let options = `<option value="">-- Kosongkan / Belum --</option>`;
-        db.pendamping.forEach(p => {
-            options += `<option value="${p['Nama Pendamping']}">${p['Nama Pendamping']}</option>`;
-        });
-        document.getElementById('setPendamping1').innerHTML = options;
-        document.getElementById('setPendamping2').innerHTML = options;
-        document.getElementById('setPendamping3').innerHTML = options;
     }
 
     function renderAdminTable() {
@@ -782,9 +766,6 @@
         if(fKehadiran !== 'All') validRekap = validRekap.filter(r => r['Model Kehadiran'] === fKehadiran);
         if(fPelaksanaan !== 'All') validRekap = validRekap.filter(r => r['Model Pelaksanaan'] === fPelaksanaan);
         
-        // Populate Dropdowns once for the modal
-        populatePendampingDropdowns();
-
         // Calculate penetapan stats and filter
         let countDitetapkan = 0;
         let countBelum = 0;
@@ -867,25 +848,149 @@
                     <td class="px-5 py-4 text-xs">${tanggunganHTML}</td>
                     <td class="px-5 py-4 text-xs text-slate-600 max-w-[250px] whitespace-normal italic">${halDievaluasi}</td>
                     <td class="px-5 py-4 text-center">
-                        <button onclick="openPenetapan('${r.Wilayah}')" class="bg-blue-100 hover:bg-blue-600 text-blue-600 hover:text-white transition w-10 h-10 rounded-full flex items-center justify-center shadow-sm text-lg" title="Tetapkan Pendamping">🎯</button>
+                        <button onclick="openPenetapan('${r.Wilayah}', '${r.Kegiatan}')" class="bg-blue-100 hover:bg-blue-600 text-blue-600 hover:text-white transition w-10 h-10 rounded-full flex items-center justify-center shadow-sm text-lg mx-auto" title="Tetapkan Pendamping">🎯</button>
                     </td>
                 </tr>
             `;
         });
     }
 
-    function openPenetapan(wilayah) {
+    let penetapanRowCount = 0;
+
+    function openPenetapan(wilayah, kegiatan) {
         document.getElementById('penetapanWilayahText').innerText = wilayah;
         document.getElementById('penetapanWilayahId').value = wilayah;
+        document.getElementById('penetapanKegiatan').value = kegiatan;
+        
+        const container = document.getElementById('penetapanContainer');
+        container.innerHTML = '';
+        penetapanRowCount = 0;
         
         // Set existing if any
         let p = db.penetapan ? db.penetapan.find(x => x.Wilayah === wilayah) : null;
-        document.getElementById('setPendamping1').value = p && p['Pendamping 1'] ? p['Pendamping 1'] : "";
-        document.getElementById('setPendamping2').value = p && p['Pendamping 2'] ? p['Pendamping 2'] : "";
-        document.getElementById('setPendamping3').value = p && p['Pendamping 3'] ? p['Pendamping 3'] : "";
+        let count = 0;
+        if (p) {
+            if (p['Pendamping 1']) { addPenetapanRow(p['Pendamping 1'], kegiatan); count++; }
+            if (p['Pendamping 2']) { addPenetapanRow(p['Pendamping 2'], kegiatan); count++; }
+            if (p['Pendamping 3']) { addPenetapanRow(p['Pendamping 3'], kegiatan); count++; }
+        }
+        
+        if (count === 0) {
+            addPenetapanRow('', kegiatan);
+        }
         
         document.getElementById('modalPenetapan').classList.remove('hidden');
     }
+
+    function addPenetapanRow(existingValue = '', kegiatan = '') {
+        const container = document.getElementById('penetapanContainer');
+        if (container.children.length >= 3) {
+            Swal.fire('Maksimal 3', 'Hanya bisa menetapkan maksimal 3 pendamping.', 'warning');
+            return;
+        }
+        
+        if (!kegiatan) kegiatan = document.getElementById('penetapanKegiatan').value;
+        penetapanRowCount++;
+        const rowId = `penRow_${Date.now()}_${penetapanRowCount}`;
+        
+        const isDPW = existingValue === 'DPW';
+        const isMukerda = kegiatan === 'Mukerda';
+        
+        const rowHTML = `
+            <div class="penetapan-row bg-slate-50 p-4 rounded-xl border border-slate-200 relative" id="${rowId}">
+                <div class="flex justify-between items-center mb-3">
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest">Pendamping <span class="row-num">${container.children.length + 1}</span></label>
+                    ${container.children.length > 0 ? `<button type="button" onclick="document.getElementById('${rowId}').remove(); updatePenetapanRowNumbers();" class="text-red-500 hover:text-red-700 text-sm"><i class="bi bi-trash"></i></button>` : ''}
+                </div>
+                
+                <div class="grid grid-cols-2 gap-3 mb-3 ${!isMukerda ? 'hidden' : ''}">
+                    <label class="cursor-pointer relative">
+                        <input type="radio" name="sumber_${rowId}" value="DPP" class="modern-radio sr-only" ${!isMukerda || !isDPW ? 'checked' : ''} onchange="togglePenetapanInput('${rowId}', 'DPP')">
+                        <div class="p-2 text-sm rounded-lg border-2 border-slate-200 text-center text-slate-500 transition font-medium">Dari Pusat (DPP)</div>
+                    </label>
+                    <label class="cursor-pointer relative">
+                        <input type="radio" name="sumber_${rowId}" value="DPW" class="modern-radio sr-only" ${isMukerda && isDPW ? 'checked' : ''} onchange="togglePenetapanInput('${rowId}', 'DPW')">
+                        <div class="p-2 text-sm rounded-lg border-2 border-slate-200 text-center text-slate-500 transition font-medium">Dari Wilayah (DPW)</div>
+                    </label>
+                </div>
+                
+                <div id="inputContainer_${rowId}" class="relative ${isMukerda && isDPW ? 'hidden' : ''}">
+                    <input type="text" id="searchInput_${rowId}" class="input-premium bg-white font-bold text-slate-700 pr-10 py-2.5 text-sm" placeholder="Ketik nama pendamping (DPP)..." autocomplete="off" value="${isDPW ? '' : existingValue}">
+                    <i class="bi bi-search absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                    <input type="hidden" id="hiddenInput_${rowId}" class="penetapan-hidden-val" value="${existingValue}">
+                    <div id="dropdown_${rowId}" class="hidden absolute w-full mt-1 bg-white/95 backdrop-blur-xl border border-slate-200 rounded-xl shadow-xl max-h-48 overflow-y-auto z-[120]"></div>
+                </div>
+            </div>
+        `;
+        
+        container.insertAdjacentHTML('beforeend', rowHTML);
+        setupPenetapanAutosearch(rowId);
+    }
+
+    function updatePenetapanRowNumbers() {
+        const rows = document.querySelectorAll('#penetapanContainer .penetapan-row');
+        rows.forEach((row, index) => {
+            row.querySelector('.row-num').innerText = index + 1;
+        });
+    }
+
+    function togglePenetapanInput(rowId, sumber) {
+        const inputContainer = document.getElementById(`inputContainer_${rowId}`);
+        const hiddenInput = document.getElementById(`hiddenInput_${rowId}`);
+        const searchInput = document.getElementById(`searchInput_${rowId}`);
+        
+        if (sumber === 'DPP') {
+            inputContainer.classList.remove('hidden');
+            hiddenInput.value = searchInput.value; 
+        } else {
+            inputContainer.classList.add('hidden');
+            hiddenInput.value = 'DPW'; 
+        }
+    }
+
+    function setupPenetapanAutosearch(rowId) {
+        const searchInput = document.getElementById(`searchInput_${rowId}`);
+        const hiddenInput = document.getElementById(`hiddenInput_${rowId}`);
+        
+        searchInput.onfocus = () => { renderPenetapanDropdown(rowId, searchInput.value); };
+        
+        searchInput.oninput = (e) => {
+            hiddenInput.value = e.target.value; 
+            renderPenetapanDropdown(rowId, e.target.value);
+        };
+    }
+
+    function renderPenetapanDropdown(rowId, filterValue) {
+        const dropdown = document.getElementById(`dropdown_${rowId}`);
+        dropdown.innerHTML = '';
+        const val = filterValue.toLowerCase();
+        
+        const matched = db.pendamping.filter(p => p['Nama Pendamping'].toLowerCase().includes(val));
+        if (matched.length === 0) {
+            dropdown.innerHTML = '<div class="p-3 text-slate-400 text-xs font-semibold">Data tidak ditemukan</div>';
+        } else {
+            matched.forEach(p => {
+                const div = document.createElement('div');
+                div.className = "px-4 py-2.5 hover:bg-blue-50 cursor-pointer text-sm font-bold text-slate-700 border-b border-slate-50 transition";
+                div.innerText = p['Nama Pendamping'];
+                div.onclick = (e) => {
+                    e.stopPropagation();
+                    document.getElementById(`searchInput_${rowId}`).value = p['Nama Pendamping'];
+                    document.getElementById(`hiddenInput_${rowId}`).value = p['Nama Pendamping'];
+                    dropdown.classList.add('hidden');
+                };
+                dropdown.appendChild(div);
+            });
+        }
+        dropdown.classList.remove('hidden');
+    }
+
+    // Global click listener to close dropdowns inside penetapan modal
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.penetapan-row')) {
+            document.querySelectorAll('[id^="dropdown_penRow_"]').forEach(el => el.classList.add('hidden'));
+        }
+    });
 
     function closePenetapan() {
         document.getElementById('modalPenetapan').classList.add('hidden');
@@ -893,9 +998,20 @@
 
     async function simpanPenetapan() {
         const wilayah = document.getElementById('penetapanWilayahId').value;
-        const p1 = document.getElementById('setPendamping1').value;
-        const p2 = document.getElementById('setPendamping2').value;
-        const p3 = document.getElementById('setPendamping3').value;
+        const rows = document.querySelectorAll('#penetapanContainer .penetapan-row');
+        
+        let p1 = '', p2 = '', p3 = '';
+        rows.forEach((row, index) => {
+            const hiddenInput = row.querySelector('.penetapan-hidden-val');
+            const checkedRadio = row.querySelector('input[type="radio"]:checked');
+            let val = hiddenInput.value.trim();
+            
+            if (checkedRadio && checkedRadio.value === 'DPW') val = 'DPW';
+            
+            if (index === 0) p1 = val;
+            if (index === 1) p2 = val;
+            if (index === 2) p3 = val;
+        });
         
         const btn = document.getElementById('btnSimpanPenetapan');
         const ogText = btn.innerHTML;
