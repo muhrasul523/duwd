@@ -226,9 +226,6 @@
         <p class="text-lg text-slate-500 mb-8 font-medium">Data Mukerwil/Mukerda Anda telah terintegrasi.</p>
         
         <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
-            <button onclick="location.reload()" class="btn-premium px-8 py-4 font-bold rounded-2xl transition text-lg inline-flex items-center justify-center gap-2 w-full sm:w-auto">
-                <i class="bi bi-arrow-left"></i> Kembali ke Form
-            </button>
             <a id="btnKonfirmasiWA" href="#" target="_blank" class="bg-[#25D366] hover:bg-[#128C7E] text-white px-8 py-4 font-bold rounded-2xl transition shadow-lg shadow-green-500/30 text-lg inline-flex items-center justify-center gap-2 w-full sm:w-auto">
                 <i class="bi bi-whatsapp"></i> Konfirmasi via WA
             </a>
@@ -341,7 +338,7 @@
 
   <!-- ================= MODAL PENETAPAN PENDAMPING ================= -->
   <div id="modalPenetapan" class="hidden fixed inset-0 z-[110] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm animate-fade-in">
-    <div class="bg-white p-8 rounded-3xl max-w-md w-full mx-4 shadow-2xl relative border border-slate-100 max-h-[90vh] overflow-y-auto">
+    <div class="bg-white p-8 rounded-3xl max-w-xl w-full mx-4 shadow-2xl relative border border-slate-100 max-h-[90vh] overflow-y-auto">
       <button onclick="closePenetapan()" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 font-bold text-xl"><i class="bi bi-x-circle-fill"></i></button>
       <h3 class="font-extrabold text-xl text-slate-800 mb-1"><i class="bi bi-person-check-fill text-blue-500 mr-2"></i>Tetapkan Pendamping</h3>
       <p id="penetapanWilayahText" class="text-sm font-bold text-slate-500 mb-6 uppercase tracking-wider text-blue-600"></p>
@@ -386,7 +383,27 @@
     const API_URL = "https://script.google.com/macros/s/AKfycbwOs_PQC97QQcEb65pAD5q8sScf_rbDgED00inFJ3x7iLilWFJCk_DQUcKknnxJBDI-KQ/exec";
     let db = { pendamping: [], wilayah: [], rekap: [], penetapan: [] };
 
-    window.onload = () => { loadData(); };
+    window.onload = () => { 
+        loadData(); 
+        initializeDateValidations();
+    };
+    
+    function initializeDateValidations() {
+        const tzOffset = (new Date()).getTimezoneOffset() * 60000; 
+        const todayISO = (new Date(Date.now() - tzOffset)).toISOString().slice(0,16);
+        const jadwalMulai = document.getElementById('jadwalMulai');
+        const jadwalSelesai = document.getElementById('jadwalSelesai');
+        
+        jadwalMulai.min = todayISO;
+        jadwalSelesai.min = todayISO;
+        
+        jadwalMulai.addEventListener('change', function() {
+            jadwalSelesai.min = this.value;
+            if(jadwalSelesai.value && jadwalSelesai.value < this.value) {
+                jadwalSelesai.value = this.value;
+            }
+        });
+    }
 
     async function loadData() {
         try {
@@ -453,10 +470,13 @@
         const filterStatus = kegiatan === 'Mukerwil' ? 'DPW' : 'DPD';
         const filteredWilayah = db.wilayah.filter(w => w.Status && w.Status.toString().trim().toUpperCase() === filterStatus);
         
+        searchInput.onfocus = () => {
+            searchInput.dispatchEvent(new Event('input')); 
+        };
+        
         searchInput.oninput = (e) => {
             const val = e.target.value.toLowerCase();
             dropdown.innerHTML = '';
-            if(!val) { dropdown.classList.add('hidden'); return; }
             dropdown.classList.remove('hidden');
             
             const matched = filteredWilayah.filter(w => w['Nama Wilayah'].toLowerCase().includes(val));
@@ -478,6 +498,14 @@
                 });
             }
         };
+        
+        searchInput.addEventListener('blur', () => {
+            setTimeout(() => {
+                if(searchInput.value !== document.getElementById('wilayahSelect').value) {
+                    searchInput.value = document.getElementById('wilayahSelect').value;
+                }
+            }, 200);
+        });
 
         // Update blok pendamping (DPP Only if Mukerwil)
         for(let i=1; i<=3; i++) {
@@ -498,7 +526,15 @@
     // click outside
     document.addEventListener('click', (e) => {
         if (!e.target.closest('#searchWilayah') && !e.target.closest('#dropdownWilayah')) {
-            document.getElementById("dropdownWilayah").classList.add("hidden");
+            document.getElementById("dropdownWilayah")?.classList.add("hidden");
+        }
+        for(let i=1; i<=3; i++) {
+            if (!e.target.closest(`#searchPendamping${i}`) && !e.target.closest(`#dropdownPendamping${i}`)) {
+                document.getElementById(`dropdownPendamping${i}`)?.classList.add("hidden");
+            }
+        }
+        if (!e.target.closest('.penetapan-row')) {
+            document.querySelectorAll('[id^="dropdown_penRow_"]').forEach(el => el.classList.add('hidden'));
         }
     });
 
@@ -518,7 +554,15 @@
         
         if(existing) {
             document.getElementById('waPJ').value = existing['WA PJ'] || '';
-            document.getElementById('jadwalMulai').value = convertToDatetimeLocal(existing['Mulai']);
+            
+            const valMulai = convertToDatetimeLocal(existing['Mulai']);
+            const tzOffset = (new Date()).getTimezoneOffset() * 60000; 
+            const todayISO = (new Date(Date.now() - tzOffset)).toISOString().slice(0,16);
+            if (valMulai && valMulai < todayISO) {
+                document.getElementById('jadwalMulai').min = valMulai;
+            }
+            
+            document.getElementById('jadwalMulai').value = valMulai;
             document.getElementById('jadwalSelesai').value = convertToDatetimeLocal(existing['Selesai']);
             
             const pel = document.querySelector(`input[name="pelaksanaan"][value="${existing['Model Pelaksanaan']}"]`);
@@ -586,7 +630,13 @@
             togglePendampingInput(index, sumber);
             setTimeout(() => {
                 const input = document.getElementById(`pendamping${index}`);
-                if(input) input.value = nilai;
+                if(input) {
+                    input.value = nilai;
+                    if(sumber === 'DPP') {
+                        const searchInput = document.getElementById(`searchPendamping${index}`);
+                        if(searchInput) searchInput.value = nilai;
+                    }
+                }
             }, 50);
         }
     }
@@ -615,14 +665,63 @@
         const box = document.getElementById(`inputBoxP${index}`);
         const isRequired = index === 1 ? 'required' : '';
         if(sumber === 'DPP') {
-            let options = `<option value="">-- Pilih Nama Pendamping DPP --</option>`;
-            db.pendamping.forEach(p => {
-                options += `<option value="${p['Nama Pendamping']} - ${p['Jabatan']}">${p['Nama Pendamping']} (${p['Jabatan']})</option>`;
-            });
-            box.innerHTML = `<select id="pendamping${index}" class="input-premium bg-slate-50 font-semibold" ${isRequired}>${options}</select>`;
+            box.innerHTML = `
+                <div class="relative">
+                    <input type="text" id="searchPendamping${index}" class="input-premium bg-slate-50 font-semibold pr-10 uppercase" placeholder="-- Ketik/Pilih Nama Pendamping DPP --" autocomplete="off" ${isRequired}>
+                    <i class="bi bi-search absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+                    <input type="hidden" id="pendamping${index}" ${isRequired}>
+                    <div id="dropdownPendamping${index}" class="hidden absolute w-full mt-1 bg-white/95 backdrop-blur-xl border border-slate-200 rounded-xl shadow-xl max-h-60 overflow-y-auto z-[100]"></div>
+                </div>
+            `;
+            setupUsulanPendampingAutosearch(index);
         } else {
             box.innerHTML = `<input type="text" id="pendamping${index}" class="input-premium bg-slate-50 font-semibold uppercase" placeholder="Ketik Nama atau Jabatannya ..." ${isRequired} oninput="this.value = this.value.toUpperCase()">`;
         }
+    }
+
+    function setupUsulanPendampingAutosearch(index) {
+        const searchInput = document.getElementById(`searchPendamping${index}`);
+        const hiddenInput = document.getElementById(`pendamping${index}`);
+        const dropdown = document.getElementById(`dropdownPendamping${index}`);
+        
+        const renderList = (filterStr) => {
+            dropdown.innerHTML = '';
+            const val = filterStr.toLowerCase();
+            const matched = db.pendamping.filter(p => p['Nama Pendamping'].toLowerCase().includes(val) || p['Jabatan'].toLowerCase().includes(val));
+            
+            if (matched.length === 0) {
+                dropdown.innerHTML = '<div class="p-3 text-slate-400 text-xs font-semibold">Data tidak ditemukan</div>';
+            } else {
+                matched.forEach(p => {
+                    const div = document.createElement('div');
+                    div.className = "px-4 py-3 hover:bg-blue-50 cursor-pointer text-sm font-bold text-slate-700 border-b border-slate-50 transition";
+                    div.innerText = `${p['Nama Pendamping']} (${p['Jabatan']})`;
+                    div.onclick = (e) => {
+                        e.stopPropagation();
+                        const fullVal = `${p['Nama Pendamping']} - ${p['Jabatan']}`;
+                        searchInput.value = fullVal;
+                        hiddenInput.value = fullVal;
+                        dropdown.classList.add('hidden');
+                    };
+                    dropdown.appendChild(div);
+                });
+            }
+            dropdown.classList.remove('hidden');
+        };
+
+        searchInput.onfocus = () => { renderList(searchInput.value); };
+        searchInput.oninput = (e) => { 
+            hiddenInput.value = ''; 
+            renderList(e.target.value); 
+        };
+        
+        searchInput.addEventListener('blur', () => {
+            setTimeout(() => {
+                if(searchInput.value !== hiddenInput.value) {
+                    searchInput.value = hiddenInput.value;
+                }
+            }, 200);
+        });
     }
 
     function toggleHonor() {
@@ -698,6 +797,24 @@
         } catch(err) { showSuccess(payload); } finally { btn.innerHTML = originalText; btn.disabled = false; }
     }
 
+    function formatWADate(mulaiStr, selesaiStr) {
+        try {
+            const d1 = new Date(mulaiStr.replace(' ', 'T'));
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const dateText = d1.toLocaleDateString('id-ID', options);
+            
+            let days = 1;
+            if (selesaiStr) {
+                const d2 = new Date(selesaiStr.replace(' ', 'T'));
+                const diffTime = Math.abs(d2 - d1);
+                days = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
+            }
+            return `${dateText} (${days} Hari)`;
+        } catch (e) {
+            return mulaiStr;
+        }
+    }
+
     function showSuccess(payload) {
         // Build WA URL
         const p1 = payload.pendamping1 ? extractName(payload.pendamping1) : "-";
@@ -705,8 +822,8 @@
         const p3 = payload.pendamping3 ? extractName(payload.pendamping3) : "";
         
         let wilayahStatus = payload.kegiatan === 'Mukerwil' ? 'DPW' : 'DPD';
-        let waText = `KONFIRMASI ${payload.kegiatan.toUpperCase()} ${wilayahStatus} ${payload.wilayah}\n`;
-        waText += `Tanggal : ${payload.mulai}\n`;
+        let waText = `*KONFIRMASI ${payload.kegiatan.toUpperCase()} ${wilayahStatus} ${payload.wilayah.toUpperCase()}*\n\n`;
+        waText += `Tanggal : ${formatWADate(payload.mulai, payload.selesai)}\n`;
         waText += `Usulan pendamping:\n1. ${p1}`;
         if (p2) waText += `\n2. ${p2}`;
         if (p3) waText += `\n3. ${p3}`;
@@ -923,7 +1040,7 @@
                     <input type="text" id="searchInput_${rowId}" class="input-premium bg-white font-bold text-slate-700 pr-10 py-2.5 text-sm" placeholder="Ketik nama pendamping (DPP)..." autocomplete="off" value="${isDPW ? '' : existingValue}">
                     <i class="bi bi-search absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
                     <input type="hidden" id="hiddenInput_${rowId}" class="penetapan-hidden-val" value="${existingValue}">
-                    <div id="dropdown_${rowId}" class="hidden absolute w-full mt-1 bg-white/95 backdrop-blur-xl border border-slate-200 rounded-xl shadow-xl max-h-48 overflow-y-auto z-[120]"></div>
+                    <div id="dropdown_${rowId}" class="hidden absolute w-full mt-1 bg-white/95 backdrop-blur-xl border border-slate-200 rounded-xl shadow-xl max-h-60 overflow-y-auto z-[120]"></div>
                 </div>
             </div>
         `;
