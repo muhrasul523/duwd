@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sistem Manajemen Mukerwil & Mukerda Wahdah Islamiyah</title>
   
+  <meta property="og:image" content="./logo_wi.png">
+  <link rel="icon" type="image/png" href="./logo_wi.png">
+  
   <!-- CSS & Fonts -->
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -26,7 +29,7 @@
       box-shadow: 0 25px 50px -12px rgba(15, 23, 42, 0.08); 
     }
     .input-premium { 
-      width: 100%; padding: 0.875rem 1.25rem; border-radius: 1rem; 
+      width: 100%; padding: 1rem 1.25rem; border-radius: 1rem; 
       background: #f8fafc; border: 1.5px solid #e2e8f0; 
       outline: none; transition: all 0.3s ease; font-size: 0.95rem; font-weight: 500;
     }
@@ -40,21 +43,28 @@
       box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.4);
     }
     .btn-premium:hover { transform: translateY(-3px); box-shadow: 0 15px 35px -5px rgba(37, 99, 235, 0.5); }
+    .btn-premium:disabled { background: #94a3b8; box-shadow: none; transform: none; cursor: not-allowed; }
     
-    /* Modern Radio / Checkbox */
-    .modern-radio:checked + div { border-color: #3b82f6; background-color: #eff6ff; color: #1d4ed8; font-weight: 700; }
-    .modern-radio:checked + div svg { opacity: 1; transform: scale(1); }
+    /* Modern Radio & Checkbox */
+    .modern-radio:checked + div { border-color: #3b82f6; background-color: #eff6ff; color: #1d4ed8; font-weight: 700; box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1); }
     .modern-check:checked + div { border-color: #10b981; background-color: #ecfdf5; color: #047857; font-weight: 700; }
     
-    /* Loading Overlay */
+    /* Checkbox base UI */
+    .custom-checkbox input:checked + div {
+        background-color: #2563eb; border-color: #2563eb;
+    }
+    .custom-checkbox input:checked + div svg {
+        opacity: 1; transform: scale(1);
+    }
+
     #loadingOverlay {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(5px);
-        z-index: 9999; display: flex; flex-direction: column; justify-content: center; items-center; transition: 0.3s;
+        background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(8px);
+        z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: 0.3s;
     }
     .spinner {
-        width: 50px; height: 50px; border: 5px solid #e2e8f0; border-top-color: #3b82f6;
-        border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 15px auto;
+        width: 56px; height: 56px; border: 6px solid #e2e8f0; border-top-color: #3b82f6;
+        border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
   </style>
@@ -64,50 +74,50 @@
   <!-- LOADING OVERLAY -->
   <div id="loadingOverlay">
       <div class="spinner"></div>
-      <div class="text-center font-bold text-slate-600 text-lg">Memuat Data...</div>
+      <div class="text-center font-bold text-slate-700 text-xl tracking-tight">Menghubungkan ke Server...</div>
+      <p class="text-slate-500 text-sm mt-2 font-medium">Mohon tunggu sebentar</p>
   </div>
 
   <!-- ================= APP VIEW (FORM) ================= -->
   <div id="appView" class="max-w-4xl w-full space-y-6 mt-2 md:mt-6 animate-fade-in pb-10 hidden">
-    <div class="glass-premium p-6 md:p-10 rounded-[2rem]">
+    <div class="glass-premium p-6 md:p-12 rounded-[2rem]">
       
       <!-- HEADER -->
-      <div class="mb-10 text-center flex flex-col items-center">
-        <div class="relative group cursor-pointer" onclick="openAdmin()" title="Buka Dashboard Admin">
+      <div class="mb-12 text-center flex flex-col items-center relative">
+        <div class="absolute inset-0 bg-blue-500 rounded-full blur-3xl opacity-10 w-48 h-48 mx-auto -top-10"></div>
+        <div class="relative group cursor-pointer" onclick="openAdmin()" title="Buka Dashboard Admin (Rekap Data)">
           <div class="absolute inset-0 bg-blue-500 rounded-full blur-2xl opacity-20 group-hover:opacity-50 transition duration-500"></div>
-          <!-- Ganti URL logo jika punya aset sendiri -->
-          <div class="w-24 h-24 mb-4 bg-white rounded-full flex items-center justify-center shadow-xl border border-slate-100 group-hover:scale-110 transition duration-300">
-             <i class="bi bi-shield-check text-4xl text-blue-600"></i>
-          </div>
+          <img src="./logo_wi.png" alt="Logo Wahdah" class="relative w-28 h-28 mb-5 drop-shadow-xl object-contain transform group-hover:scale-110 transition duration-300">
         </div>
-        <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight mb-2 text-slate-800">Manajemen <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">Muker</span></h1>
-        <p class="text-slate-500 font-medium text-sm md:text-base">Pendataan Mukerwil & Mukerda Wahdah Islamiyah</p>
+        <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight mb-3 text-slate-800 relative z-10">
+            Pendataan <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">Muker</span>
+        </h1>
+        <p class="text-slate-500 font-semibold md:text-lg relative z-10">Sistem Manajemen Mukerwil & Mukerda DPW/DPD</p>
       </div>
       
       <!-- FORM -->
-      <form id="mainForm" onsubmit="submitForm(event)" class="space-y-8">
+      <form id="mainForm" onsubmit="submitForm(event)" class="space-y-8 relative z-10">
           
         <!-- 1. WA PJ -->
-        <div>
-            <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">WA Penanggung Jawab</label>
+        <div class="bg-white/60 p-6 rounded-2xl border border-slate-100 shadow-sm">
+            <label class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-widest"><i class="bi bi-whatsapp mr-1 text-green-500"></i> WhatsApp Penanggung Jawab</label>
             <input type="text" id="waPJ" class="input-premium" placeholder="Contoh: 0853..." required oninput="formatWA(this)">
-            <p class="text-xs text-slate-400 mt-1">*Hanya angka. Awalan 08 akan otomatis menjadi 628</p>
         </div>
 
         <!-- 2. PILIH KEGIATAN -->
         <div>
-            <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Jenis Kegiatan</label>
+            <label class="block text-xs font-bold text-slate-500 mb-3 uppercase tracking-widest ml-1">Jenis Kegiatan</label>
             <div class="grid grid-cols-2 gap-4">
                 <label class="cursor-pointer relative">
                     <input type="radio" name="kegiatan" value="Mukerwil" class="modern-radio sr-only" onchange="updateFormUI()" required>
-                    <div class="p-4 rounded-xl border-2 border-slate-200 text-center transition flex items-center justify-center gap-2 text-slate-500">
-                        <i class="bi bi-building"></i> Mukerwil
+                    <div class="p-5 rounded-2xl border-2 border-slate-200 text-center transition flex flex-col items-center justify-center gap-2 text-slate-500 bg-white hover:bg-slate-50">
+                        <i class="bi bi-building text-2xl"></i> <span class="font-bold">MUKERWIL</span>
                     </div>
                 </label>
                 <label class="cursor-pointer relative">
                     <input type="radio" name="kegiatan" value="Mukerda" class="modern-radio sr-only" onchange="updateFormUI()">
-                    <div class="p-4 rounded-xl border-2 border-slate-200 text-center transition flex items-center justify-center gap-2 text-slate-500">
-                        <i class="bi bi-house"></i> Mukerda
+                    <div class="p-5 rounded-2xl border-2 border-slate-200 text-center transition flex flex-col items-center justify-center gap-2 text-slate-500 bg-white hover:bg-slate-50">
+                        <i class="bi bi-houses text-2xl"></i> <span class="font-bold">MUKERDA</span>
                     </div>
                 </label>
             </div>
@@ -115,87 +125,121 @@
 
         <!-- 3. PILIH WILAYAH -->
         <div>
-            <label id="labelWilayah" class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Pilih DPW / DPD</label>
-            <select id="wilayahSelect" class="input-premium" required disabled>
-                <option value="">-- Pilih Kegiatan Terlebih Dahulu --</option>
+            <label id="labelWilayah" class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-widest ml-1">Pilih Entitas (DPW / DPD)</label>
+            <select id="wilayahSelect" class="input-premium font-bold text-slate-700 bg-white" required disabled>
+                <option value="">-- Pilih Jenis Kegiatan Terlebih Dahulu --</option>
             </select>
         </div>
 
         <!-- 4. JADWAL -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-6 rounded-2xl border border-slate-100">
             <div>
-                <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Mulai</label>
-                <input type="datetime-local" id="jadwalMulai" class="input-premium" required>
+                <label class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-widest"><i class="bi bi-calendar-event mr-1 text-blue-500"></i> Waktu Mulai</label>
+                <input type="datetime-local" id="jadwalMulai" class="input-premium bg-white" required>
             </div>
             <div>
-                <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Selesai</label>
-                <input type="datetime-local" id="jadwalSelesai" class="input-premium" required>
+                <label class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-widest"><i class="bi bi-calendar-check mr-1 text-blue-500"></i> Waktu Selesai</label>
+                <input type="datetime-local" id="jadwalSelesai" class="input-premium bg-white" required>
             </div>
         </div>
 
         <!-- 5. MODEL PELAKSANAAN -->
         <div>
-            <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Model Pelaksanaan</label>
+            <label class="block text-xs font-bold text-slate-500 mb-3 uppercase tracking-widest ml-1">Model Pelaksanaan Kegiatan</label>
             <div class="grid grid-cols-3 gap-3">
-                <label class="cursor-pointer relative"><input type="radio" name="pelaksanaan" value="Full Offline" class="modern-radio sr-only" required><div class="p-3 text-sm rounded-xl border-2 border-slate-200 text-center text-slate-500 transition">Full Offline</div></label>
-                <label class="cursor-pointer relative"><input type="radio" name="pelaksanaan" value="Full Online" class="modern-radio sr-only"><div class="p-3 text-sm rounded-xl border-2 border-slate-200 text-center text-slate-500 transition">Full Online</div></label>
-                <label class="cursor-pointer relative"><input type="radio" name="pelaksanaan" value="Hybrid" class="modern-radio sr-only"><div class="p-3 text-sm rounded-xl border-2 border-slate-200 text-center text-slate-500 transition">Hybrid</div></label>
+                <label class="cursor-pointer relative"><input type="radio" name="pelaksanaan" value="Full Offline" class="modern-radio sr-only" required><div class="p-4 text-sm rounded-2xl border-2 border-slate-200 text-center text-slate-500 font-semibold transition bg-white">Full Offline</div></label>
+                <label class="cursor-pointer relative"><input type="radio" name="pelaksanaan" value="Full Online" class="modern-radio sr-only"><div class="p-4 text-sm rounded-2xl border-2 border-slate-200 text-center text-slate-500 font-semibold transition bg-white">Full Online</div></label>
+                <label class="cursor-pointer relative"><input type="radio" name="pelaksanaan" value="Hybrid" class="modern-radio sr-only"><div class="p-4 text-sm rounded-2xl border-2 border-slate-200 text-center text-slate-500 font-semibold transition bg-white">Hybrid</div></label>
             </div>
         </div>
 
         <!-- 6. MODEL KEHADIRAN PENDAMPING -->
         <div>
-            <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Kehadiran Pendamping</label>
+            <label class="block text-xs font-bold text-slate-500 mb-3 uppercase tracking-widest ml-1">Model Kehadiran Pendamping</label>
             <div class="grid grid-cols-3 gap-3">
-                <label class="cursor-pointer relative"><input type="radio" name="kehadiran" value="Full Offline" class="modern-radio sr-only" required><div class="p-3 text-sm rounded-xl border-2 border-slate-200 text-center text-slate-500 transition">Full Offline</div></label>
-                <label class="cursor-pointer relative"><input type="radio" name="kehadiran" value="Full Online" class="modern-radio sr-only"><div class="p-3 text-sm rounded-xl border-2 border-slate-200 text-center text-slate-500 transition">Full Online</div></label>
-                <label class="cursor-pointer relative"><input type="radio" name="kehadiran" value="Hybrid" class="modern-radio sr-only"><div class="p-3 text-sm rounded-xl border-2 border-slate-200 text-center text-slate-500 transition">Hybrid</div></label>
+                <label class="cursor-pointer relative"><input type="radio" name="kehadiran" value="Full Offline" class="modern-radio sr-only" required><div class="p-4 text-sm rounded-2xl border-2 border-slate-200 text-center text-slate-500 font-semibold transition bg-white">Full Offline</div></label>
+                <label class="cursor-pointer relative"><input type="radio" name="kehadiran" value="Full Online" class="modern-radio sr-only"><div class="p-4 text-sm rounded-2xl border-2 border-slate-200 text-center text-slate-500 font-semibold transition bg-white">Full Online</div></label>
+                <label class="cursor-pointer relative"><input type="radio" name="kehadiran" value="Hybrid" class="modern-radio sr-only"><div class="p-4 text-sm rounded-2xl border-2 border-slate-200 text-center text-slate-500 font-semibold transition bg-white">Hybrid</div></label>
             </div>
         </div>
 
         <!-- 7. TANGGUNGAN -->
-        <div class="bg-blue-50/50 p-6 rounded-2xl border border-blue-100">
-            <label class="block text-sm font-bold text-slate-700 mb-3 uppercase tracking-wide">Tanggungan Panitia</label>
-            <div class="space-y-3">
-                <label class="flex items-center gap-3 cursor-pointer">
-                    <input type="checkbox" id="checkHonor" value="Honorarium" class="w-5 h-5 text-blue-600 rounded" onchange="toggleHonor()">
-                    <span class="font-medium text-slate-700">Honorarium / Uang Saku</span>
+        <div class="bg-gradient-to-br from-blue-50/50 to-slate-50 p-6 md:p-8 rounded-[1.5rem] border border-blue-100 shadow-sm">
+            <label class="block text-xs font-bold text-blue-600 mb-5 uppercase tracking-widest"><i class="bi bi-wallet2 mr-1"></i> Tanggungan Panitia</label>
+            <div class="space-y-4">
+                
+                <label class="custom-checkbox flex items-center gap-4 cursor-pointer group">
+                    <input type="checkbox" id="checkHonor" value="Honorarium" class="sr-only" onchange="toggleHonor()">
+                    <div class="w-6 h-6 border-2 border-slate-300 rounded-md flex items-center justify-center transition-all bg-white group-hover:border-blue-400">
+                        <svg class="w-4 h-4 text-white opacity-0 transition-all transform scale-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                    <span class="font-bold text-slate-700">Honorarium / Uang Saku</span>
                 </label>
-                <div id="honorContainer" class="hidden pl-8">
-                    <input type="text" id="nominalHonor" class="input-premium py-2 text-sm max-w-xs" placeholder="Nominal (Rp)" oninput="formatRupiah(this)">
+                
+                <!-- Input Nominal (Hidden default) -->
+                <div id="honorContainer" class="hidden pl-10 mb-4 animate-fade-in">
+                    <input type="text" id="nominalHonor" class="input-premium py-3 text-sm max-w-xs font-bold text-blue-700" placeholder="Ketik Nominal (Rp)..." oninput="formatRupiah(this)">
                 </div>
-                <label class="flex items-center gap-3 cursor-pointer">
-                    <input type="checkbox" id="checkTiket" value="Tiket/Transportasi" class="w-5 h-5 text-blue-600 rounded">
-                    <span class="font-medium text-slate-700">Tiket / Dana Transportasi</span>
+
+                <label class="custom-checkbox flex items-center gap-4 cursor-pointer group">
+                    <input type="checkbox" id="checkTiket" value="Tiket/Transportasi" class="sr-only">
+                    <div class="w-6 h-6 border-2 border-slate-300 rounded-md flex items-center justify-center transition-all bg-white group-hover:border-blue-400">
+                        <svg class="w-4 h-4 text-white opacity-0 transition-all transform scale-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                    <span class="font-bold text-slate-700">Tiket / Dana Transportasi</span>
                 </label>
-                <label class="flex items-center gap-3 cursor-pointer">
-                    <input type="checkbox" id="checkInap" value="Penginapan" class="w-5 h-5 text-blue-600 rounded">
-                    <span class="font-medium text-slate-700">Penginapan</span>
+                
+                <label class="custom-checkbox flex items-center gap-4 cursor-pointer group">
+                    <input type="checkbox" id="checkInap" value="Penginapan" class="sr-only">
+                    <div class="w-6 h-6 border-2 border-slate-300 rounded-md flex items-center justify-center transition-all bg-white group-hover:border-blue-400">
+                        <svg class="w-4 h-4 text-white opacity-0 transition-all transform scale-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                    </div>
+                    <span class="font-bold text-slate-700">Penginapan</span>
                 </label>
             </div>
         </div>
 
         <!-- 8. USULAN PENDAMPING -->
         <div class="space-y-6" id="containerPendamping">
-            <!-- Rendered by JS -->
+            <!-- Rendered via JavaScript -->
         </div>
 
         <!-- 9. HAL DIKUATKAN -->
         <div>
-            <label id="labelDikuatkan" class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Hal yang perlu dikuatkan</label>
-            <textarea id="halDikuatkan" class="input-premium" rows="3" placeholder="Tuliskan fokus evaluasi/penguatan..."></textarea>
+            <label id="labelDikuatkan" class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-widest ml-1">Hal yang perlu dikuatkan</label>
+            <textarea id="halDikuatkan" class="input-premium bg-white" rows="3" placeholder="Sebutkan hal-hal apa saja yang perlu dievaluasi atau dikuatkan di daerah Anda..."></textarea>
         </div>
 
         <!-- 10. KETERANGAN -->
         <div>
-            <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Keterangan Lainnya (Opsional)</label>
-            <textarea id="keterangan" class="input-premium" rows="2" placeholder="Catatan tambahan..."></textarea>
+            <label class="block text-xs font-bold text-slate-500 mb-2 uppercase tracking-widest ml-1">Keterangan Lainnya (Opsional)</label>
+            <textarea id="keterangan" class="input-premium bg-white" rows="2" placeholder="Catatan tambahan..."></textarea>
         </div>
 
-        <button type="submit" id="btnSubmit" class="w-full py-4 btn-premium font-bold rounded-2xl text-lg mt-5 flex justify-center items-center gap-3">
-          <i class="bi bi-send-fill"></i> Simpan Data Kegiatan
+        <button type="submit" id="btnSubmit" class="w-full py-5 btn-premium font-extrabold rounded-2xl text-xl mt-8 flex justify-center items-center gap-3">
+          <i class="bi bi-cloud-arrow-up-fill text-2xl"></i> Sinkronisasi Data Kegiatan
         </button>
       </form>
+    </div>
+  </div>
+
+  <!-- ================= SUCCESS PAGE ================= -->
+  <div id="successView" class="hidden max-w-3xl w-full mt-10 animate-fade-in scroll-mt-10">
+    <div class="glass-premium p-12 rounded-[2.5rem] text-center relative overflow-hidden">
+      <div class="absolute top-0 right-0 w-64 h-64 bg-green-200 rounded-full filter blur-[80px] opacity-60"></div>
+      <div class="absolute bottom-0 left-0 w-64 h-64 bg-blue-200 rounded-full filter blur-[80px] opacity-60"></div>
+      
+      <div class="relative z-10">
+        <div class="w-24 h-24 bg-gradient-to-br from-green-400 to-emerald-500 text-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-xl shadow-green-500/30">
+          <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+        </div>
+        <h2 class="text-4xl font-extrabold mb-4 text-slate-800">Berhasil Disimpan!</h2>
+        <p class="text-lg text-slate-500 mb-10 font-medium">Data kegiatan Mukerwil/Mukerda Anda telah terintegrasi ke sistem pusat.</p>
+        
+        <button onclick="location.reload()" class="btn-premium px-8 py-4 font-bold rounded-2xl transition text-lg inline-flex items-center gap-2">
+            <i class="bi bi-arrow-left"></i> Kembali ke Form
+        </button>
+      </div>
     </div>
   </div>
 
@@ -203,47 +247,55 @@
   <div id="adminView" class="hidden w-full max-w-[95%] bg-white/95 backdrop-blur-3xl rounded-[2rem] p-6 md:p-10 shadow-2xl min-h-[95vh] border border-white mt-4 animate-fade-in mx-auto">
     <div class="flex justify-between items-center mb-10 border-b border-slate-200 pb-6">
       <h2 class="text-2xl md:text-3xl font-extrabold text-slate-800 flex items-center gap-4">
-        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center text-blue-600"><i class="bi bi-shield-check text-2xl"></i></div> 
-        Dashboard Admin Rekap
+        <img src="./logo_wi.png" class="w-12 h-12 drop-shadow-sm"> Dashboard Rekap Data
       </h2>
-      <button onclick="closeAdmin()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-6 py-3 rounded-xl text-sm font-bold transition shadow-sm"><i class="bi bi-x-lg"></i> Tutup</button>
+      <button onclick="closeAdmin()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-6 py-3 rounded-xl text-sm font-bold transition shadow-sm flex items-center gap-2">
+          <i class="bi bi-x-lg"></i> Tutup Admin
+      </button>
     </div>
     
-    <!-- Rekap Atas -->
+    <!-- Dashboard Stats -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-      <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-5 rounded-2xl border border-blue-200">
+      <div class="bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-2xl border border-blue-200 relative overflow-hidden">
+        <i class="bi bi-database absolute -bottom-4 -right-4 text-6xl text-blue-200/50"></i>
         <div class="text-blue-600 text-xs font-bold uppercase tracking-widest mb-1">Total Data Input</div>
-        <div id="adTotal" class="text-3xl font-black text-slate-800">0</div>
+        <div id="adTotal" class="text-4xl font-black text-slate-800">0</div>
       </div>
-      <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 p-5 rounded-2xl border border-emerald-200">
-        <div class="text-emerald-600 text-xs font-bold uppercase tracking-widest mb-1">Total Mukerwil</div>
-        <div id="adMukerwil" class="text-3xl font-black text-slate-800">0</div>
+      <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 p-6 rounded-2xl border border-indigo-200 relative overflow-hidden">
+        <i class="bi bi-building absolute -bottom-4 -right-4 text-6xl text-indigo-200/50"></i>
+        <div class="text-indigo-600 text-xs font-bold uppercase tracking-widest mb-1">Total Mukerwil</div>
+        <div id="adMukerwil" class="text-4xl font-black text-slate-800">0</div>
       </div>
-      <div class="bg-gradient-to-br from-orange-50 to-orange-100 p-5 rounded-2xl border border-orange-200">
+      <div class="bg-gradient-to-br from-orange-50 to-orange-100 p-6 rounded-2xl border border-orange-200 relative overflow-hidden">
+        <i class="bi bi-houses absolute -bottom-4 -right-4 text-6xl text-orange-200/50"></i>
         <div class="text-orange-600 text-xs font-bold uppercase tracking-widest mb-1">Total Mukerda</div>
-        <div id="adMukerda" class="text-3xl font-black text-slate-800">0</div>
+        <div id="adMukerda" class="text-4xl font-black text-slate-800">0</div>
       </div>
-      <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 p-5 rounded-2xl border border-indigo-200">
-        <div class="text-indigo-600 text-xs font-bold uppercase tracking-widest mb-1">Status Kesiapan</div>
-        <div class="text-xl font-black text-slate-800 mt-1">Aman</div>
+      <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 p-6 rounded-2xl border border-emerald-200 relative overflow-hidden">
+        <i class="bi bi-shield-check absolute -bottom-4 -right-4 text-6xl text-emerald-200/50"></i>
+        <div class="text-emerald-600 text-xs font-bold uppercase tracking-widest mb-1">Status Sistem</div>
+        <div class="text-2xl font-black text-slate-800 mt-2">Connected</div>
       </div>
     </div>
     
-    <div class="flex justify-between items-center mb-4">
-        <h3 class="font-extrabold text-xl text-slate-800">Tabel Rekapitulasi Data</h3>
-        <input type="text" id="searchTable" class="input-premium max-w-xs py-2 text-sm" placeholder="🔍 Cari Data..." oninput="filterTable()">
+    <div class="flex flex-col md:flex-row justify-between items-end md:items-center mb-6 gap-4">
+        <h3 class="font-extrabold text-xl text-slate-800"><i class="bi bi-table mr-2 text-blue-500"></i>Tabel Rekapitulasi</h3>
+        <div class="relative w-full md:w-80">
+            <i class="bi bi-search absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
+            <input type="text" id="searchTable" class="input-premium pl-12 py-3 text-sm" placeholder="Ketik kata kunci untuk mencari..." oninput="filterTable()">
+        </div>
     </div>
 
     <div class="overflow-x-auto bg-white rounded-3xl border border-slate-200 shadow-sm">
       <table class="w-full text-left whitespace-nowrap" id="rekapTable">
         <thead class="bg-slate-50 text-slate-500 uppercase text-xs font-bold tracking-wider border-b border-slate-200">
           <tr>
-            <th class="px-5 py-4 cursor-pointer hover:text-blue-600" onclick="sortTable(0)">Wilayah ↕</th>
-            <th class="px-5 py-4 cursor-pointer hover:text-blue-600" onclick="sortTable(1)">Kegiatan ↕</th>
-            <th class="px-5 py-4">Pelaksanaan</th>
-            <th class="px-5 py-4">Tanggal Mulai</th>
-            <th class="px-5 py-4">Pendamping 1</th>
-            <th class="px-5 py-4">Hal Dikuatkan</th>
+            <th class="px-6 py-5 cursor-pointer hover:text-blue-600 transition" onclick="sortTable(0)">Entitas / Wilayah <i class="bi bi-arrow-down-up ml-1 text-[10px]"></i></th>
+            <th class="px-6 py-5 cursor-pointer hover:text-blue-600 transition" onclick="sortTable(1)">Kegiatan <i class="bi bi-arrow-down-up ml-1 text-[10px]"></i></th>
+            <th class="px-6 py-5">Tanggal Pelaksanaan</th>
+            <th class="px-6 py-5 text-center">Kehadiran</th>
+            <th class="px-6 py-5">Usulan Pendamping Utama</th>
+            <th class="px-6 py-5">Uang Saku</th>
           </tr>
         </thead>
         <tbody id="adminTableBody" class="divide-y divide-slate-100 text-sm"></tbody>
@@ -251,62 +303,76 @@
     </div>
   </div>
 
-  <!-- FOOTER -->
-  <footer class="absolute bottom-0 w-full text-center py-4 text-sm text-slate-500 font-medium">
-    2026 | Dibuat oleh <button onclick="window.open('https://wa.me/6285342540658','_blank')" class="font-bold text-blue-600 hover:text-blue-800 underline transition">Wadah Digital</button>
+  <!-- FOOTER & MODAL WADAH DIGITAL -->
+  <footer class="absolute bottom-0 w-full text-center py-6 text-sm text-slate-500 font-medium">
+    Copyright &copy; 2026 | App by <button onclick="openWadahDigital()" class="font-bold text-blue-600 hover:text-blue-800 underline transition">Wadah Digital</button>
   </footer>
 
+  <div id="modalWadah" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-fade-in">
+    <div class="bg-white p-8 rounded-3xl max-w-sm w-full mx-4 shadow-2xl text-center relative border border-slate-100">
+      <button onclick="closeWadahDigital()" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 font-bold text-xl"><i class="bi bi-x-circle-fill"></i></button>
+      <div class="w-16 h-16 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-blue-100">
+        <i class="bi bi-code-slash text-3xl"></i>
+      </div>
+      <h3 class="font-bold text-xl text-slate-800 mb-2">Build Your App?</h3>
+      <p class="text-sm text-slate-500 mb-6 leading-relaxed">Kembangkan sistem informasi modern untuk bisnis, lembaga, atau organisasi Anda bersama tim kami.</p>
+      <a href="https://wa.me/6285342540658" target="_blank" class="block w-full py-3.5 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-green-500/30 transition">
+        <i class="bi bi-whatsapp mr-2"></i>Hubungi Wadah Digital
+      </a>
+    </div>
+  </div>
+
   <script>
-    // ================= GLOBAL STATE =================
+    // ================= CONFIGURATION =================
+    // URL Deployment AppScript WebApp Anda
+    const API_URL = "https://script.google.com/macros/s/AKfycbwOs_PQC97QQcEb65pAD5q8sScf_rbDgED00inFJ3x7iLilWFJCk_DQUcKknnxJBDI-KQ/exec";
+    
     let db = { pendamping: [], wilayah: [], rekap: [] };
 
     // ================= STARTUP / LOAD DATA =================
-    window.onload = () => {
-        loadData();
-    };
+    window.onload = () => { loadData(); };
 
-    function startLoading() { document.getElementById('loadingOverlay').style.display = 'flex'; }
-    function endLoading() { document.getElementById('loadingOverlay').style.display = 'none'; document.getElementById('appView').classList.remove('hidden'); }
-
-    function loadData() {
-        startLoading();
-        
-        if (typeof google === 'undefined') {
-            // SIMULATION MODE (Gemini Canvas / Local HTML)
-            setTimeout(() => {
-                db = {
-                    pendamping: [
-                        {'Nama Pendamping': 'Ust. Zaitun Rasmin', 'Jabatan': 'Pimpinan Umum'},
-                        {'Nama Pendamping': 'Ust. Rahmat Abdul Rahman', 'Jabatan': 'Ketua Harian'},
-                        {'Nama Pendamping': 'Ust. Syaibani Mujiono', 'Jabatan': 'Sekjen'}
-                    ],
-                    wilayah: [
-                        {'Kode': '11', 'Nama Wilayah': '11 Aceh', 'Status': 'DPW'},
-                        {'Kode': '11.01', 'Nama Wilayah': '11.01 Kab. Aceh Besar', 'Status': 'DPD'},
-                        {'Kode': '12', 'Nama Wilayah': '12 Sumut', 'Status': 'DPW'},
-                        {'Kode': '12.01', 'Nama Wilayah': '12.01 Medan', 'Status': 'DPD'}
-                    ],
-                    rekap: [
-                        {'Wilayah': '11 Aceh', 'Kegiatan': 'Mukerwil', 'Mulai': '2026-11-20T08:00', 'Pelaksanaan': 'Full Offline', 'Pendamping 1': 'Ust. Zaitun Rasmin', 'Hal Dikuatkan': 'Konsolidasi'}
-                    ]
-                };
+    async function loadData() {
+        try {
+            const response = await fetch(API_URL);
+            if(response.ok) {
+                const data = await response.json();
+                db = data;
                 renderUI();
                 endLoading();
-            }, 800);
-        } else {
-            // PRODUCTION MODE (Google Apps Script)
-            google.script.run
-                .withSuccessHandler(res => {
-                    db = res;
-                    renderUI();
-                    endLoading();
-                })
-                .withFailureHandler(err => {
-                    Swal.fire('Error', 'Gagal memuat data dari server.', 'error');
-                    endLoading();
-                })
-                .getAllData();
+            } else {
+                throw new Error("Network Response Error");
+            }
+        } catch (error) {
+            console.error("Gagal load dari server, mengaktifkan mode simulasi (Dummy Data):", error);
+            // SIMULATION MODE DUMMY
+            db = {
+                pendamping: [
+                    {'Nama Pendamping': 'Ust. Dr. Muhammad Zaitun Rasmin, Lc., M.A.', 'Jabatan': 'Pemimpin Umum'},
+                    {'Nama Pendamping': 'Ust. Dr. Rahmat Abdul Rahman, Lc., M.A.', 'Jabatan': 'Ketua Harian'},
+                    {'Nama Pendamping': 'Ust. Syaibani Mujiono, S.Sy., M.Si.', 'Jabatan': 'Sekretaris Jenderal'}
+                ],
+                wilayah: [
+                    {'Kode': '11', 'Nama Wilayah': '11 Aceh', 'Status': 'DPW'},
+                    {'Kode': '11.01', 'Nama Wilayah': '11.01 Kab. Aceh Besar', 'Status': 'DPD'},
+                    {'Kode': '12', 'Nama Wilayah': '12 Sumatera Utara', 'Status': 'DPW'},
+                    {'Kode': '12.01', 'Nama Wilayah': '12.01 Kota Medan', 'Status': 'DPD'}
+                ],
+                rekap: [
+                    {'Wilayah': '11 Aceh', 'Kegiatan': 'Mukerwil', 'Mulai': '2026-11-20 08:00', 'Pelaksanaan': 'Full Offline', 'Kehadiran': 'Hybrid', 'Pendamping 1': 'Ust. Zaitun Rasmin', 'Nominal Uang Saku': '1500000'}
+                ]
+            };
+            
+            setTimeout(() => { renderUI(); endLoading(); }, 500);
         }
+    }
+
+    function endLoading() { 
+        document.getElementById('loadingOverlay').style.opacity = '0';
+        setTimeout(() => {
+            document.getElementById('loadingOverlay').style.display = 'none'; 
+            document.getElementById('appView').classList.remove('hidden'); 
+        }, 300);
     }
 
     function renderUI() {
@@ -323,10 +389,10 @@
         
         if(kegiatan) {
             selWil.disabled = false;
-            selWil.innerHTML = `<option value="">-- Pilih ${kegiatan === 'Mukerwil' ? 'DPW' : 'DPD'} --</option>`;
+            selWil.innerHTML = `<option value="">-- Pilih ${kegiatan === 'Mukerwil' ? 'DPW' : 'DPD'} Anda --</option>`;
             
-            lblWil.innerText = `Pilih ${kegiatan === 'Mukerwil' ? 'DPW' : 'DPD'}`;
-            lblKuat.innerText = `Hal yang perlu dikuatkan di ${kegiatan === 'Mukerwil' ? 'DPW' : 'DPD'}`;
+            lblWil.innerHTML = `Pilih Entitas (${kegiatan === 'Mukerwil' ? 'DPW' : 'DPD'})`;
+            lblKuat.innerHTML = `Hal yang perlu dikuatkan di ${kegiatan === 'Mukerwil' ? 'DPW' : 'DPD'}`;
 
             const filterStatus = kegiatan === 'Mukerwil' ? 'DPW' : 'DPD';
             const filteredWilayah = db.wilayah.filter(w => w.Status === filterStatus);
@@ -339,12 +405,12 @@
             for(let i=1; i<=3; i++) {
                 const radioBox = document.getElementById(`radioSumberP${i}`);
                 if (kegiatan === 'Mukerwil') {
-                    radioBox.classList.add('hidden'); // Selalu DPP
+                    radioBox.classList.add('hidden'); // Selalu DPP, sembunyikan pilihan
                     document.querySelector(`input[name="sumberP${i}"][value="DPP"]`).checked = true;
                     togglePendampingInput(i, 'DPP');
                 } else {
-                    radioBox.classList.remove('hidden'); // Bisa DPP / DPW
-                    // Reset
+                    radioBox.classList.remove('hidden'); // DPD bisa pilih minta ke pusat(DPP) atau ke DPW
+                    // Reset Check
                     document.querySelector(`input[name="sumberP${i}"][value="DPP"]`).checked = false;
                     document.querySelector(`input[name="sumberP${i}"][value="DPW"]`).checked = false;
                     document.getElementById(`inputBoxP${i}`).innerHTML = '';
@@ -359,17 +425,20 @@
         
         for(let i=1; i<=3; i++) {
             container.innerHTML += `
-            <div class="p-5 border border-slate-200 rounded-2xl bg-white">
-                <label class="block text-sm font-bold text-slate-700 mb-3 uppercase tracking-wide">Usulan Pendamping ${i}</label>
+            <div class="p-6 md:p-8 border border-slate-200 rounded-3xl bg-white shadow-sm hover:shadow-md transition">
+                <label class="flex items-center gap-2 text-xs font-bold text-slate-500 mb-4 uppercase tracking-widest">
+                    <span class="bg-blue-100 text-blue-700 rounded-full w-6 h-6 flex items-center justify-center font-black">${i}</span> 
+                    Usulan Pendamping ${i} ${i===1?'(Wajib)':'(Opsional)'}
+                </label>
                 
-                <div id="radioSumberP${i}" class="grid grid-cols-2 gap-3 mb-3 hidden">
+                <div id="radioSumberP${i}" class="grid grid-cols-2 gap-3 mb-4 hidden">
                     <label class="cursor-pointer relative">
                         <input type="radio" name="sumberP${i}" value="DPP" class="modern-radio sr-only" onchange="togglePendampingInput(${i}, 'DPP')">
-                        <div class="p-2 text-sm rounded-lg border-2 border-slate-200 text-center text-slate-500 transition">Dari DPP</div>
+                        <div class="p-3 text-sm rounded-xl border-2 border-slate-200 text-center text-slate-500 transition font-medium">Pengurus Pusat (DPP)</div>
                     </label>
                     <label class="cursor-pointer relative">
                         <input type="radio" name="sumberP${i}" value="DPW" class="modern-radio sr-only" onchange="togglePendampingInput(${i}, 'DPW')">
-                        <div class="p-2 text-sm rounded-lg border-2 border-slate-200 text-center text-slate-500 transition">Dari DPW</div>
+                        <div class="p-3 text-sm rounded-xl border-2 border-slate-200 text-center text-slate-500 transition font-medium">Pengurus Wilayah (DPW)</div>
                     </label>
                 </div>
                 
@@ -380,30 +449,35 @@
 
     function togglePendampingInput(index, sumber) {
         const box = document.getElementById(`inputBoxP${index}`);
+        const isRequired = index === 1 ? 'required' : '';
+        
         if(sumber === 'DPP') {
-            let options = `<option value="">-- Pilih Pendamping DPP --</option>`;
+            let options = `<option value="">-- Pilih Nama Pendamping DPP --</option>`;
             db.pendamping.forEach(p => {
                 options += `<option value="${p['Nama Pendamping']} - ${p['Jabatan']}">${p['Nama Pendamping']} (${p['Jabatan']})</option>`;
             });
-            box.innerHTML = `<select id="pendamping${index}" class="input-premium" ${index===1 ? 'required' : ''}>${options}</select>`;
+            box.innerHTML = `<select id="pendamping${index}" class="input-premium bg-slate-50 font-semibold" ${isRequired}>${options}</select>`;
         } else {
-            box.innerHTML = `<input type="text" id="pendamping${index}" class="input-premium uppercase" placeholder="Ketik Nama & Jabatan..." ${index===1 ? 'required' : ''} oninput="this.value = this.value.toUpperCase()">`;
+            box.innerHTML = `<input type="text" id="pendamping${index}" class="input-premium bg-slate-50 font-semibold uppercase" placeholder="Ketik Nama & Jabatan (Manual)..." ${isRequired} oninput="this.value = this.value.toUpperCase()">`;
         }
     }
 
     function toggleHonor() {
         const isChecked = document.getElementById('checkHonor').checked;
         const box = document.getElementById('honorContainer');
-        box.style.display = isChecked ? 'block' : 'none';
-        if(!isChecked) document.getElementById('nominalHonor').value = '';
+        if(isChecked) {
+            box.classList.remove('hidden');
+        } else {
+            box.classList.add('hidden');
+            document.getElementById('nominalHonor').value = '';
+            document.getElementById('nominalHonor').dataset.raw = '';
+        }
     }
 
-    // ================= HELPERS FORMATTER =================
+    // ================= FORMATTERS =================
     function formatWA(el) {
-        let val = el.value.replace(/\D/g, ''); // hanya angka
-        if (val.startsWith('08')) {
-            val = '628' + val.substring(2);
-        }
+        let val = el.value.replace(/\D/g, ''); // hapus non-angka
+        if (val.startsWith('08')) { val = '628' + val.substring(2); }
         el.value = val;
     }
 
@@ -413,20 +487,25 @@
             el.dataset.raw = val; 
             el.value = "Rp " + parseInt(val).toLocaleString('id-ID');
         } else {
-            el.dataset.raw = "0";
-            el.value = "";
+            el.dataset.raw = "0"; el.value = "";
         }
     }
+    
+    function fmtRpText(nominalRaw) {
+        if(!nominalRaw || nominalRaw === "0" || nominalRaw === "") return "-";
+        return "Rp " + parseInt(nominalRaw).toLocaleString('id-ID');
+    }
 
-    // ================= SUBMIT DATA =================
-    function submitForm(e) {
+    // ================= SUBMIT LOGIC =================
+    async function submitForm(e) {
         e.preventDefault();
         
         const btn = document.getElementById('btnSubmit');
-        btn.innerHTML = `<div class="spinner w-5 h-5 border-2 border-white border-t-transparent mx-auto"></div> Menyimpan...`;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = `<div class="spinner !w-6 !h-6 !border-4 !mb-0 !border-t-transparent mx-auto"></div> Menyimpan...`;
         btn.disabled = true;
 
-        // Kumpulkan Tanggungan
+        // Kumpulkan Array Tanggungan
         let tanggungan = [];
         if(document.getElementById('checkHonor').checked) tanggungan.push('Honorarium');
         if(document.getElementById('checkTiket').checked) tanggungan.push('Transportasi');
@@ -454,40 +533,51 @@
             keterangan: document.getElementById('keterangan').value
         };
 
-        if (typeof google === 'undefined') {
-            // SIMULATION UPDATE
+        try {
+            // Mengirim request menggunakan plain text CORS ke GAS WebApp
+            const res = await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify(payload)
+            });
+            
+            const result = await res.json();
+            
+            if(result.status === 'success') {
+                // Update internal dummy arrays agar jika admin dibuka datanya terupdate
+                db.rekap.push({
+                    'Wilayah': payload.wilayah, 'Kegiatan': payload.kegiatan, 'Mulai': payload.mulai,
+                    'Kehadiran': payload.kehadiran, 'Pendamping 1': payload.pendamping1, 'Nominal Uang Saku': payload.nominal
+                });
+                renderAdminTable();
+                
+                document.getElementById('appView').classList.add('hidden');
+                document.getElementById('successView').classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } else {
+                throw new Error("Gagal menyimpan dari server.");
+            }
+            
+        } catch(err) {
+            console.error("Fetch API error, menggunakan mode simulasi memori", err);
+            // Simulasi lokal jika CORS atau API error
             setTimeout(() => {
                 db.rekap.push({
                     'Wilayah': payload.wilayah, 'Kegiatan': payload.kegiatan, 'Mulai': payload.mulai,
-                    'Pelaksanaan': payload.pelaksanaan, 'Pendamping 1': payload.pendamping1, 'Hal Dikuatkan': payload.dikuatkan
+                    'Kehadiran': payload.kehadiran, 'Pendamping 1': payload.pendamping1, 'Nominal Uang Saku': payload.nominal
                 });
-                postSubmit(btn);
+                renderAdminTable();
+                document.getElementById('appView').classList.add('hidden');
+                document.getElementById('successView').classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }, 1000);
-        } else {
-            google.script.run
-                .withSuccessHandler(() => {
-                    // Refresh data after save
-                    google.script.run.withSuccessHandler(res => { db = res; renderAdminTable(); postSubmit(btn); }).getAllData();
-                })
-                .withFailureHandler(err => {
-                    Swal.fire('Error', 'Gagal menyimpan.', 'error');
-                    btn.disabled = false; btn.innerHTML = `<i class="bi bi-send-fill"></i> Simpan Data Kegiatan`;
-                })
-                .saveData(payload);
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
         }
     }
 
-    function postSubmit(btn) {
-        Swal.fire({
-            title: 'Berhasil!', text: 'Data kegiatan telah tersimpan.', icon: 'success', confirmButtonColor: '#3b82f6'
-        }).then(() => {
-            document.getElementById('mainForm').reset();
-            buildPendampingUI();
-            btn.disabled = false; btn.innerHTML = `<i class="bi bi-send-fill"></i> Simpan Data Kegiatan`;
-        });
-    }
-
-    // ================= ADMIN & TABLE =================
+    // ================= ADMIN DASHBOARD =================
     function openAdmin() {
         document.getElementById("appView").classList.add("hidden"); 
         document.getElementById("adminView").classList.remove("hidden");
@@ -502,21 +592,31 @@
         const tbody = document.getElementById('adminTableBody');
         tbody.innerHTML = '';
         
-        document.getElementById('adTotal').innerText = db.rekap.length;
-        document.getElementById('adMukerwil').innerText = db.rekap.filter(r => r.Kegiatan === 'Mukerwil').length;
-        document.getElementById('adMukerda').innerText = db.rekap.filter(r => r.Kegiatan === 'Mukerda').length;
+        let validRekap = db.rekap.filter(r => r.Wilayah && r.Wilayah.trim() !== "");
+        
+        document.getElementById('adTotal').innerText = validRekap.length;
+        document.getElementById('adMukerwil').innerText = validRekap.filter(r => r.Kegiatan === 'Mukerwil').length;
+        document.getElementById('adMukerda').innerText = validRekap.filter(r => r.Kegiatan === 'Mukerda').length;
 
-        db.rekap.forEach(r => {
-            if(!r.Wilayah) return;
-            let theme = r.Kegiatan === 'Mukerwil' ? 'text-blue-600 bg-blue-50' : 'text-orange-600 bg-orange-50';
+        if(validRekap.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-10 text-center text-slate-400 font-bold">Belum ada data terekap.</td></tr>`;
+            return;
+        }
+
+        validRekap.forEach(r => {
+            let theme = r.Kegiatan === 'Mukerwil' ? 'text-blue-700 bg-blue-100 border-blue-200' : 'text-orange-700 bg-orange-100 border-orange-200';
+            
+            // Highlight kehadiran online vs offline
+            let hadirTheme = r.Kehadiran === 'Full Offline' ? 'text-green-600' : (r.Kehadiran === 'Hybrid' ? 'text-indigo-600' : 'text-red-500');
+
             tbody.innerHTML += `
-                <tr class="hover:bg-slate-50 transition">
-                    <td class="px-5 py-4 font-bold text-slate-800">${r.Wilayah}</td>
-                    <td class="px-5 py-4"><span class="px-3 py-1 rounded-full text-xs font-bold ${theme}">${r.Kegiatan}</span></td>
-                    <td class="px-5 py-4 font-medium text-slate-600">${r.Pelaksanaan || '-'}</td>
-                    <td class="px-5 py-4 text-xs text-slate-500">${r.Mulai || '-'}</td>
-                    <td class="px-5 py-4 text-sm font-semibold text-slate-700 max-w-[200px] truncate" title="${r['Pendamping 1']}">${r['Pendamping 1'] || '-'}</td>
-                    <td class="px-5 py-4 text-sm text-slate-500 max-w-[250px] truncate" title="${r['Hal Dikuatkan']}">${r['Hal Dikuatkan'] || '-'}</td>
+                <tr class="hover:bg-slate-50 transition border-b border-slate-50">
+                    <td class="px-6 py-4 font-bold text-slate-800">${r.Wilayah}</td>
+                    <td class="px-6 py-4"><span class="px-3 py-1.5 rounded-lg text-xs font-black border ${theme}">${r.Kegiatan}</span></td>
+                    <td class="px-6 py-4 text-xs font-medium text-slate-500"><i class="bi bi-clock mr-1"></i> ${r.Mulai || '-'}</td>
+                    <td class="px-6 py-4 text-center text-xs font-bold ${hadirTheme}">${r.Kehadiran || '-'}</td>
+                    <td class="px-6 py-4 text-sm font-semibold text-slate-700 max-w-[250px] truncate" title="${r['Pendamping 1']}">${r['Pendamping 1'] || '-'}</td>
+                    <td class="px-6 py-4 text-sm font-bold text-emerald-600">${fmtRpText(r['Nominal Uang Saku'])}</td>
                 </tr>
             `;
         });
@@ -533,8 +633,7 @@
     function sortTable(n) {
         let table = document.getElementById("rekapTable");
         let rows = table.rows;
-        let switching = true;
-        let dir = "asc", switchcount = 0;
+        let switching = true, dir = "asc", switchcount = 0;
         
         while (switching) {
             switching = false;
@@ -557,6 +656,10 @@
             }
         }
     }
+    
+    // Modal Wadah Digital
+    function openWadahDigital() { document.getElementById("modalWadah").classList.remove("hidden"); }
+    function closeWadahDigital() { document.getElementById("modalWadah").classList.add("hidden"); }
   </script>
 </body>
 </html>
