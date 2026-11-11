@@ -1,11 +1,21 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SIMUKER - Wahdah Islamiyah</title>
   
-  <meta property="og:image" content="./logo_wi.png">
+  <!-- OPEN GRAPH META TAGS UNTUK WHATSAPP PREVIEW -->
+  <title>SIMUKER - Wahdah Islamiyah</title>
+  <meta name="description" content="Sistem Manajemen Mukerwil dan Mukerda DPW DPD Wahdah Islamiyah">
+  <meta property="og:title" content="SIMUKER - Wahdah Islamiyah">
+  <meta property="og:description" content="Sistem Manajemen Mukerwil dan Mukerda DPW DPD Wahdah Islamiyah">
+  <meta property="og:type" content="website">
+  <!-- GANTI URL DI BAWAH INI DENGAN URL LENGKAP TEMPAT ANDA HOSTING WEB (contoh: https://username.github.io/repo/logo_wi.png) -->
+  <meta property="og:image" content="https://domain-anda.com/logo_wi.png">
+  <meta property="og:image:width" content="300">
+  <meta property="og:image:height" content="300">
+  
   <link rel="icon" type="image/png" href="./logo_wi.png">
   
   <script src="https://cdn.tailwindcss.com"></script>
@@ -397,10 +407,28 @@
         jadwalMulai.min = todayISO;
         jadwalSelesai.min = todayISO;
         
+        // Peringatan langsung jika tanggal mulai keliru
         jadwalMulai.addEventListener('change', function() {
+            if (this.value && this.value < todayISO) {
+                Swal.fire({ toast: true, position: 'top', icon: 'error', title: 'Keliru: Tanggal mulai tidak boleh berlalu dari hari ini.', showConfirmButton: false, timer: 3500 });
+                this.value = '';
+                jadwalSelesai.min = todayISO;
+                return;
+            }
+            
             jadwalSelesai.min = this.value;
+            
             if(jadwalSelesai.value && jadwalSelesai.value < this.value) {
-                jadwalSelesai.value = this.value;
+                Swal.fire({ toast: true, position: 'top', icon: 'error', title: 'Keliru: Tanggal selesai tidak boleh lebih cepat dari tanggal mulai.', showConfirmButton: false, timer: 3500 });
+                jadwalSelesai.value = ''; // Reset yang keliru
+            }
+        });
+
+        // Peringatan langsung jika tanggal selesai keliru
+        jadwalSelesai.addEventListener('change', function() {
+            if (jadwalMulai.value && this.value < jadwalMulai.value) {
+                Swal.fire({ toast: true, position: 'top', icon: 'error', title: 'Keliru: Tanggal selesai tidak boleh lebih cepat dari tanggal mulai.', showConfirmButton: false, timer: 3500 });
+                this.value = ''; // Reset yang keliru
             }
         });
     }
@@ -541,8 +569,8 @@
     // ================= AUTOFILL LOGIC =================
     function convertToDatetimeLocal(dateStr) {
         if(!dateStr) return "";
-        let d = new Date(dateStr.replace(' ', 'T'));
-        if(isNaN(d)) return "";
+        let d = new Date(String(dateStr).trim().replace(' ', 'T'));
+        if(isNaN(d.getTime())) return "";
         d.setMinutes(d.getMinutes() - d.getTimezoneOffset());
         return d.toISOString().slice(0,16);
     }
@@ -799,15 +827,18 @@
 
     function formatWADate(mulaiStr, selesaiStr) {
         try {
-            const d1 = new Date(mulaiStr.replace(' ', 'T'));
+            const d1 = new Date(String(mulaiStr).trim().replace(' ', 'T'));
+            if(isNaN(d1.getTime())) return mulaiStr;
             const options = { year: 'numeric', month: 'long', day: 'numeric' };
             const dateText = d1.toLocaleDateString('id-ID', options);
             
             let days = 1;
             if (selesaiStr) {
-                const d2 = new Date(selesaiStr.replace(' ', 'T'));
-                const diffTime = Math.abs(d2 - d1);
-                days = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
+                const d2 = new Date(String(selesaiStr).trim().replace(' ', 'T'));
+                if(!isNaN(d2.getTime())) {
+                    const diffTime = Math.abs(d2 - d1);
+                    days = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
+                }
             }
             return `${dateText} (${days} Hari)`;
         } catch (e) {
@@ -848,16 +879,22 @@
     function parseDateToLongText(dateStr, endStr) {
         if(!dateStr) return "-";
         try {
-            const d1 = new Date(dateStr.replace(' ', 'T'));
+            const safeDateStr = String(dateStr).trim().replace(' ', 'T');
+            const d1 = new Date(safeDateStr);
+            if(isNaN(d1.getTime())) return dateStr;
+            
             const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
             const startText = d1.toLocaleDateString('id-ID', options).replace('pukul', '');
             
             let durasiHTML = "";
             if(endStr) {
-                const d2 = new Date(endStr.replace(' ', 'T'));
-                const diffTime = Math.abs(d2 - d1);
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
-                durasiHTML = `<span class="mt-1 inline-block bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded text-[10px] uppercase tracking-wider">Durasi: ${diffDays} Hari</span>`;
+                const safeEndStr = String(endStr).trim().replace(' ', 'T');
+                const d2 = new Date(safeEndStr);
+                if(!isNaN(d2.getTime())) {
+                    const diffTime = Math.abs(d2 - d1);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1;
+                    durasiHTML = `<span class="mt-1 inline-block bg-blue-100 text-blue-700 font-bold px-2 py-0.5 rounded text-[10px] uppercase tracking-wider">Durasi: ${diffDays} Hari</span>`;
+                }
             }
             return `${startText} ${durasiHTML}`;
         } catch(e) { return dateStr; }
