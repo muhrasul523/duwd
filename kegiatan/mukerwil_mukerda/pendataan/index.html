@@ -56,14 +56,20 @@
         width: 56px; height: 56px; border: 6px solid #e2e8f0; border-top-color: #3b82f6;
         border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px;
     }
+    .spinner-sm {
+        width: 24px; height: 24px; border: 3px solid rgba(255,255,255,0.3); border-top-color: white;
+        border-radius: 50%; animation: spin 1s linear infinite;
+    }
     @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-text-animate { animation: pulseText 1.5s infinite; }
+    @keyframes pulseText { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
   </style>
 </head>
 <body class="p-4 md:p-8 flex justify-center items-start pb-20 relative min-h-screen">
 
   <div id="loadingOverlay">
       <div class="spinner"></div>
-      <div class="text-center font-bold text-slate-700 text-xl tracking-tight">Menghubungkan ke Server...</div>
+      <div class="text-center font-bold text-slate-700 text-xl tracking-tight loading-text-animate">Mohon bersabar sejenak ...</div>
   </div>
 
   <!-- ================= APP VIEW (FORM) ================= -->
@@ -216,10 +222,16 @@
           <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
         </div>
         <h2 class="text-4xl font-extrabold mb-4 text-slate-800">Berhasil Disimpan!</h2>
-        <p class="text-lg text-slate-500 mb-10 font-medium">Data Mukerwil/Mukerda Anda telah terintegrasi.</p>
-        <button onclick="location.reload()" class="btn-premium px-8 py-4 font-bold rounded-2xl transition text-lg inline-flex items-center gap-2">
-            <i class="bi bi-arrow-left"></i> Kembali ke Form
-        </button>
+        <p class="text-lg text-slate-500 mb-8 font-medium">Data Mukerwil/Mukerda Anda telah terintegrasi.</p>
+        
+        <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+            <button onclick="location.reload()" class="btn-premium px-8 py-4 font-bold rounded-2xl transition text-lg inline-flex items-center justify-center gap-2 w-full sm:w-auto">
+                <i class="bi bi-arrow-left"></i> Kembali ke Form
+            </button>
+            <a id="btnKonfirmasiWA" href="#" target="_blank" class="bg-[#25D366] hover:bg-[#128C7E] text-white px-8 py-4 font-bold rounded-2xl transition shadow-lg shadow-green-500/30 text-lg inline-flex items-center justify-center gap-2 w-full sm:w-auto">
+                <i class="bi bi-whatsapp"></i> Konfirmasi via WA
+            </a>
+        </div>
       </div>
     </div>
   </div>
@@ -250,14 +262,34 @@
         </div>
       </div>
 
+      <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 p-6 rounded-2xl border border-emerald-200 relative overflow-hidden">
+        <i class="bi bi-check-circle absolute -bottom-4 -right-4 text-6xl text-emerald-200/50"></i>
+        <div class="text-emerald-600 text-xs font-bold uppercase tracking-widest mb-1">Pendamping Ditetapkan</div>
+        <div id="adDitetapkan" class="text-4xl font-black text-slate-800">0</div>
+      </div>
+      <div class="bg-gradient-to-br from-rose-50 to-rose-100 p-6 rounded-2xl border border-rose-200 relative overflow-hidden">
+        <i class="bi bi-clock-history absolute -bottom-4 -right-4 text-6xl text-rose-200/50"></i>
+        <div class="text-rose-600 text-xs font-bold uppercase tracking-widest mb-1">Belum Ditetapkan</div>
+        <div id="adBelumDitetapkan" class="text-4xl font-black text-slate-800">0</div>
+      </div>
+
       <!-- FILTER KEGIATAN & PELAKSANAAN -->
-      <div class="col-span-1 md:col-span-2 grid grid-cols-2 gap-4">
+      <div class="col-span-1 md:col-span-4 grid grid-cols-1 md:grid-cols-4 gap-4 mt-2">
           <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
              <label class="block text-xs font-bold text-slate-500 mb-2 uppercase">Filter Kegiatan</label>
              <select id="filterKegiatan" class="input-premium py-2 text-sm" onchange="renderAdminTable()">
                  <option value="All">Semua Kegiatan</option>
-                 <option value="Mukerwil">Mukerwil Saja (DPW)</option>
-                 <option value="Mukerda">Mukerda Saja (DPD)</option>
+                 <option value="Mukerwil">Mukerwil (DPW)</option>
+                 <option value="Mukerda">Mukerda (DPD)</option>
+             </select>
+          </div>
+          <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
+             <label class="block text-xs font-bold text-slate-500 mb-2 uppercase">Filter Pelaksanaan</label>
+             <select id="filterPelaksanaan" class="input-premium py-2 text-sm" onchange="renderAdminTable()">
+                 <option value="All">Semua Mode</option>
+                 <option value="Full Offline">Full Offline</option>
+                 <option value="Full Online">Full Online</option>
+                 <option value="Hybrid">Hybrid</option>
              </select>
           </div>
           <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
@@ -266,6 +298,14 @@
                  <option value="All">Semua Kehadiran</option>
                  <option value="Offline">Offline</option>
                  <option value="Online">Online</option>
+             </select>
+          </div>
+          <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
+             <label class="block text-xs font-bold text-slate-500 mb-2 uppercase">Status Penetapan</label>
+             <select id="filterPenetapan" class="input-premium py-2 text-sm" onchange="renderAdminTable()">
+                 <option value="All">Semua Status</option>
+                 <option value="Sudah">Sudah Ditetapkan</option>
+                 <option value="Belum">Belum Ditetapkan</option>
              </select>
           </div>
       </div>
@@ -283,16 +323,48 @@
       <table class="w-full text-left whitespace-nowrap" id="rekapTable">
         <thead class="bg-slate-50 text-slate-500 uppercase text-xs font-bold tracking-wider border-b border-slate-200">
           <tr>
-            <th class="px-5 py-4 cursor-pointer hover:text-blue-600" onclick="sortTable(0)">Wilayah <i class="bi bi-arrow-down-up ml-1 text-[10px]"></i></th>
-            <th class="px-5 py-4 cursor-pointer hover:text-blue-600" onclick="sortTable(1)">Info Kegiatan <i class="bi bi-arrow-down-up ml-1 text-[10px]"></i></th>
-            <th class="px-5 py-4 cursor-pointer hover:text-blue-600" onclick="sortTable(2)">Pelaksanaan & Waktu <i class="bi bi-arrow-down-up ml-1 text-[10px]"></i></th>
+            <th class="px-5 py-4 cursor-pointer hover:text-blue-600" onclick="sortTable(0)">No <i class="bi bi-arrow-down-up ml-1 text-[10px]"></i></th>
+            <th class="px-5 py-4 cursor-pointer hover:text-blue-600" onclick="sortTable(1)">DPW DPD <i class="bi bi-arrow-down-up ml-1 text-[10px]"></i></th>
+            <th class="px-5 py-4 cursor-pointer hover:text-blue-600" onclick="sortTable(2)">Info Kegiatan <i class="bi bi-arrow-down-up ml-1 text-[10px]"></i></th>
             <th class="px-5 py-4">Pendamping Diusulkan</th>
+            <th class="px-5 py-4">Pendamping Ditetapkan</th>
             <th class="px-5 py-4">Tanggungan Panitia</th>
-            <th class="px-5 py-4">Hal Dievaluasi / Dikuatkan</th>
+            <th class="px-5 py-4">Hal Dievaluasi & Keterangan</th>
+            <th class="px-5 py-4 text-center">Aksi</th>
           </tr>
         </thead>
         <tbody id="adminTableBody" class="divide-y divide-slate-100 text-sm"></tbody>
       </table>
+    </div>
+  </div>
+
+  <!-- ================= MODAL PENETAPAN PENDAMPING ================= -->
+  <div id="modalPenetapan" class="hidden fixed inset-0 z-[110] flex items-center justify-center bg-slate-900/60 backdrop-blur-sm animate-fade-in">
+    <div class="bg-white p-8 rounded-3xl max-w-md w-full mx-4 shadow-2xl relative border border-slate-100">
+      <button onclick="closePenetapan()" class="absolute top-4 right-4 text-slate-400 hover:text-red-500 font-bold text-xl"><i class="bi bi-x-circle-fill"></i></button>
+      <h3 class="font-extrabold text-xl text-slate-800 mb-1"><i class="bi bi-person-check-fill text-blue-500 mr-2"></i>Tetapkan Pendamping</h3>
+      <p id="penetapanWilayahText" class="text-sm font-bold text-slate-500 mb-6 uppercase tracking-wider text-blue-600"></p>
+      
+      <input type="hidden" id="penetapanWilayahId">
+      
+      <div class="space-y-4 mb-6">
+          <div>
+              <label class="block text-xs font-bold text-slate-500 mb-1">Pendamping Utama (1)</label>
+              <select id="setPendamping1" class="input-premium py-2 bg-slate-50"></select>
+          </div>
+          <div>
+              <label class="block text-xs font-bold text-slate-500 mb-1">Pendamping 2 (Opsional)</label>
+              <select id="setPendamping2" class="input-premium py-2 bg-slate-50"></select>
+          </div>
+          <div>
+              <label class="block text-xs font-bold text-slate-500 mb-1">Pendamping 3 (Opsional)</label>
+              <select id="setPendamping3" class="input-premium py-2 bg-slate-50"></select>
+          </div>
+      </div>
+      
+      <button onclick="simpanPenetapan()" id="btnSimpanPenetapan" class="w-full py-3.5 btn-premium font-bold rounded-xl flex items-center justify-center gap-2">
+          <i class="bi bi-save"></i> Simpan Penetapan
+      </button>
     </div>
   </div>
 
@@ -316,7 +388,7 @@
 
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbwOs_PQC97QQcEb65pAD5q8sScf_rbDgED00inFJ3x7iLilWFJCk_DQUcKknnxJBDI-KQ/exec";
-    let db = { pendamping: [], wilayah: [], rekap: [] };
+    let db = { pendamping: [], wilayah: [], rekap: [], penetapan: [] };
 
     window.onload = () => { loadData(); };
 
@@ -347,9 +419,10 @@
                         'Tanggungan': 'Honorarium, Tiket Pergi, Penginapan', 'Nominal Uang Saku': '1500000',
                         'Sumber P1': 'DPP', 'Pendamping 1': 'Ust. Dr. Muhammad Zaitun Rasmin, Lc., M.A. - Pemimpin Umum',
                         'Sumber P2': '', 'Pendamping 2': '', 'Sumber P3': '', 'Pendamping 3': '',
-                        'Hal Dikuatkan': 'Konsolidasi pengurus', 'Keterangan': ''
+                        'Hal Dikuatkan': 'Konsolidasi pengurus', 'Keterangan': 'Semoga lancar'
                     }
-                ]
+                ],
+                penetapan: []
             };
             setTimeout(() => { renderUI(); endLoading(); }, 500);
         }
@@ -589,7 +662,7 @@
         e.preventDefault();
         const btn = document.getElementById('btnSubmit');
         const originalText = btn.innerHTML;
-        btn.innerHTML = `<div class="spinner !w-6 !h-6 !border-4 !mb-0 !border-t-transparent mx-auto"></div> Menyimpan...`;
+        btn.innerHTML = `<span class="flex items-center justify-center gap-2"><div class="spinner-sm"></div> Menyimpan...</span>`;
         btn.disabled = true;
 
         let tanggungan = [];
@@ -628,6 +701,20 @@
     }
 
     function showSuccess(payload) {
+        // Build WA URL
+        const p1 = payload.pendamping1 ? extractName(payload.pendamping1) : "-";
+        const p2 = payload.pendamping2 ? extractName(payload.pendamping2) : "";
+        const p3 = payload.pendamping3 ? extractName(payload.pendamping3) : "";
+        
+        let wilayahStatus = payload.kegiatan === 'Mukerwil' ? 'DPW' : 'DPD';
+        let waText = `KONFIRMASI ${payload.kegiatan.toUpperCase()} ${wilayahStatus} ${payload.wilayah}\n`;
+        waText += `Tanggal : ${payload.mulai}\n`;
+        waText += `Usulan pendamping:\n1. ${p1}`;
+        if (p2) waText += `\n2. ${p2}`;
+        if (p3) waText += `\n3. ${p3}`;
+        
+        document.getElementById('btnKonfirmasiWA').href = `https://wa.me/6281277778448?text=${encodeURIComponent(waText)}`;
+
         // Update local memory
         const i = db.rekap.findIndex(r => r.Wilayah === payload.wilayah);
         const obj = { 'Wilayah': payload.wilayah, 'Kegiatan': payload.kegiatan, 'Mulai': payload.mulai, 'Selesai': payload.selesai, 'Model Pelaksanaan': payload.pelaksanaan, 'Model Kehadiran': payload.kehadiran, 'Tanggungan': payload.tanggungan, 'Nominal Uang Saku': payload.nominal, 'Pendamping 1': payload.pendamping1, 'Pendamping 2': payload.pendamping2, 'Pendamping 3': payload.pendamping3, 'Hal Dikuatkan': payload.dikuatkan };
@@ -666,6 +753,16 @@
         return fullName.split(' - ')[0]; // Ambil nama saja sebelum tanda "-"
     }
 
+    function populatePendampingDropdowns() {
+        let options = `<option value="">-- Kosongkan / Belum --</option>`;
+        db.pendamping.forEach(p => {
+            options += `<option value="${p['Nama Pendamping']}">${p['Nama Pendamping']}</option>`;
+        });
+        document.getElementById('setPendamping1').innerHTML = options;
+        document.getElementById('setPendamping2').innerHTML = options;
+        document.getElementById('setPendamping3').innerHTML = options;
+    }
+
     function renderAdminTable() {
         const tbody = document.getElementById('adminTableBody');
         tbody.innerHTML = '';
@@ -678,16 +775,41 @@
         // Apply Filters
         const fKegiatan = document.getElementById('filterKegiatan').value;
         const fKehadiran = document.getElementById('filterKehadiran').value;
+        const fPelaksanaan = document.getElementById('filterPelaksanaan').value;
+        const fPenetapan = document.getElementById('filterPenetapan').value;
         
         if(fKegiatan !== 'All') validRekap = validRekap.filter(r => r.Kegiatan === fKegiatan);
         if(fKehadiran !== 'All') validRekap = validRekap.filter(r => r['Model Kehadiran'] === fKehadiran);
+        if(fPelaksanaan !== 'All') validRekap = validRekap.filter(r => r['Model Pelaksanaan'] === fPelaksanaan);
+        
+        // Populate Dropdowns once for the modal
+        populatePendampingDropdowns();
 
-        if(validRekap.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="6" class="px-6 py-10 text-center text-slate-400 font-bold">Tidak ada data sesuai filter.</td></tr>`; return;
+        // Calculate penetapan stats and filter
+        let countDitetapkan = 0;
+        let countBelum = 0;
+        
+        let processedRekap = validRekap.map(r => {
+            const pen = db.penetapan ? db.penetapan.find(p => p.Wilayah === r.Wilayah) : null;
+            r._ditetapkan = pen && (pen['Pendamping 1'] || pen['Pendamping 2'] || pen['Pendamping 3']);
+            r._penData = pen;
+            if(r._ditetapkan) countDitetapkan++; else countBelum++;
+            return r;
+        });
+
+        document.getElementById('adDitetapkan').innerText = countDitetapkan;
+        document.getElementById('adBelumDitetapkan').innerText = countBelum;
+
+        if(fPenetapan === 'Sudah') processedRekap = processedRekap.filter(r => r._ditetapkan);
+        if(fPenetapan === 'Belum') processedRekap = processedRekap.filter(r => !r._ditetapkan);
+
+        if(processedRekap.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="8" class="px-6 py-10 text-center text-slate-400 font-bold">Tidak ada data sesuai filter.</td></tr>`; return;
         }
 
-        validRekap.forEach(r => {
-            let theme = r.Kegiatan === 'Mukerwil' ? 'text-blue-700 bg-blue-100' : 'text-orange-700 bg-orange-100';
+        processedRekap.forEach((r, index) => {
+            let rowColor = index % 2 === 0 ? 'bg-white' : 'bg-slate-50';
+            let statusWilayah = r.Kegiatan === 'Mukerwil' ? 'DPW' : 'DPD';
             
             // Format Tanggunggan
             let tanggunganHTML = "";
@@ -704,29 +826,117 @@
                 });
             } else { tanggunganHTML = "-"; }
 
-            // Format Pendamping (Nama Saja, 3 baris)
+            // Format Pendamping Diusulkan + Kehadiran
             let p1 = extractName(r['Pendamping 1']);
             let p2 = r['Pendamping 2'] ? `<br>2. ${extractName(r['Pendamping 2'])}` : "";
             let p3 = r['Pendamping 3'] ? `<br>3. ${extractName(r['Pendamping 3'])}` : "";
             let listPendamping = `1. ${p1}${p2}${p3}`;
+            let kehadiranColor = r['Model Kehadiran'] === 'Offline' ? 'text-green-600' : 'text-blue-600';
+            let pendampingUsulanLengkap = `
+                <div class="mb-1">${listPendamping}</div>
+                <div class="text-[10px] font-bold uppercase ${kehadiranColor} border border-current px-2 py-0.5 rounded inline-block">Minta: ${r['Model Kehadiran'] || '-'}</div>
+            `;
+            
+            // Format Pendamping Ditetapkan
+            let listDitetapkan = "-";
+            if(r._ditetapkan) {
+                let dp1 = r._penData['Pendamping 1'] ? `1. <b>${r._penData['Pendamping 1']}</b>` : "";
+                let dp2 = r._penData['Pendamping 2'] ? `<br>2. <b>${r._penData['Pendamping 2']}</b>` : "";
+                let dp3 = r._penData['Pendamping 3'] ? `<br>3. <b>${r._penData['Pendamping 3']}</b>` : "";
+                listDitetapkan = [dp1, dp2, dp3].filter(Boolean).join('');
+                if(listDitetapkan === "") listDitetapkan = "-";
+            }
+            
+            // Format Evaluasi & Keterangan
+            let halDievaluasi = r['Hal Dikuatkan'] ? `<div>"${r['Hal Dikuatkan']}"</div>` : "-";
+            if (r['Keterangan']) {
+                halDievaluasi += `<div class="mt-2 text-xs font-semibold text-blue-600 border-t border-slate-200 pt-1">Keterangan: ${r['Keterangan']}</div>`;
+            }
 
             tbody.innerHTML += `
-                <tr class="hover:bg-slate-50 transition border-b border-slate-100">
-                    <td class="px-5 py-4 font-bold text-slate-800">${r.Wilayah}</td>
-                    <td class="px-5 py-4">
-                        <span class="px-3 py-1 rounded-lg text-xs font-black ${theme} block w-max mb-1">${r.Kegiatan}</span>
-                        <div class="text-xs text-slate-500 font-semibold mt-1">Kehadiran: <span class="${r['Model Kehadiran'] === 'Offline'?'text-green-600':'text-blue-600'} font-bold">${r['Model Kehadiran'] || '-'}</span></div>
-                    </td>
+                <tr class="hover:bg-blue-50/50 transition border-b border-slate-100 ${rowColor}">
+                    <td class="px-5 py-4 font-bold text-slate-500 text-center">${index + 1}</td>
+                    <td class="px-5 py-4 font-bold text-slate-800">${statusWilayah} ${r.Wilayah}</td>
                     <td class="px-5 py-4 text-xs font-medium text-slate-600 leading-relaxed max-w-[200px] whitespace-normal">
-                        <div class="font-bold text-slate-800 mb-1">${r['Model Pelaksanaan'] || '-'}</div>
+                        <span class="px-2 py-1 rounded text-[10px] font-black ${r.Kegiatan === 'Mukerwil' ? 'text-blue-700 bg-blue-100' : 'text-orange-700 bg-orange-100'} block w-max mb-1 uppercase tracking-widest">${r.Kegiatan}</span>
+                        <div class="font-bold text-slate-800 mb-1 mt-1">${r['Model Pelaksanaan'] || '-'}</div>
                         ${parseDateToLongText(r['Mulai'], r['Selesai'])}
                     </td>
-                    <td class="px-5 py-4 text-xs font-bold text-slate-700 leading-relaxed">${listPendamping}</td>
+                    <td class="px-5 py-4 text-xs text-slate-700 leading-relaxed">${pendampingUsulanLengkap}</td>
+                    <td class="px-5 py-4 text-xs text-slate-800 leading-relaxed">${listDitetapkan}</td>
                     <td class="px-5 py-4 text-xs">${tanggunganHTML}</td>
-                    <td class="px-5 py-4 text-xs text-slate-600 max-w-[250px] whitespace-normal italic">"${r['Hal Dikuatkan'] || '-'}"</td>
+                    <td class="px-5 py-4 text-xs text-slate-600 max-w-[250px] whitespace-normal italic">${halDievaluasi}</td>
+                    <td class="px-5 py-4 text-center">
+                        <button onclick="openPenetapan('${r.Wilayah}')" class="bg-blue-100 hover:bg-blue-600 text-blue-600 hover:text-white transition w-10 h-10 rounded-full flex items-center justify-center shadow-sm text-lg" title="Tetapkan Pendamping">🎯</button>
+                    </td>
                 </tr>
             `;
         });
+    }
+
+    function openPenetapan(wilayah) {
+        document.getElementById('penetapanWilayahText').innerText = wilayah;
+        document.getElementById('penetapanWilayahId').value = wilayah;
+        
+        // Set existing if any
+        let p = db.penetapan ? db.penetapan.find(x => x.Wilayah === wilayah) : null;
+        document.getElementById('setPendamping1').value = p && p['Pendamping 1'] ? p['Pendamping 1'] : "";
+        document.getElementById('setPendamping2').value = p && p['Pendamping 2'] ? p['Pendamping 2'] : "";
+        document.getElementById('setPendamping3').value = p && p['Pendamping 3'] ? p['Pendamping 3'] : "";
+        
+        document.getElementById('modalPenetapan').classList.remove('hidden');
+    }
+
+    function closePenetapan() {
+        document.getElementById('modalPenetapan').classList.add('hidden');
+    }
+
+    async function simpanPenetapan() {
+        const wilayah = document.getElementById('penetapanWilayahId').value;
+        const p1 = document.getElementById('setPendamping1').value;
+        const p2 = document.getElementById('setPendamping2').value;
+        const p3 = document.getElementById('setPendamping3').value;
+        
+        const btn = document.getElementById('btnSimpanPenetapan');
+        const ogText = btn.innerHTML;
+        btn.innerHTML = `<span class="flex items-center justify-center gap-2"><div class="spinner-sm border-blue-500 border-t-white"></div> Menyimpan...</span>`;
+        btn.disabled = true;
+        
+        const payload = {
+            action: 'set_pendamping',
+            wilayah: wilayah,
+            penetapan1: p1,
+            penetapan2: p2,
+            penetapan3: p3
+        };
+
+        try {
+            const res = await fetch(API_URL, { method: "POST", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(payload) });
+            const result = await res.json();
+            if(result.status === 'success') {
+                if(!db.penetapan) db.penetapan = [];
+                const idx = db.penetapan.findIndex(x => x.Wilayah === wilayah);
+                const obj = { 'Wilayah': wilayah, 'Pendamping 1': p1, 'Pendamping 2': p2, 'Pendamping 3': p3 };
+                if (idx > -1) db.penetapan[idx] = obj; else db.penetapan.push(obj);
+                
+                renderAdminTable();
+                closePenetapan();
+                Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Pendamping Ditetapkan!', showConfirmButton: false, timer: 2000 });
+            }
+        } catch(e) {
+            // Simulasi lokal
+            if(!db.penetapan) db.penetapan = [];
+            const idx = db.penetapan.findIndex(x => x.Wilayah === wilayah);
+            const obj = { 'Wilayah': wilayah, 'Pendamping 1': p1, 'Pendamping 2': p2, 'Pendamping 3': p3 };
+            if (idx > -1) db.penetapan[idx] = obj; else db.penetapan.push(obj);
+            
+            renderAdminTable();
+            closePenetapan();
+            Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: '(Simulasi) Pendamping Ditetapkan!', showConfirmButton: false, timer: 2000 });
+        } finally {
+            btn.innerHTML = ogText;
+            btn.disabled = false;
+        }
     }
 
     function filterSearchTable() {
@@ -740,9 +950,14 @@
         while (switching) {
             switching = false;
             for (let i = 1; i < (rows.length - 1); i++) {
-                let shouldSwitch = false; let x = rows[i].getElementsByTagName("TD")[n]; let y = rows[i + 1].getElementsByTagName("TD")[n];
-                if (dir == "asc") { if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) { shouldSwitch = true; break; } } 
-                else if (dir == "desc") { if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) { shouldSwitch = true; break; } }
+                let shouldSwitch = false; 
+                let x = rows[i].getElementsByTagName("TD")[n]; 
+                let y = rows[i + 1].getElementsByTagName("TD")[n];
+                if (dir == "asc") { 
+                    if (x.innerText.toLowerCase() > y.innerText.toLowerCase()) { shouldSwitch = true; break; } 
+                } else if (dir == "desc") { 
+                    if (x.innerText.toLowerCase() < y.innerText.toLowerCase()) { shouldSwitch = true; break; } 
+                }
             }
             if (shouldSwitch) { rows[i].parentNode.insertBefore(rows[i + 1], rows[i]); switching = true; switchcount++; } 
             else { if (switchcount == 0 && dir == "asc") { dir = "desc"; switching = true; } }
