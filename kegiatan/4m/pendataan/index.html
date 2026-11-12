@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -6,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
   <!-- OPEN GRAPH META TAGS UNTUK WHATSAPP PREVIEW -->
-  <title>SIMUKER - Wahdah Islamiyah</title>
-  <meta name="description" content="Sistem Manajemen Mukerwil dan Mukerda DPW DPD Wahdah Islamiyah">
-  <meta property="og:title" content="SIMUKER - Wahdah Islamiyah">
-  <meta property="og:description" content="Sistem Manajemen Mukerwil dan Mukerda DPW DPD Wahdah Islamiyah">
+  <title>PELAYANAN 4M - Wahdah Islamiyah</title>
+  <meta name="description" content="Sistem Manajemen Muswil, Musda, Mukerwil dan Mukerda DPW DPD Wahdah Islamiyah">
+  <meta property="og:title" content="DUWD - Wahdah Islamiyah">
+  <meta property="og:description" content="Sistem Manajemen Muswil, Musda, Mukerwil dan Mukerda DPW DPD Wahdah Islamiyah">
   <meta property="og:type" content="website">
   <!-- GANTI URL DI BAWAH INI DENGAN URL LENGKAP TEMPAT ANDA HOSTING WEB (contoh: https://username.github.io/repo/logo_wi.png) -->
   <meta property="og:image" content="https://domain-anda.com/logo_wi.png">
@@ -93,9 +92,9 @@
           <img src="./logo_wi.png" alt="Logo Wahdah" class="relative w-28 h-28 mb-5 drop-shadow-xl object-contain transform group-hover:scale-110 transition duration-300">
         </div>
         <h1 class="text-3xl md:text-5xl font-extrabold tracking-tight mb-3 text-slate-800 relative z-10">
-            SIMUKER
+            PELAYANAN 4M
         </h1>
-        <p class="text-slate-500 font-bold md:text-lg relative z-10">Sistem Manajemen Mukerwil dan Mukerda</p>
+        <p class="text-slate-500 font-bold md:text-lg relative z-10">Muswil - Musda - Mukerwil - Mukerda</p>
         <p class="text-blue-500 font-semibold md:text-md relative z-10 uppercase tracking-widest mt-1">DPW DPD Wahdah Islamiyah</p>
       </div>
       
@@ -104,17 +103,29 @@
         <!-- 1. PILIH KEGIATAN -->
         <div>
             <label class="block text-xs font-bold text-slate-500 mb-3 uppercase tracking-widest ml-1">Jenis Kegiatan</label>
-            <div class="grid grid-cols-2 gap-4">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <label class="cursor-pointer relative">
-                    <input type="radio" name="kegiatan" value="Mukerwil" class="modern-radio sr-only" onchange="setupWilayahDropdown('Mukerwil')" required>
-                    <div class="p-5 rounded-2xl border-2 border-slate-200 text-center transition flex flex-col items-center justify-center gap-2 text-slate-500 bg-white hover:bg-slate-50">
-                        <i class="bi bi-building text-2xl"></i> <span class="font-bold">MUKERWIL</span>
+                    <input type="radio" name="kegiatan" value="Muswil" class="modern-radio sr-only" onchange="setupWilayahDropdown('Muswil')" required>
+                    <div class="p-4 rounded-2xl border-2 border-slate-200 text-center transition flex flex-col items-center justify-center gap-2 text-slate-500 bg-white hover:bg-slate-50">
+                        <i class="bi bi-building text-xl"></i> <span class="font-bold text-sm">MUSWIL</span>
+                    </div>
+                </label>
+                <label class="cursor-pointer relative">
+                    <input type="radio" name="kegiatan" value="Musda" class="modern-radio sr-only" onchange="setupWilayahDropdown('Musda')">
+                    <div class="p-4 rounded-2xl border-2 border-slate-200 text-center transition flex flex-col items-center justify-center gap-2 text-slate-500 bg-white hover:bg-slate-50">
+                        <i class="bi bi-houses text-xl"></i> <span class="font-bold text-sm">MUSDA</span>
+                    </div>
+                </label>
+                <label class="cursor-pointer relative">
+                    <input type="radio" name="kegiatan" value="Mukerwil" class="modern-radio sr-only" onchange="setupWilayahDropdown('Mukerwil')">
+                    <div class="p-4 rounded-2xl border-2 border-slate-200 text-center transition flex flex-col items-center justify-center gap-2 text-slate-500 bg-white hover:bg-slate-50">
+                        <i class="bi bi-building-check text-xl"></i> <span class="font-bold text-sm">MUKERWIL</span>
                     </div>
                 </label>
                 <label class="cursor-pointer relative">
                     <input type="radio" name="kegiatan" value="Mukerda" class="modern-radio sr-only" onchange="setupWilayahDropdown('Mukerda')">
-                    <div class="p-5 rounded-2xl border-2 border-slate-200 text-center transition flex flex-col items-center justify-center gap-2 text-slate-500 bg-white hover:bg-slate-50">
-                        <i class="bi bi-houses text-2xl"></i> <span class="font-bold">MUKERDA</span>
+                    <div class="p-4 rounded-2xl border-2 border-slate-200 text-center transition flex flex-col items-center justify-center gap-2 text-slate-500 bg-white hover:bg-slate-50">
+                        <i class="bi bi-house-check text-xl"></i> <span class="font-bold text-sm">MUKERDA</span>
                     </div>
                 </label>
             </div>
@@ -233,7 +244,7 @@
           <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
         </div>
         <h2 class="text-4xl font-extrabold mb-4 text-slate-800">Berhasil Disimpan!</h2>
-        <p class="text-lg text-slate-500 mb-8 font-medium">Data Mukerwil/Mukerda Anda telah terintegrasi.</p>
+        <p class="text-lg text-slate-500 mb-8 font-medium">Data Kegiatan Anda telah terintegrasi dengan sistem.</p>
         
         <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
             <a id="btnKonfirmasiWA" href="#" target="_blank" class="bg-[#25D366] hover:bg-[#128C7E] text-white px-8 py-4 font-bold rounded-2xl transition shadow-lg shadow-green-500/30 text-lg inline-flex items-center justify-center gap-2 w-full sm:w-auto">
@@ -262,11 +273,13 @@
         <div id="adTotal" class="text-4xl font-black text-slate-800">0</div>
       </div>
       
-      <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 p-6 rounded-2xl border border-indigo-200 relative overflow-hidden flex flex-col justify-center">
-        <div class="flex justify-between items-center w-full">
-            <div><div class="text-indigo-600 text-xs font-bold uppercase mb-1">Mukerwil</div><div id="adMukerwil" class="text-2xl font-black text-slate-800">0</div></div>
-            <div class="h-10 border-r-2 border-indigo-200"></div>
-            <div><div class="text-indigo-600 text-xs font-bold uppercase mb-1">Mukerda</div><div id="adMukerda" class="text-2xl font-black text-slate-800">0</div></div>
+      <!-- Card Statistik Kegiatan dibagi 4 M -->
+      <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 p-4 rounded-2xl border border-indigo-200 relative overflow-hidden flex flex-col justify-center">
+        <div class="grid grid-cols-4 gap-2 text-center w-full">
+            <div><div class="text-indigo-600 text-[10px] font-bold uppercase mb-1">Muswil</div><div id="adMuswil" class="text-xl font-black text-slate-800">0</div></div>
+            <div><div class="text-indigo-600 text-[10px] font-bold uppercase mb-1">Musda</div><div id="adMusda" class="text-xl font-black text-slate-800">0</div></div>
+            <div><div class="text-indigo-600 text-[10px] font-bold uppercase mb-1">Mukerwil</div><div id="adMukerwil" class="text-xl font-black text-slate-800">0</div></div>
+            <div><div class="text-indigo-600 text-[10px] font-bold uppercase mb-1">Mukerda</div><div id="adMukerda" class="text-xl font-black text-slate-800">0</div></div>
         </div>
       </div>
 
@@ -287,6 +300,8 @@
              <label class="block text-xs font-bold text-slate-500 mb-2 uppercase">Filter Kegiatan</label>
              <select id="filterKegiatan" class="input-premium py-2 text-sm" onchange="renderAdminTable()">
                  <option value="All">Semua Kegiatan</option>
+                 <option value="Muswil">Muswil (DPW)</option>
+                 <option value="Musda">Musda (DPD)</option>
                  <option value="Mukerwil">Mukerwil (DPW)</option>
                  <option value="Mukerda">Mukerda (DPD)</option>
              </select>
@@ -407,7 +422,6 @@
         jadwalMulai.min = todayISO;
         jadwalSelesai.min = todayISO;
         
-        // Peringatan langsung jika tanggal mulai keliru
         jadwalMulai.addEventListener('change', function() {
             if (this.value && this.value < todayISO) {
                 Swal.fire({ toast: true, position: 'top', icon: 'error', title: 'Keliru: Tanggal mulai tidak boleh berlalu dari hari ini.', showConfirmButton: false, timer: 3500 });
@@ -420,15 +434,14 @@
             
             if(jadwalSelesai.value && jadwalSelesai.value < this.value) {
                 Swal.fire({ toast: true, position: 'top', icon: 'error', title: 'Keliru: Tanggal selesai tidak boleh lebih cepat dari tanggal mulai.', showConfirmButton: false, timer: 3500 });
-                jadwalSelesai.value = ''; // Reset yang keliru
+                jadwalSelesai.value = ''; 
             }
         });
 
-        // Peringatan langsung jika tanggal selesai keliru
         jadwalSelesai.addEventListener('change', function() {
             if (jadwalMulai.value && this.value < jadwalMulai.value) {
                 Swal.fire({ toast: true, position: 'top', icon: 'error', title: 'Keliru: Tanggal selesai tidak boleh lebih cepat dari tanggal mulai.', showConfirmButton: false, timer: 3500 });
-                this.value = ''; // Reset yang keliru
+                this.value = ''; 
             }
         });
     }
@@ -489,13 +502,17 @@
         
         searchInput.disabled = false;
         searchInput.value = '';
-        searchInput.placeholder = `Ketik nama ${kegiatan === 'Mukerwil' ? 'DPW Provinsi' : 'DPD Kabupaten/Kota'}...`;
+        
+        // Cek secara dinamis, Muswil/Mukerwil = DPW, Musda/Mukerda = DPD
+        const isDPW = (kegiatan === 'Mukerwil' || kegiatan === 'Muswil');
+        const filterStatus = isDPW ? 'DPW' : 'DPD';
+        
+        searchInput.placeholder = `Ketik nama ${isDPW ? 'DPW Provinsi' : 'DPD Kabupaten/Kota'}...`;
         document.getElementById('wilayahSelect').value = '';
         
         // Hide lanjutan
         document.getElementById('formLanjutan').classList.add('hidden');
 
-        const filterStatus = kegiatan === 'Mukerwil' ? 'DPW' : 'DPD';
         const filteredWilayah = db.wilayah.filter(w => w.Status && w.Status.toString().trim().toUpperCase() === filterStatus);
         
         searchInput.onfocus = () => {
@@ -520,7 +537,7 @@
                         document.getElementById('wilayahSelect').value = w['Nama Wilayah'];
                         document.getElementById('kodeWilayahSelect').value = w['Kode'];
                         dropdown.classList.add('hidden');
-                        checkAutofill(w['Kode'], w['Nama Wilayah']);
+                        checkAutofill(w['Kode'], w['Nama Wilayah'], kegiatan);
                     };
                     dropdown.appendChild(div);
                 });
@@ -535,10 +552,10 @@
             }, 200);
         });
 
-        // Update blok pendamping (DPP Only if Mukerwil)
+        // Update blok pendamping
         for(let i=1; i<=3; i++) {
             const radioBox = document.getElementById(`radioSumberP${i}`);
-            if (kegiatan === 'Mukerwil') {
+            if (isDPW) {
                 radioBox.classList.add('hidden');
                 document.querySelector(`input[name="sumberP${i}"][value="DPP"]`).checked = true;
                 togglePendampingInput(i, 'DPP');
@@ -575,10 +592,11 @@
         return d.toISOString().slice(0,16);
     }
 
-    function checkAutofill(kodeWilayah, wilayahName) {
+    function checkAutofill(kodeWilayah, wilayahName, kegiatan) {
         document.getElementById('formLanjutan').classList.remove('hidden');
         
-        const existing = db.rekap.find(r => r['Kode Wilayah'] == kodeWilayah);
+        // Memeriksa Autofill berdasarkan kombinasi Kode Wilayah DAN Jenis Kegiatan
+        const existing = db.rekap.find(r => r['Kode Wilayah'] == kodeWilayah && r['Kegiatan'] == kegiatan);
         
         if(existing) {
             document.getElementById('waPJ').value = existing['WA PJ'] || '';
@@ -635,9 +653,9 @@
             document.getElementById('halDikuatkan').value = '';
             document.getElementById('keterangan').value = '';
             
-            const keg = document.querySelector('input[name="kegiatan"]:checked').value;
+            const isDPW = (kegiatan === 'Mukerwil' || kegiatan === 'Muswil');
             for(let i=1; i<=3; i++) {
-                if(keg === 'Mukerwil') {
+                if(isDPW) {
                     const r = document.querySelector(`input[name="sumberP${i}"][value="DPP"]`);
                     if(r) r.checked = true;
                     togglePendampingInput(i, 'DPP');
@@ -796,9 +814,10 @@
         if(document.getElementById('checkInap').checked) tanggungan.push('Penginapan');
 
         const kegiatan = document.querySelector('input[name="kegiatan"]:checked').value;
-        const sP1 = kegiatan === 'Mukerwil' ? 'DPP' : document.querySelector('input[name="sumberP1"]:checked')?.value || '';
-        const sP2 = kegiatan === 'Mukerwil' ? 'DPP' : document.querySelector('input[name="sumberP2"]:checked')?.value || '';
-        const sP3 = kegiatan === 'Mukerwil' ? 'DPP' : document.querySelector('input[name="sumberP3"]:checked')?.value || '';
+        const isDPW = (kegiatan === 'Mukerwil' || kegiatan === 'Muswil');
+        const sP1 = isDPW ? 'DPP' : document.querySelector('input[name="sumberP1"]:checked')?.value || '';
+        const sP2 = isDPW ? 'DPP' : document.querySelector('input[name="sumberP2"]:checked')?.value || '';
+        const sP3 = isDPW ? 'DPP' : document.querySelector('input[name="sumberP3"]:checked')?.value || '';
 
         const payload = {
             wa: document.getElementById('waPJ').value,
@@ -847,12 +866,13 @@
     }
 
     function showSuccess(payload) {
-        // Build WA URL
         const p1 = payload.pendamping1 ? extractName(payload.pendamping1) : "-";
         const p2 = payload.pendamping2 ? extractName(payload.pendamping2) : "";
         const p3 = payload.pendamping3 ? extractName(payload.pendamping3) : "";
         
-        let wilayahStatus = payload.kegiatan === 'Mukerwil' ? 'DPW' : 'DPD';
+        const isDPW = (payload.kegiatan === 'Mukerwil' || payload.kegiatan === 'Muswil');
+        let wilayahStatus = isDPW ? 'DPW' : 'DPD';
+        
         let waText = `*KONFIRMASI ${payload.kegiatan.toUpperCase()} ${wilayahStatus} ${payload.wilayah.toUpperCase()}*\n\n`;
         waText += `Tanggal : ${formatWADate(payload.mulai, payload.selesai)}\n`;
         waText += `Usulan pendamping:\n1. ${p1}`;
@@ -862,7 +882,7 @@
         document.getElementById('btnKonfirmasiWA').href = `https://wa.me/6281277778448?text=${encodeURIComponent(waText)}`;
 
         // Update local memory
-        const i = db.rekap.findIndex(r => r['Kode Wilayah'] == payload.kodeWilayah);
+        const i = db.rekap.findIndex(r => r['Kode Wilayah'] == payload.kodeWilayah && r['Kegiatan'] == payload.kegiatan);
         const obj = { 'Kode Wilayah': payload.kodeWilayah, 'Wilayah': payload.wilayah, 'Kegiatan': payload.kegiatan, 'Mulai': payload.mulai, 'Selesai': payload.selesai, 'Model Pelaksanaan': payload.pelaksanaan, 'Model Kehadiran': payload.kehadiran, 'Tanggungan': payload.tanggungan, 'Nominal Uang Saku': payload.nominal, 'Pendamping 1': payload.pendamping1, 'Pendamping 2': payload.pendamping2, 'Pendamping 3': payload.pendamping3, 'Hal Dikuatkan': payload.dikuatkan };
         if(i > -1) db.rekap[i] = obj; else db.rekap.push(obj);
         
@@ -902,7 +922,7 @@
 
     function extractName(fullName) {
         if(!fullName || fullName === "DPW") return fullName || "-";
-        return fullName.split(' - ')[0]; // Ambil nama saja sebelum tanda "-"
+        return fullName.split(' - ')[0]; 
     }
 
     function renderAdminTable() {
@@ -911,6 +931,9 @@
         
         let validRekap = db.rekap.filter(r => r.Wilayah && r.Wilayah.trim() !== "");
         document.getElementById('adTotal').innerText = validRekap.length;
+        
+        document.getElementById('adMuswil').innerText = validRekap.filter(r => r.Kegiatan === 'Muswil').length;
+        document.getElementById('adMusda').innerText = validRekap.filter(r => r.Kegiatan === 'Musda').length;
         document.getElementById('adMukerwil').innerText = validRekap.filter(r => r.Kegiatan === 'Mukerwil').length;
         document.getElementById('adMukerda').innerText = validRekap.filter(r => r.Kegiatan === 'Mukerda').length;
 
@@ -929,7 +952,7 @@
         let countBelum = 0;
         
         let processedRekap = validRekap.map(r => {
-            const pen = db.penetapan ? db.penetapan.find(p => p['Kode Wilayah'] == r['Kode Wilayah']) : null;
+            const pen = db.penetapan ? db.penetapan.find(p => p['Kode Wilayah'] == r['Kode Wilayah'] && p['Kegiatan'] == r['Kegiatan']) : null;
             r._ditetapkan = pen && (pen['Pendamping 1'] || pen['Pendamping 2'] || pen['Pendamping 3']);
             r._penData = pen;
             if(r._ditetapkan) countDitetapkan++; else countBelum++;
@@ -948,7 +971,14 @@
 
         processedRekap.forEach((r, index) => {
             let rowColor = index % 2 === 0 ? 'bg-white' : 'bg-slate-50';
-            let statusWilayah = r.Kegiatan === 'Mukerwil' ? 'DPW' : 'DPD';
+            let statusWilayah = (r.Kegiatan === 'Mukerwil' || r.Kegiatan === 'Muswil') ? 'DPW' : 'DPD';
+            
+            // Format Tema Warna Card Jenis Kegiatan
+            let theme = '';
+            if (r.Kegiatan === 'Muswil') theme = 'text-purple-700 bg-purple-100 border-purple-200';
+            else if (r.Kegiatan === 'Musda') theme = 'text-pink-700 bg-pink-100 border-pink-200';
+            else if (r.Kegiatan === 'Mukerwil') theme = 'text-blue-700 bg-blue-100 border-blue-200';
+            else theme = 'text-orange-700 bg-orange-100 border-orange-200';
             
             // Format Tanggunggan
             let tanggunganHTML = "";
@@ -997,7 +1027,7 @@
                     <td class="px-5 py-4 font-bold text-slate-500 text-center">${index + 1}</td>
                     <td class="px-5 py-4 font-bold text-slate-800">${statusWilayah} ${r.Wilayah}</td>
                     <td class="px-5 py-4 text-xs font-medium text-slate-600 leading-relaxed max-w-[200px] whitespace-normal">
-                        <span class="px-2 py-1 rounded text-[10px] font-black ${r.Kegiatan === 'Mukerwil' ? 'text-blue-700 bg-blue-100' : 'text-orange-700 bg-orange-100'} block w-max mb-1 uppercase tracking-widest">${r.Kegiatan}</span>
+                        <span class="px-2 py-1 rounded text-[10px] font-black border ${theme} block w-max mb-1 uppercase tracking-widest">${r.Kegiatan}</span>
                         <div class="font-bold text-slate-800 mb-1 mt-1">${r['Model Pelaksanaan'] || '-'}</div>
                         ${parseDateToLongText(r['Mulai'], r['Selesai'])}
                     </td>
@@ -1016,7 +1046,7 @@
     let penetapanRowCount = 0;
 
     function openPenetapan(kode, wilayah, kegiatan) {
-        document.getElementById('penetapanWilayahText').innerText = wilayah;
+        document.getElementById('penetapanWilayahText').innerText = `${wilayah} - ${kegiatan}`;
         document.getElementById('penetapanWilayahId').value = wilayah;
         document.getElementById('penetapanKodeWilayah').value = kode;
         document.getElementById('penetapanKegiatan').value = kegiatan;
@@ -1025,8 +1055,7 @@
         container.innerHTML = '';
         penetapanRowCount = 0;
         
-        // Set existing if any
-        let p = db.penetapan ? db.penetapan.find(x => x['Kode Wilayah'] == kode) : null;
+        let p = db.penetapan ? db.penetapan.find(x => x['Kode Wilayah'] == kode && x['Kegiatan'] == kegiatan) : null;
         let count = 0;
         if (p) {
             if (p['Pendamping 1']) { addPenetapanRow(p['Pendamping 1'], kegiatan); count++; }
@@ -1053,7 +1082,7 @@
         const rowId = `penRow_${Date.now()}_${penetapanRowCount}`;
         
         const isDPW = existingValue === 'DPW';
-        const isMukerda = kegiatan === 'Mukerda';
+        const isTingkatDaerah = (kegiatan === 'Mukerda' || kegiatan === 'Musda');
         
         const rowHTML = `
             <div class="penetapan-row bg-slate-50 p-4 rounded-xl border border-slate-200 relative" id="${rowId}">
@@ -1062,18 +1091,18 @@
                     ${container.children.length > 0 ? `<button type="button" onclick="document.getElementById('${rowId}').remove(); updatePenetapanRowNumbers();" class="text-red-500 hover:text-red-700 text-sm"><i class="bi bi-trash"></i></button>` : ''}
                 </div>
                 
-                <div class="grid grid-cols-2 gap-3 mb-3 ${!isMukerda ? 'hidden' : ''}">
+                <div class="grid grid-cols-2 gap-3 mb-3 ${!isTingkatDaerah ? 'hidden' : ''}">
                     <label class="cursor-pointer relative">
-                        <input type="radio" name="sumber_${rowId}" value="DPP" class="modern-radio sr-only" ${!isMukerda || !isDPW ? 'checked' : ''} onchange="togglePenetapanInput('${rowId}', 'DPP')">
+                        <input type="radio" name="sumber_${rowId}" value="DPP" class="modern-radio sr-only" ${!isTingkatDaerah || !isDPW ? 'checked' : ''} onchange="togglePenetapanInput('${rowId}', 'DPP')">
                         <div class="p-2 text-sm rounded-lg border-2 border-slate-200 text-center text-slate-500 transition font-medium">Dari Pusat (DPP)</div>
                     </label>
                     <label class="cursor-pointer relative">
-                        <input type="radio" name="sumber_${rowId}" value="DPW" class="modern-radio sr-only" ${isMukerda && isDPW ? 'checked' : ''} onchange="togglePenetapanInput('${rowId}', 'DPW')">
+                        <input type="radio" name="sumber_${rowId}" value="DPW" class="modern-radio sr-only" ${isTingkatDaerah && isDPW ? 'checked' : ''} onchange="togglePenetapanInput('${rowId}', 'DPW')">
                         <div class="p-2 text-sm rounded-lg border-2 border-slate-200 text-center text-slate-500 transition font-medium">Dari Wilayah (DPW)</div>
                     </label>
                 </div>
                 
-                <div id="inputContainer_${rowId}" class="relative ${isMukerda && isDPW ? 'hidden' : ''}">
+                <div id="inputContainer_${rowId}" class="relative ${isTingkatDaerah && isDPW ? 'hidden' : ''}">
                     <input type="text" id="searchInput_${rowId}" class="input-premium bg-white font-bold text-slate-700 pr-10 py-2.5 text-sm" placeholder="Ketik nama pendamping (DPP)..." autocomplete="off" value="${isDPW ? '' : existingValue}">
                     <i class="bi bi-search absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400"></i>
                     <input type="hidden" id="hiddenInput_${rowId}" class="penetapan-hidden-val" value="${existingValue}">
@@ -1158,6 +1187,7 @@
     async function simpanPenetapan() {
         const wilayah = document.getElementById('penetapanWilayahId').value;
         const kodeWilayah = document.getElementById('penetapanKodeWilayah').value;
+        const kegiatan = document.getElementById('penetapanKegiatan').value;
         const rows = document.querySelectorAll('#penetapanContainer .penetapan-row');
         
         let p1 = '', p2 = '', p3 = '';
@@ -1182,6 +1212,7 @@
             action: 'set_pendamping',
             kodeWilayah: kodeWilayah,
             wilayah: wilayah,
+            kegiatan: kegiatan,
             penetapan1: p1,
             penetapan2: p2,
             penetapan3: p3
@@ -1192,8 +1223,8 @@
             const result = await res.json();
             if(result.status === 'success') {
                 if(!db.penetapan) db.penetapan = [];
-                const idx = db.penetapan.findIndex(x => x['Kode Wilayah'] == kodeWilayah);
-                const obj = { 'Kode Wilayah': kodeWilayah, 'Wilayah': wilayah, 'Pendamping 1': p1, 'Pendamping 2': p2, 'Pendamping 3': p3 };
+                const idx = db.penetapan.findIndex(x => x['Kode Wilayah'] == kodeWilayah && x['Kegiatan'] == kegiatan);
+                const obj = { 'Kode Wilayah': kodeWilayah, 'Wilayah': wilayah, 'Kegiatan': kegiatan, 'Pendamping 1': p1, 'Pendamping 2': p2, 'Pendamping 3': p3 };
                 if (idx > -1) db.penetapan[idx] = obj; else db.penetapan.push(obj);
                 
                 renderAdminTable();
@@ -1203,8 +1234,8 @@
         } catch(e) {
             // Simulasi lokal
             if(!db.penetapan) db.penetapan = [];
-            const idx = db.penetapan.findIndex(x => x['Kode Wilayah'] == kodeWilayah);
-            const obj = { 'Kode Wilayah': kodeWilayah, 'Wilayah': wilayah, 'Pendamping 1': p1, 'Pendamping 2': p2, 'Pendamping 3': p3 };
+            const idx = db.penetapan.findIndex(x => x['Kode Wilayah'] == kodeWilayah && x['Kegiatan'] == kegiatan);
+            const obj = { 'Kode Wilayah': kodeWilayah, 'Wilayah': wilayah, 'Kegiatan': kegiatan, 'Pendamping 1': p1, 'Pendamping 2': p2, 'Pendamping 3': p3 };
             if (idx > -1) db.penetapan[idx] = obj; else db.penetapan.push(obj);
             
             renderAdminTable();
