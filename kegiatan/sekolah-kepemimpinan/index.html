@@ -5,12 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Konfirmasi DUWD</title>
     
-    <!-- PENTING: Gunakan URL Absolut berdasarkan domain Anda agar muncul di WA & Favicon Browser -->
-    <link rel="icon" type="image/png" href="https://duwd.wadahdigital.my.id/kegiatan/sekolah-kepemimpinan/logo_wi.png">
+    <!-- Penambahan ?v=1 untuk cache buster -->
+    <link rel="icon" type="image/png" href="https://duwd.wadahdigital.my.id/kegiatan/sekolah-kepemimpinan/logo_wi.png?v=1">
+    <link rel="shortcut icon" href="https://duwd.wadahdigital.my.id/kegiatan/sekolah-kepemimpinan/logo_wi.png?v=1">
     
     <meta property="og:title" content="Konfirmasi Kehadiran DUWD">
     <meta property="og:description" content="Formulir Pendaftaran & Konfirmasi Kegiatan Majelis Kepemimpinan DUWD Wahdah Islamiyah">
-    <meta property="og:image" itemprop="image" content="https://duwd.wadahdigital.my.id/kegiatan/sekolah-kepemimpinan/logo_wi.png">
+    <meta property="og:image" itemprop="image" content="https://duwd.wadahdigital.my.id/kegiatan/sekolah-kepemimpinan/logo_wi.png?v=1">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://duwd.wadahdigital.my.id/kegiatan/sekolah-kepemimpinan/">
 
@@ -77,8 +78,7 @@
 
     <!-- Loading Overlay -->
     <div id="loading-overlay">
-        <!-- Menggunakan URL absolut di sini juga untuk jaga-jaga -->
-        <img src="https://duwd.wadahdigital.my.id/kegiatan/sekolah-kepemimpinan/logo_wi.png" class="w-16 h-16 mb-6 animate-bounce" alt="Loading Logo" onerror="this.style.display='none'">
+        <img src="https://duwd.wadahdigital.my.id/kegiatan/sekolah-kepemimpinan/logo_wi.png?v=1" class="w-16 h-16 mb-6 animate-bounce" alt="Loading Logo" onerror="this.style.display='none'">
         <div class="progress-container">
             <div id="progress-bar" class="progress-bar"></div>
         </div>
@@ -88,7 +88,7 @@
     <!-- Navbar -->
     <nav class="glass-panel mx-4 mt-4 px-6 py-4 flex justify-between items-center sticky top-4 z-50">
         <div class="flex items-center gap-3">
-            <img src="https://duwd.wadahdigital.my.id/kegiatan/sekolah-kepemimpinan/logo_wi.png" alt="Logo" class="w-10 h-10 object-contain drop-shadow-md rounded" onerror="this.src='https://ui-avatars.com/api/?name=WI&background=0ea5e9&color=fff'">
+            <img src="https://duwd.wadahdigital.my.id/kegiatan/sekolah-kepemimpinan/logo_wi.png?v=1" alt="Logo" class="w-10 h-10 object-contain drop-shadow-md rounded" onerror="this.src='https://ui-avatars.com/api/?name=WI&background=0ea5e9&color=fff'">
             <div>
                 <h1 class="font-bold text-lg leading-tight text-slate-800">DUWD App</h1>
                 <p class="text-xs text-slate-500 font-medium">Majelis Kepemimpinan</p>
@@ -156,7 +156,7 @@
             </div>
         </section>
 
-        <!-- VIEW SUCCESS (After Submit) -->
+        <!-- VIEW SUCCESS -->
         <section id="view-success" class="max-w-2xl mx-auto hidden text-center">
             <div class="glass-panel p-10 flex flex-col items-center">
                 <div class="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mb-6">
@@ -212,7 +212,7 @@
                             <tr class="bg-slate-50/50 text-slate-500 text-xs uppercase tracking-wider">
                                 <th class="py-3 px-5 font-bold">Info Kontak</th>
                                 <th class="py-3 px-5 font-bold">Asal & Entitas</th>
-                                <th class="py-3 px-5 font-bold">Kehadiran (Persentase)</th>
+                                <th class="py-3 px-5 font-bold">Kehadiran (Rekap)</th>
                                 <th class="py-3 px-5 font-bold">Status & Sertifikat</th>
                                 <th class="py-3 px-5 font-bold text-center">Aksi</th>
                             </tr>
@@ -457,7 +457,6 @@
             tbody.innerHTML = '';
             const sortedUsers = [...db.users].reverse();
 
-            // Ambil jumlah total sesi yang ada dari database
             const maxSesiCount = db.sesiData ? db.sesiData.length : 1; 
 
             sortedUsers.forEach(user => {
@@ -472,21 +471,26 @@
                 } else {
                     statusBadge = `<span class="px-2 py-1 bg-amber-100 text-amber-700 rounded text-[10px] font-bold shadow-sm">Pending</span>`;
                 }
+
+                const certLink = user.linkSertifikat ? `<a href="${user.linkSertifikat}" target="_blank" class="text-sky-600 hover:text-sky-800 text-[10px] font-medium block mt-1 flex items-center gap-1"><i data-lucide="external-link" class="w-3 h-3"></i> Lihat PDF</a>` : '';
                 
                 const trId = 'row-' + user.wa;
                 const actionBtn = isVerified
                     ? `<span class="text-[10px] text-slate-400 font-medium">Selesai</span>`
                     : `<button id="btn-verif-${user.wa}" onclick="verifyAction('${user.wa}')" class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg text-xs font-bold shadow-md hover:scale-105 transition flex items-center gap-1 mx-auto"><i data-lucide="check" class="w-3 h-3"></i> ACC</button>`;
 
-                // Kalkulasi Persentase Kehadiran
                 const userSesiArr = user.sesi ? user.sesi.split(", ").filter(s => s.trim() !== "") : [];
                 const persentase = Math.round((userSesiArr.length / maxSesiCount) * 100);
                 
-                // Warna badge persentase (Hijau jika >= 80, Merah jika < 80)
                 const pctColor = persentase >= 80 ? 'bg-emerald-100 text-emerald-700 border-emerald-200' : 'bg-rose-100 text-rose-700 border-rose-200';
-                const pctBadge = `<div class="mt-2 inline-block px-2 py-1 rounded text-[10px] font-bold border ${pctColor}">${persentase}% Hadir</div>`;
-
-                const sesiList = userSesiArr.map(s => `<span class="inline-block bg-slate-100 text-slate-600 text-[10px] px-2 py-0.5 rounded mr-1 mb-1 border border-slate-200">${s}</span>`).join('');
+                
+                // Format Kehadiran Rekap (contoh: 5/10 50%)
+                const rekapKehadiran = `
+                    <div class="flex items-center gap-2">
+                        <span class="font-extrabold text-slate-700 text-base">${userSesiArr.length}<span class="text-xs text-slate-400">/${maxSesiCount}</span></span>
+                        <div class="px-2 py-1 rounded text-[10px] font-bold border ${pctColor}">${persentase}%</div>
+                    </div>
+                `;
 
                 const tr = document.createElement('tr');
                 tr.id = trId;
@@ -501,12 +505,13 @@
                         <span class="font-bold text-slate-700">${user.entitas}</span>
                         <div class="text-xs text-slate-500">${user.asal}</div>
                     </td>
-                    <td class="py-3 px-5 whitespace-normal w-48">
-                        <div>${sesiList}</div>
-                        ${pctBadge}
+                    <td class="py-3 px-5 whitespace-nowrap">
+                        ${rekapKehadiran}
                     </td>
-                    <td class="py-3 px-5" id="status-td-${user.wa}">${statusBadge}<br>
+                    <td class="py-3 px-5" id="status-td-${user.wa}">
+                        ${statusBadge}<br>
                         ${user.noSertifikat ? `<span class="text-[10px] font-mono text-slate-500 mt-1 block">${user.noSertifikat}</span>` : ''}
+                        ${certLink}
                     </td>
                     <td class="py-3 px-5 text-center" id="action-td-${user.wa}">${actionBtn}</td>
                 `;
@@ -533,23 +538,23 @@
             btn.classList.replace('to-emerald-600', 'to-slate-500');
             lucide.createIcons();
             
-            Toast.fire({ icon: 'info', title: 'Memverifikasi & Membuat PDF...' });
+            Toast.fire({ icon: 'info', title: 'Membuat Sertifikat PDF...' });
 
             fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'verify', wa: wa }) })
             .then(res => res.json()).then(res => {
                 if(res.success) { 
                     Toast.fire({ icon: 'success', title: res.message }); 
                     
-                    let newStatus = `<span class="px-2 py-1 bg-sky-100 text-sky-700 rounded text-[10px] font-bold shadow-sm mr-1"><i data-lucide="user-check" class="w-3 h-3 inline"></i> ACC</span>`;
-                    if(res.emailStatus === 'Terkirim') newStatus += `<span class="px-2 py-1 bg-emerald-100 text-emerald-700 rounded text-[10px] font-bold shadow-sm"><i data-lucide="mail-check" class="w-3 h-3 inline"></i> Sent</span>`;
-                    else newStatus += `<span class="px-2 py-1 bg-red-100 text-red-700 rounded text-[10px] font-bold shadow-sm"><i data-lucide="mail-warning" class="w-3 h-3 inline"></i> Fail</span>`;
+                    // Update Local Database
+                    const userIndex = db.users.findIndex(u => u.wa === wa);
+                    if(userIndex > -1) {
+                        db.users[userIndex].status = 'Terverifikasi';
+                        db.users[userIndex].statusEmail = res.emailStatus;
+                        db.users[userIndex].noSertifikat = res.noSertifikat;
+                        db.users[userIndex].linkSertifikat = res.linkSertifikat;
+                    }
                     
-                    const statusTd = document.getElementById(`status-td-${wa}`);
-                    statusTd.innerHTML = `${newStatus}<br><span class="text-[10px] font-mono text-slate-500 mt-1 block">${res.noSertifikat}</span>`;
-                    
-                    const actionTd = document.getElementById(`action-td-${wa}`);
-                    actionTd.innerHTML = `<span class="text-[10px] text-slate-400 font-medium">Selesai</span>`;
-                    lucide.createIcons();
+                    renderAdminUI(); // Re-render table
                 } 
                 else { 
                     Toast.fire({ icon: 'error', title: res.message }); 
