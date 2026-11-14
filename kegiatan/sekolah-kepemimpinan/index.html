@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Konfirmasi DUWD</title>
     
-    <link rel="icon" type="image/png" href="logo_wi.png">
+    <link rel="icon" type="image/png" href="./logo_wi.png">
     <meta property="og:title" content="Konfirmasi Kehadiran DUWD">
     <meta property="og:description" content="Formulir Pendaftaran & Konfirmasi Kegiatan Majelis Kepemimpinan DUWD Wahdah Islamiyah">
-    <meta property="og:image" content="logo_wi.png">
+    <meta property="og:image" content="./logo_wi.png">
     <!-- Ganti URL ini dengan URL WebApp Anda jika dihosting di Github -->
     <meta property="og:url" content="https://script.google.com/macros/s/AKfycbyrpKkY1ubFZQYnKqTLMvsA0B1_tbgdNw_EzKO6a_DG3WQ8ec4EVHnjDuvRIwiMMiE9Xg/exec">
 
@@ -52,19 +52,21 @@
         }
 
         .btn-primary { background: linear-gradient(135deg, #0ea5e9, #0284c7); color: white; transition: all 0.2s;}
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px -8px rgba(14, 165, 233, 0.6); }
+        .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 20px -8px rgba(14, 165, 233, 0.6); }
+        .btn-primary:disabled { opacity: 0.7; cursor: not-allowed; }
 
         .custom-radio:checked + div { border-color: #0ea5e9; background-color: #f0f9ff; }
         .custom-radio:checked + div .radio-dot { background-color: #0ea5e9; border-color: #0ea5e9; }
         .custom-checkbox:checked + div { border-color: #10b981; background-color: #ecfdf5; }
         .custom-checkbox:checked + div .check-icon { display: block; }
 
+        /* Custom Progress Bar */
         #loading-overlay {
-            position: fixed; inset: 0; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(5px);
-            z-index: 9999; display: none; justify-content: center; align-items: center; flex-direction: column;
+            position: fixed; inset: 0; background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(8px);
+            z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column;
         }
-        .spinner { width: 45px; height: 45px; border: 4px solid #bae6fd; border-left-color: #0284c7; border-radius: 50%; animation: spin 1s linear infinite; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .progress-container { width: 80%; max-width: 320px; height: 10px; background: #e2e8f0; border-radius: 999px; overflow: hidden; margin-bottom: 12px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.1); }
+        .progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, #38bdf8, #0284c7); border-radius: 999px; transition: width 0.3s ease; }
         
         .autocomplete-list { max-height: 200px; overflow-y: auto; }
         .autocomplete-item:hover { background-color: #f1f5f9; cursor: pointer; }
@@ -72,15 +74,19 @@
 </head>
 <body class="antialiased">
 
+    <!-- Loading Overlay Bar -->
     <div id="loading-overlay">
-        <div class="spinner mb-4"></div>
-        <p class="text-sky-800 font-medium animate-pulse">Memproses data...</p>
+        <img src="./logo_wi.png" class="w-16 h-16 mb-6 animate-bounce" alt="Loading Logo" onerror="this.style.display='none'">
+        <div class="progress-container">
+            <div id="progress-bar" class="progress-bar"></div>
+        </div>
+        <p class="text-sky-800 font-bold text-sm" id="progress-text">Menyiapkan sistem... 0%</p>
     </div>
 
     <!-- Navbar -->
     <nav class="glass-panel mx-4 mt-4 px-6 py-4 flex justify-between items-center sticky top-4 z-50">
         <div class="flex items-center gap-3">
-            <img src="logo_wi.png" alt="Logo" class="w-10 h-10 object-contain drop-shadow-md rounded" onerror="this.src='https://ui-avatars.com/api/?name=WI&background=0ea5e9&color=fff'">
+            <img src="./logo_wi.png" alt="Logo" class="w-10 h-10 object-contain drop-shadow-md rounded" onerror="this.src='https://ui-avatars.com/api/?name=WI&background=0ea5e9&color=fff'">
             <div>
                 <h1 class="font-bold text-lg leading-tight text-slate-800">DUWD App</h1>
                 <p class="text-xs text-slate-500 font-medium">Majelis Kepemimpinan</p>
@@ -103,42 +109,68 @@
                 </div>
 
                 <form id="registrationForm" onsubmit="submitForm(event)" class="space-y-6">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-1">Nomor WhatsApp</label>
-                            <input type="text" id="wa" required class="glass-input w-full px-4 py-2.5 rounded-xl text-slate-700" placeholder="628123456789">
+                    
+                    <!-- STEP 1: Cek WA -->
+                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Nomor WhatsApp Aktif</label>
+                        <div class="flex gap-2">
+                            <input type="text" id="wa" required class="glass-input w-full px-4 py-3 rounded-xl text-slate-700 font-bold" placeholder="Contoh: 628123456789">
+                            <button type="button" onclick="checkNumber()" class="bg-slate-800 hover:bg-slate-700 text-white px-5 rounded-xl font-bold text-sm transition whitespace-nowrap">Lanjut</button>
                         </div>
+                        <p class="text-xs text-slate-500 mt-2"><i data-lucide="info" class="w-3 h-3 inline"></i> Awali dengan 628 (Otomatis berubah)</p>
+                    </div>
+
+                    <!-- STEP 2: Detail Form (Hidden by default) -->
+                    <div id="form-details" class="hidden space-y-6 animate-fade-in mt-4">
                         <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-1">Nama Lengkap</label>
+                            <label class="block text-sm font-bold text-slate-700 mb-1">Nama Lengkap (Tanpa Gelar)</label>
                             <input type="text" id="nama" required class="glass-input w-full px-4 py-2.5 rounded-xl text-slate-700 font-semibold" placeholder="NAMA SESUAI SERTIFIKAT">
                         </div>
-                    </div>
 
-                    <div>
-                        <label class="block text-sm font-bold text-slate-700 mb-1">Alamat Email Aktif</label>
-                        <input type="email" id="email" required class="glass-input w-full px-4 py-2.5 rounded-xl text-slate-700" placeholder="Sertifikat akan dikirim ke email ini">
-                    </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-1">Alamat Email Valid</label>
+                            <input type="email" id="email" required class="glass-input w-full px-4 py-2.5 rounded-xl text-slate-700" placeholder="contoh: emailanda@gmail.com">
+                        </div>
 
-                    <div>
-                        <label class="block text-sm font-bold text-slate-700 mb-2">Entitas</label>
-                        <div id="entitas-container" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
-                    </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Entitas</label>
+                            <div id="entitas-container" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
+                        </div>
 
-                    <div class="relative z-40">
-                        <label class="block text-sm font-bold text-slate-700 mb-1">Asal Daerah (Ketik & Pilih)</label>
-                        <input type="text" id="asal" required autocomplete="off" class="glass-input w-full px-4 py-2.5 rounded-xl text-slate-700" placeholder="Cari asal DPW/DPD...">
-                        <ul id="asal-autocomplete" class="autocomplete-list absolute hidden w-full bg-white border border-slate-200 shadow-xl rounded-xl mt-1 z-50"></ul>
-                    </div>
+                        <div class="relative z-40">
+                            <label class="block text-sm font-bold text-slate-700 mb-1">Asal DPW/DPD</label>
+                            <input type="text" id="asal" required autocomplete="off" class="glass-input w-full px-4 py-2.5 rounded-xl text-slate-700" placeholder="Pilih dari daftar (Klik di sini)">
+                            <ul id="asal-autocomplete" class="autocomplete-list absolute hidden w-full bg-white border border-slate-200 shadow-xl rounded-xl mt-1 z-50"></ul>
+                        </div>
 
-                    <div>
-                        <label class="block text-sm font-bold text-slate-700 mb-2">Sesi yang Diikuti</label>
-                        <div id="sesi-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
-                    </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-2">Sesi yang Diikuti</label>
+                            <div id="sesi-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+                        </div>
 
-                    <button type="submit" class="btn-primary w-full py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 mt-4 text-lg">
-                        <i data-lucide="send" class="w-5 h-5"></i> Kirim Data
-                    </button>
+                        <button type="submit" id="btn-submit" class="btn-primary w-full py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 mt-4 text-lg">
+                            <i data-lucide="send" class="w-5 h-5"></i> Kirim Data
+                        </button>
+                    </div>
                 </form>
+            </div>
+        </section>
+
+        <!-- VIEW SUCCESS (After Submit) -->
+        <section id="view-success" class="max-w-2xl mx-auto hidden text-center">
+            <div class="glass-panel p-10 flex flex-col items-center">
+                <div class="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mb-6">
+                    <i data-lucide="check-circle-2" class="w-12 h-12 text-emerald-600"></i>
+                </div>
+                <h2 class="text-2xl font-black text-slate-800 mb-4">Alhamdulillah, Data Diterima!</h2>
+                <p class="text-slate-600 mb-6 leading-relaxed">
+                    Data kehadiran Anda telah masuk ke dalam antrean sistem kami dan akan ditinjau oleh Admin Majelis Kepemimpinan DUWD Wahdah Islamiyah. 
+                    <br><br>
+                    <strong>Jika telah diverifikasi</strong>, file E-Sertifikat akan dikirimkan langsung ke alamat email yang Anda masukkan. Silakan dipantau secara berkala.
+                </p>
+                <button onclick="window.location.reload()" class="px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition">
+                    Kembali ke Beranda
+                </button>
             </div>
         </section>
 
@@ -154,20 +186,16 @@
                     <h3 class="text-3xl font-extrabold text-sky-700" id="stat-verified">0</h3>
                 </div>
                 <div class="glass-panel p-5 text-center bg-emerald-50/50">
-                    <p class="text-xs text-emerald-600 font-bold uppercase tracking-wider mb-1">Terkirim</p>
+                    <p class="text-xs text-emerald-600 font-bold uppercase tracking-wider mb-1">Email Terkirim</p>
                     <h3 class="text-3xl font-extrabold text-emerald-700" id="stat-emailed">0</h3>
                 </div>
                 <div class="glass-panel p-5 text-center bg-amber-50/50">
-                    <p class="text-xs text-amber-600 font-bold uppercase tracking-wider mb-1">Pending</p>
+                    <p class="text-xs text-amber-600 font-bold uppercase tracking-wider mb-1">Menunggu</p>
                     <h3 class="text-3xl font-extrabold text-amber-700" id="stat-pending">0</h3>
                 </div>
             </div>
 
-            <div class="glass-panel p-6 mb-8">
-                <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2"><i data-lucide="pie-chart" class="w-5 h-5 text-sky-500"></i> Analisis Sesi (Peserta Verifikasi)</h3>
-                <div id="sesi-stats-container" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
-            </div>
-
+            <!-- Tabel Data -->
             <div class="glass-panel overflow-hidden">
                 <div class="p-5 border-b border-slate-200/50 flex flex-wrap gap-4 justify-between items-center bg-white/40">
                     <h3 class="font-bold text-slate-800">Manajemen Peserta</h3>
@@ -179,8 +207,8 @@
                             <tr class="bg-slate-50/50 text-slate-500 text-xs uppercase tracking-wider">
                                 <th class="py-3 px-5 font-bold">Info Kontak</th>
                                 <th class="py-3 px-5 font-bold">Asal & Entitas</th>
-                                <th class="py-3 px-5 font-bold">Sesi / Kehadiran</th>
-                                <th class="py-3 px-5 font-bold">Status</th>
+                                <th class="py-3 px-5 font-bold">Kehadiran</th>
+                                <th class="py-3 px-5 font-bold">Status & Sertifikat</th>
                                 <th class="py-3 px-5 font-bold text-center">Aksi</th>
                             </tr>
                         </thead>
@@ -198,6 +226,7 @@
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyrpKkY1ubFZQYnKqTLMvsA0B1_tbgdNw_EzKO6a_DG3WQ8ec4EVHnjDuvRIwiMMiE9Xg/exec";
 
         let db = { users: [], config: {}, entitasData: [], sesiData: [] };
+        let progressInterval;
         
         const Toast = Swal.mixin({
             toast: true, position: 'top-end', showConfirmButton: false, timer: 3000,
@@ -210,6 +239,24 @@
             loadData();
             setupFormListeners();
         });
+
+        function animateProgress() {
+            let width = 0;
+            const bar = document.getElementById('progress-bar');
+            const txt = document.getElementById('progress-text');
+            progressInterval = setInterval(() => {
+                if(width < 90) { width += Math.random() * 15; if(width > 90) width = 90; }
+                bar.style.width = width + "%";
+                txt.innerText = "Memproses data... " + Math.floor(width) + "%";
+            }, 200);
+        }
+
+        function endProgress() {
+            clearInterval(progressInterval);
+            document.getElementById('progress-bar').style.width = "100%";
+            document.getElementById('progress-text').innerText = "Selesai! 100%";
+            setTimeout(() => { document.getElementById('loading-overlay').style.display = 'none'; }, 400);
+        }
 
         function handleRouting() {
             const hash = window.location.hash;
@@ -228,20 +275,23 @@
         function switchView(view) {
             document.getElementById('view-form').classList.add('hidden');
             document.getElementById('view-admin').classList.add('hidden');
+            document.getElementById('view-success').classList.add('hidden');
             document.getElementById(`view-${view}`).classList.remove('hidden');
             if (view === 'admin') renderAdminUI();
         }
 
         function loadData() {
             document.getElementById('loading-overlay').style.display = 'flex';
+            animateProgress();
+            
             fetch(SCRIPT_URL + "?action=getData").then(res => res.json()).then(data => {
                 db = data; buildFormOptions();
                 if(db.config.EventName) document.getElementById('ui-event-name').innerText = db.config.EventName;
                 renderAdminUI();
-                document.getElementById('loading-overlay').style.display = 'none';
+                endProgress();
             }).catch(err => {
-                Toast.fire({ icon: 'error', title: 'Gagal menghubungi server database.' });
-                document.getElementById('loading-overlay').style.display = 'none';
+                Toast.fire({ icon: 'error', title: 'Gagal memuat database.' });
+                endProgress();
             });
         }
 
@@ -277,15 +327,13 @@
         const listAsal = document.getElementById('asal-autocomplete');
         function resetAsal() { inputAsal.value = ''; }
 
-        inputAsal.addEventListener('input', function() {
-            const query = this.value.toLowerCase();
+        function showAsalList(query) {
             const selectedEntitas = document.querySelector('input[name="entitas"]:checked')?.value;
+            if(!selectedEntitas) { Toast.fire({ icon: 'warning', title: 'Pilih Entitas terlebih dahulu' }); inputAsal.value = ''; return; }
             
-            if(!selectedEntitas) { Toast.fire({ icon: 'warning', title: 'Pilih Entitas terlebih dahulu' }); this.value = ''; return; }
             listAsal.innerHTML = '';
-            if (query.length < 1) { listAsal.classList.add('hidden'); return; }
-
-            const filtered = db.entitasData.filter(item => item.entitas === selectedEntitas && item.asal.toLowerCase().includes(query)).slice(0, 7);
+            const filtered = db.entitasData.filter(item => item.entitas === selectedEntitas && item.asal.toLowerCase().includes(query.toLowerCase()));
+            
             if (filtered.length > 0) {
                 filtered.forEach(item => {
                     const li = document.createElement('li');
@@ -296,7 +344,22 @@
                 });
                 listAsal.classList.remove('hidden');
             } else { listAsal.classList.add('hidden'); }
+        }
+
+        inputAsal.addEventListener('focus', function() { showAsalList(''); });
+        inputAsal.addEventListener('input', function() { showAsalList(this.value); });
+        
+        // Wajib dari daftar
+        inputAsal.addEventListener('blur', function() {
+            setTimeout(() => {
+                const selectedEntitas = document.querySelector('input[name="entitas"]:checked')?.value;
+                if(selectedEntitas) {
+                    const validOptions = db.entitasData.filter(item => item.entitas === selectedEntitas).map(i => i.asal);
+                    if(!validOptions.includes(this.value)) { this.value = ''; }
+                }
+            }, 250); // delay so click event on list can trigger first
         });
+
         document.addEventListener('click', (e) => { if(e.target !== inputAsal) listAsal.classList.add('hidden'); });
 
         function setupFormListeners() {
@@ -306,11 +369,13 @@
                 if (val.startsWith('08')) val = '628' + val.substring(2);
                 this.value = val;
             });
-            elWA.addEventListener('blur', function() { if(this.value.length > 8) checkAutofill(this.value); });
             document.getElementById('nama').addEventListener('input', function() { this.value = this.value.toUpperCase(); });
         }
 
-        function checkAutofill(waInput) {
+        function checkNumber() {
+            const waInput = document.getElementById('wa').value;
+            if(waInput.length < 9) return Toast.fire({ icon: 'warning', title: 'Masukkan nomor WA yang valid' });
+
             const user = db.users.find(u => u.wa === waInput);
             if (user) {
                 document.getElementById('nama').value = user.nama;
@@ -324,16 +389,24 @@
                 const userSesiArray = user.sesi.split(", ");
                 userSesiArray.forEach(s => { const cb = document.querySelector(`input[name="sesi"][value="${s}"]`); if(cb) cb.checked = true; });
                 
-                Toast.fire({ icon: 'info', title: 'Data ditemukan, siap diperbarui' });
+                Toast.fire({ icon: 'info', title: 'Data Anda ditemukan!' });
+            } else {
+                Toast.fire({ icon: 'success', title: 'Nomor baru, silakan lengkapi data.' });
             }
+            document.getElementById('form-details').classList.remove('hidden');
         }
 
         function submitForm(e) {
             e.preventDefault();
+            const btn = document.getElementById('btn-submit');
+            
             const sesiChecked = Array.from(document.querySelectorAll('input[name="sesi"]:checked')).map(cb => cb.value);
             if(sesiChecked.length === 0) return Toast.fire({ icon: 'warning', title: 'Pilih minimal 1 sesi' });
+            
             const entitasChecked = document.querySelector('input[name="entitas"]:checked');
             if(!entitasChecked) return Toast.fire({ icon: 'warning', title: 'Pilih entitas' });
+            
+            if(document.getElementById('asal').value === '') return Toast.fire({ icon: 'warning', title: 'Pilih Asal DPW/DPD dari daftar' });
 
             const payload = {
                 wa: document.getElementById('wa').value, nama: document.getElementById('nama').value,
@@ -341,14 +414,26 @@
                 asal: document.getElementById('asal').value, sesi: sesiChecked
             };
 
-            document.getElementById('loading-overlay').style.display = 'flex';
+            btn.disabled = true;
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i> Memproses...`;
+            lucide.createIcons();
+
             fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'save', ...payload }) })
             .then(res => res.json()).then(res => {
-                Toast.fire({ icon: 'success', title: res.message });
-                document.getElementById('registrationForm').reset(); loadData();
+                if(res.success) {
+                    switchView('success'); // Pindah ke halaman sukses
+                    document.getElementById('registrationForm').reset();
+                    document.getElementById('form-details').classList.add('hidden');
+                    loadData(); // Background reload
+                } else {
+                    Toast.fire({ icon: 'error', title: res.message });
+                }
             }).catch(err => {
-                Toast.fire({ icon: 'error', title: 'Gagal mengirim data' });
-                document.getElementById('loading-overlay').style.display = 'none';
+                Toast.fire({ icon: 'error', title: 'Gagal mengirim data. Cek koneksi.' });
+            }).finally(() => {
+                btn.disabled = false;
+                btn.innerHTML = `<i data-lucide="send" class="w-5 h-5"></i> Kirim Data`;
+                lucide.createIcons();
             });
         }
 
@@ -363,24 +448,6 @@
             document.getElementById('stat-verified').innerText = verifiedUsers.length;
             document.getElementById('stat-emailed').innerText = emailedUsers.length;
             document.getElementById('stat-pending').innerText = total - verifiedUsers.length;
-
-            let sesiCounts = {};
-            db.sesiData.forEach(s => sesiCounts[s] = 0);
-            verifiedUsers.forEach(u => { u.sesi.split(", ").forEach(s => { if(sesiCounts[s] !== undefined) sesiCounts[s]++; }); });
-
-            const sesiStatDiv = document.getElementById('sesi-stats-container');
-            sesiStatDiv.innerHTML = '';
-            for(let key in sesiCounts) {
-                let p = verifiedUsers.length === 0 ? 0 : Math.round((sesiCounts[key] / verifiedUsers.length) * 100);
-                sesiStatDiv.innerHTML += `
-                    <div class="bg-slate-50 border border-slate-100 p-4 rounded-xl">
-                        <p class="text-xs text-slate-500 font-bold mb-1">${key}</p>
-                        <div class="flex items-end justify-between">
-                            <span class="text-2xl font-black text-sky-700">${sesiCounts[key]} <span class="text-sm font-medium text-slate-400">Org</span></span>
-                            <span class="text-sm font-bold text-emerald-600">${p}%</span>
-                        </div>
-                    </div>`;
-            }
 
             const tbody = document.getElementById('table-body');
             tbody.innerHTML = '';
@@ -399,13 +466,16 @@
                     statusBadge = `<span class="px-2 py-1 bg-amber-100 text-amber-700 rounded text-[10px] font-bold shadow-sm">Pending</span>`;
                 }
                 
+                // Set id dinamis pada tr untuk manipulasi Background Fetch
+                const trId = 'row-' + user.wa;
                 const actionBtn = isVerified
                     ? `<span class="text-[10px] text-slate-400 font-medium">Selesai</span>`
-                    : `<button onclick="verifyAction('${user.wa}')" class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg text-xs font-bold shadow-md hover:scale-105 transition flex items-center gap-1 mx-auto"><i data-lucide="check" class="w-3 h-3"></i> ACC</button>`;
+                    : `<button id="btn-verif-${user.wa}" onclick="verifyAction('${user.wa}')" class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg text-xs font-bold shadow-md hover:scale-105 transition flex items-center gap-1 mx-auto"><i data-lucide="check" class="w-3 h-3"></i> ACC</button>`;
 
                 const sesiList = user.sesi.split(", ").map(s => `<span class="inline-block bg-slate-100 text-slate-600 text-[10px] px-2 py-0.5 rounded mr-1 mb-1 border border-slate-200">${s}</span>`).join('');
 
                 const tr = document.createElement('tr');
+                tr.id = trId;
                 tr.className = 'hover:bg-slate-50/70 transition';
                 tr.innerHTML = `
                     <td class="py-3 px-5">
@@ -418,10 +488,10 @@
                         <div class="text-xs text-slate-500">${user.asal}</div>
                     </td>
                     <td class="py-3 px-5 whitespace-normal w-48">${sesiList}</td>
-                    <td class="py-3 px-5">${statusBadge}<br>
+                    <td class="py-3 px-5" id="status-td-${user.wa}">${statusBadge}<br>
                         ${user.noSertifikat ? `<span class="text-[10px] font-mono text-slate-500 mt-1 block">${user.noSertifikat}</span>` : ''}
                     </td>
-                    <td class="py-3 px-5 text-center">${actionBtn}</td>
+                    <td class="py-3 px-5 text-center" id="action-td-${user.wa}">${actionBtn}</td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -437,24 +507,51 @@
             }
         }
 
+        // Background Verifikasi Async (Tidak membekukan layar)
         function verifyAction(wa) {
-            Swal.fire({
-                title: 'Verifikasi Peserta?',
-                text: "Sistem akan membuat PDF & Nomor Sertifikat, lalu mengirim via email.",
-                icon: 'question', showCancelButton: true, confirmButtonColor: '#10b981', confirmButtonText: 'Ya, Verifikasi!'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.getElementById('loading-overlay').style.display = 'flex';
-                    fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'verify', wa: wa }) })
-                    .then(res => res.json()).then(res => {
-                        if(res.success) { Toast.fire({ icon: 'success', title: res.message }); loadData(); } 
-                        else { Toast.fire({ icon: 'error', title: res.message }); document.getElementById('loading-overlay').style.display = 'none'; }
-                    }).catch(err => {
-                        Toast.fire({ icon: 'error', title: 'Terjadi kesalahan jaringan' });
-                        document.getElementById('loading-overlay').style.display = 'none';
-                    });
+            const btn = document.getElementById(`btn-verif-${wa}`);
+            
+            // Ubah tombol jadi loading tapi biarkan user lanjut scroll/klik yang lain
+            btn.disabled = true;
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-3 h-3 animate-spin"></i> Proses...`;
+            btn.classList.replace('from-emerald-500', 'from-slate-400');
+            btn.classList.replace('to-emerald-600', 'to-slate-500');
+            lucide.createIcons();
+            
+            Toast.fire({ icon: 'info', title: 'Memverifikasi & Membuat PDF...' });
+
+            fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'verify', wa: wa }) })
+            .then(res => res.json()).then(res => {
+                if(res.success) { 
+                    Toast.fire({ icon: 'success', title: res.message }); 
+                    
+                    // Update DOM lokal secara optimis tanpa mereload seluruh tabel
+                    let newStatus = `<span class="px-2 py-1 bg-sky-100 text-sky-700 rounded text-[10px] font-bold shadow-sm mr-1"><i data-lucide="user-check" class="w-3 h-3 inline"></i> ACC</span>`;
+                    if(res.emailStatus === 'Terkirim') newStatus += `<span class="px-2 py-1 bg-emerald-100 text-emerald-700 rounded text-[10px] font-bold shadow-sm"><i data-lucide="mail-check" class="w-3 h-3 inline"></i> Sent</span>`;
+                    else newStatus += `<span class="px-2 py-1 bg-red-100 text-red-700 rounded text-[10px] font-bold shadow-sm"><i data-lucide="mail-warning" class="w-3 h-3 inline"></i> Fail</span>`;
+                    
+                    const statusTd = document.getElementById(`status-td-${wa}`);
+                    statusTd.innerHTML = `${newStatus}<br><span class="text-[10px] font-mono text-slate-500 mt-1 block">${res.noSertifikat}</span>`;
+                    
+                    const actionTd = document.getElementById(`action-td-${wa}`);
+                    actionTd.innerHTML = `<span class="text-[10px] text-slate-400 font-medium">Selesai</span>`;
+                    lucide.createIcons();
+                } 
+                else { 
+                    Toast.fire({ icon: 'error', title: res.message }); 
+                    // Kembalikan tombol jika gagal
+                    btn.disabled = false;
+                    btn.innerHTML = `<i data-lucide="check" class="w-3 h-3"></i> ACC`;
+                    btn.classList.replace('from-slate-400', 'from-emerald-500');
+                    btn.classList.replace('to-slate-500', 'to-emerald-600');
+                    lucide.createIcons();
                 }
-            })
+            }).catch(err => {
+                Toast.fire({ icon: 'error', title: 'Terjadi kesalahan jaringan' });
+                btn.disabled = false;
+                btn.innerHTML = `<i data-lucide="check" class="w-3 h-3"></i> ACC`;
+                lucide.createIcons();
+            });
         }
     </script>
 </body>
