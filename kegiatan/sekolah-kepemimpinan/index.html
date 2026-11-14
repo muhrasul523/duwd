@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Konfirmasi DUWD</title>
+    
+    <link rel="icon" type="image/png" href="logo_wi.png">
+    <meta property="og:title" content="Konfirmasi Kehadiran DUWD">
+    <meta property="og:description" content="Formulir Pendaftaran & Konfirmasi Kegiatan Majelis Kepemimpinan DUWD Wahdah Islamiyah">
+    <meta property="og:image" content="logo_wi.png">
+    <!-- Ganti URL ini dengan URL WebApp Anda jika dihosting di Github -->
+    <meta property="og:url" content="https://script.google.com/macros/s/AKfycbyrpKkY1ubFZQYnKqTLMvsA0B1_tbgdNw_EzKO6a_DG3WQ8ec4EVHnjDuvRIwiMMiE9Xg/exec">
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        :root {
+            --soft-blue: #e0f2fe; --soft-green: #dcfce7;
+            --font-main: 'Plus Jakarta Sans', sans-serif;
+        }
+        body {
+            font-family: var(--font-main);
+            background: radial-gradient(circle at top left, var(--soft-blue), transparent 70%),
+                        radial-gradient(circle at bottom right, var(--soft-green), transparent 70%);
+            background-color: #f8fafc;
+            min-height: 100vh;
+            color: #1e293b;
+        }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 10px 40px -10px rgba(0,0,0,0.05);
+            border-radius: 1.25rem;
+        }
+        
+        .glass-input {
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid rgba(203, 213, 225, 0.8);
+            transition: all 0.3s;
+        }
+        .glass-input:focus {
+            background: rgba(255, 255, 255, 1);
+            border-color: #0ea5e9;
+            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.15);
+            outline: none;
+        }
+
+        .btn-primary { background: linear-gradient(135deg, #0ea5e9, #0284c7); color: white; transition: all 0.2s;}
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 20px -8px rgba(14, 165, 233, 0.6); }
+
+        .custom-radio:checked + div { border-color: #0ea5e9; background-color: #f0f9ff; }
+        .custom-radio:checked + div .radio-dot { background-color: #0ea5e9; border-color: #0ea5e9; }
+        .custom-checkbox:checked + div { border-color: #10b981; background-color: #ecfdf5; }
+        .custom-checkbox:checked + div .check-icon { display: block; }
+
+        #loading-overlay {
+            position: fixed; inset: 0; background: rgba(255, 255, 255, 0.5); backdrop-filter: blur(5px);
+            z-index: 9999; display: none; justify-content: center; align-items: center; flex-direction: column;
+        }
+        .spinner { width: 45px; height: 45px; border: 4px solid #bae6fd; border-left-color: #0284c7; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        
+        .autocomplete-list { max-height: 200px; overflow-y: auto; }
+        .autocomplete-item:hover { background-color: #f1f5f9; cursor: pointer; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div id="loading-overlay">
+        <div class="spinner mb-4"></div>
+        <p class="text-sky-800 font-medium animate-pulse">Memproses data...</p>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="glass-panel mx-4 mt-4 px-6 py-4 flex justify-between items-center sticky top-4 z-50">
+        <div class="flex items-center gap-3">
+            <img src="logo_wi.png" alt="Logo" class="w-10 h-10 object-contain drop-shadow-md rounded" onerror="this.src='https://ui-avatars.com/api/?name=WI&background=0ea5e9&color=fff'">
+            <div>
+                <h1 class="font-bold text-lg leading-tight text-slate-800">DUWD App</h1>
+                <p class="text-xs text-slate-500 font-medium">Majelis Kepemimpinan</p>
+            </div>
+        </div>
+        <div class="flex gap-4">
+            <a href="#" onclick="switchView('form')" class="text-sm font-semibold text-slate-600 hover:text-sky-600 transition">Formulir</a>
+            <a href="#admin" onclick="switchView('admin')" class="text-sm font-semibold text-slate-600 hover:text-sky-600 transition flex items-center gap-1"><i data-lucide="lock" class="w-3 h-3"></i> Admin</a>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto p-4 mt-6">
+        
+        <!-- VIEW FORM -->
+        <section id="view-form" class="max-w-2xl mx-auto hidden">
+            <div class="glass-panel p-8">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl font-bold text-slate-800 mb-2" id="ui-event-name">Konfirmasi Kehadiran</h2>
+                    <p class="text-slate-500 text-sm">Lengkapi formulir pendaftaran. Data akan diverifikasi oleh Admin.</p>
+                </div>
+
+                <form id="registrationForm" onsubmit="submitForm(event)" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-1">Nomor WhatsApp</label>
+                            <input type="text" id="wa" required class="glass-input w-full px-4 py-2.5 rounded-xl text-slate-700" placeholder="628123456789">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-slate-700 mb-1">Nama Lengkap</label>
+                            <input type="text" id="nama" required class="glass-input w-full px-4 py-2.5 rounded-xl text-slate-700 font-semibold" placeholder="NAMA SESUAI SERTIFIKAT">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-1">Alamat Email Aktif</label>
+                        <input type="email" id="email" required class="glass-input w-full px-4 py-2.5 rounded-xl text-slate-700" placeholder="Sertifikat akan dikirim ke email ini">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Entitas</label>
+                        <div id="entitas-container" class="grid grid-cols-2 sm:grid-cols-3 gap-3"></div>
+                    </div>
+
+                    <div class="relative z-40">
+                        <label class="block text-sm font-bold text-slate-700 mb-1">Asal Daerah (Ketik & Pilih)</label>
+                        <input type="text" id="asal" required autocomplete="off" class="glass-input w-full px-4 py-2.5 rounded-xl text-slate-700" placeholder="Cari asal DPW/DPD...">
+                        <ul id="asal-autocomplete" class="autocomplete-list absolute hidden w-full bg-white border border-slate-200 shadow-xl rounded-xl mt-1 z-50"></ul>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-bold text-slate-700 mb-2">Sesi yang Diikuti</label>
+                        <div id="sesi-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3"></div>
+                    </div>
+
+                    <button type="submit" class="btn-primary w-full py-3.5 rounded-xl font-bold flex items-center justify-center gap-2 mt-4 text-lg">
+                        <i data-lucide="send" class="w-5 h-5"></i> Kirim Data
+                    </button>
+                </form>
+            </div>
+        </section>
+
+        <!-- VIEW ADMIN -->
+        <section id="view-admin" class="hidden">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                <div class="glass-panel p-5 text-center">
+                    <p class="text-xs text-slate-500 font-bold uppercase tracking-wider mb-1">Total Data</p>
+                    <h3 class="text-3xl font-extrabold text-slate-800" id="stat-total">0</h3>
+                </div>
+                <div class="glass-panel p-5 text-center bg-sky-50/50">
+                    <p class="text-xs text-sky-600 font-bold uppercase tracking-wider mb-1">Terverifikasi</p>
+                    <h3 class="text-3xl font-extrabold text-sky-700" id="stat-verified">0</h3>
+                </div>
+                <div class="glass-panel p-5 text-center bg-emerald-50/50">
+                    <p class="text-xs text-emerald-600 font-bold uppercase tracking-wider mb-1">Terkirim</p>
+                    <h3 class="text-3xl font-extrabold text-emerald-700" id="stat-emailed">0</h3>
+                </div>
+                <div class="glass-panel p-5 text-center bg-amber-50/50">
+                    <p class="text-xs text-amber-600 font-bold uppercase tracking-wider mb-1">Pending</p>
+                    <h3 class="text-3xl font-extrabold text-amber-700" id="stat-pending">0</h3>
+                </div>
+            </div>
+
+            <div class="glass-panel p-6 mb-8">
+                <h3 class="font-bold text-slate-800 mb-4 flex items-center gap-2"><i data-lucide="pie-chart" class="w-5 h-5 text-sky-500"></i> Analisis Sesi (Peserta Verifikasi)</h3>
+                <div id="sesi-stats-container" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+            </div>
+
+            <div class="glass-panel overflow-hidden">
+                <div class="p-5 border-b border-slate-200/50 flex flex-wrap gap-4 justify-between items-center bg-white/40">
+                    <h3 class="font-bold text-slate-800">Manajemen Peserta</h3>
+                    <input type="text" id="searchInput" onkeyup="filterTable()" class="glass-input w-full md:w-72 px-4 py-2 rounded-xl text-sm" placeholder="Cari nama, WA, atau asal...">
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left whitespace-nowrap">
+                        <thead>
+                            <tr class="bg-slate-50/50 text-slate-500 text-xs uppercase tracking-wider">
+                                <th class="py-3 px-5 font-bold">Info Kontak</th>
+                                <th class="py-3 px-5 font-bold">Asal & Entitas</th>
+                                <th class="py-3 px-5 font-bold">Sesi / Kehadiran</th>
+                                <th class="py-3 px-5 font-bold">Status</th>
+                                <th class="py-3 px-5 font-bold text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body" class="text-sm text-slate-700 divide-y divide-slate-100">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        lucide.createIcons();
+        const PIN_ADMIN = "duwd1404";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyrpKkY1ubFZQYnKqTLMvsA0B1_tbgdNw_EzKO6a_DG3WQ8ec4EVHnjDuvRIwiMMiE9Xg/exec";
+
+        let db = { users: [], config: {}, entitasData: [], sesiData: [] };
+        
+        const Toast = Swal.mixin({
+            toast: true, position: 'top-end', showConfirmButton: false, timer: 3000,
+            customClass: { popup: 'backdrop-blur-md rounded-xl shadow-lg border border-slate-100' }
+        });
+
+        document.addEventListener("DOMContentLoaded", () => {
+            handleRouting();
+            window.addEventListener("hashchange", handleRouting);
+            loadData();
+            setupFormListeners();
+        });
+
+        function handleRouting() {
+            const hash = window.location.hash;
+            if (hash === '#admin') {
+                if (sessionStorage.getItem('auth') !== 'true') {
+                    Swal.fire({
+                        title: 'Keamanan Admin', input: 'password', inputPlaceholder: 'Masukkan PIN', confirmButtonText: 'Masuk', confirmButtonColor: '#0ea5e9'
+                    }).then((result) => {
+                        if (result.value === PIN_ADMIN) { sessionStorage.setItem('auth', 'true'); switchView('admin'); } 
+                        else { Toast.fire({ icon: 'error', title: 'PIN Salah' }); window.location.hash = ''; }
+                    });
+                } else { switchView('admin'); }
+            } else { switchView('form'); }
+        }
+
+        function switchView(view) {
+            document.getElementById('view-form').classList.add('hidden');
+            document.getElementById('view-admin').classList.add('hidden');
+            document.getElementById(`view-${view}`).classList.remove('hidden');
+            if (view === 'admin') renderAdminUI();
+        }
+
+        function loadData() {
+            document.getElementById('loading-overlay').style.display = 'flex';
+            fetch(SCRIPT_URL + "?action=getData").then(res => res.json()).then(data => {
+                db = data; buildFormOptions();
+                if(db.config.EventName) document.getElementById('ui-event-name').innerText = db.config.EventName;
+                renderAdminUI();
+                document.getElementById('loading-overlay').style.display = 'none';
+            }).catch(err => {
+                Toast.fire({ icon: 'error', title: 'Gagal menghubungi server database.' });
+                document.getElementById('loading-overlay').style.display = 'none';
+            });
+        }
+
+        function buildFormOptions() {
+            const entitasSet = [...new Set(db.entitasData.map(item => item.entitas))];
+            const entitasContainer = document.getElementById('entitas-container');
+            entitasContainer.innerHTML = '';
+            entitasSet.forEach((ent) => {
+                entitasContainer.insertAdjacentHTML('beforeend', `
+                    <label class="cursor-pointer relative">
+                        <input type="radio" name="entitas" value="${ent}" class="custom-radio peer sr-only" required onchange="resetAsal()">
+                        <div class="px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium text-slate-600 transition flex items-center gap-3">
+                            <div class="radio-dot w-4 h-4 rounded-full border-2 border-slate-300 transition"></div>${ent}
+                        </div>
+                    </label>`);
+            });
+
+            const sesiContainer = document.getElementById('sesi-container');
+            sesiContainer.innerHTML = '';
+            db.sesiData.forEach((sesi) => {
+                sesiContainer.insertAdjacentHTML('beforeend', `
+                    <label class="cursor-pointer relative">
+                        <input type="checkbox" name="sesi" value="${sesi}" class="custom-checkbox peer sr-only">
+                        <div class="px-4 py-3 rounded-xl border border-slate-200 text-sm font-medium text-slate-600 transition flex items-center justify-between">
+                            <span>${sesi}</span><i data-lucide="check" class="check-icon w-4 h-4 text-emerald-600 hidden"></i>
+                        </div>
+                    </label>`);
+            });
+            lucide.createIcons();
+        }
+
+        const inputAsal = document.getElementById('asal');
+        const listAsal = document.getElementById('asal-autocomplete');
+        function resetAsal() { inputAsal.value = ''; }
+
+        inputAsal.addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            const selectedEntitas = document.querySelector('input[name="entitas"]:checked')?.value;
+            
+            if(!selectedEntitas) { Toast.fire({ icon: 'warning', title: 'Pilih Entitas terlebih dahulu' }); this.value = ''; return; }
+            listAsal.innerHTML = '';
+            if (query.length < 1) { listAsal.classList.add('hidden'); return; }
+
+            const filtered = db.entitasData.filter(item => item.entitas === selectedEntitas && item.asal.toLowerCase().includes(query)).slice(0, 7);
+            if (filtered.length > 0) {
+                filtered.forEach(item => {
+                    const li = document.createElement('li');
+                    li.className = 'autocomplete-item px-4 py-3 border-b text-sm font-medium text-slate-700';
+                    li.innerText = item.asal;
+                    li.onclick = () => { inputAsal.value = item.asal; listAsal.classList.add('hidden'); };
+                    listAsal.appendChild(li);
+                });
+                listAsal.classList.remove('hidden');
+            } else { listAsal.classList.add('hidden'); }
+        });
+        document.addEventListener('click', (e) => { if(e.target !== inputAsal) listAsal.classList.add('hidden'); });
+
+        function setupFormListeners() {
+            const elWA = document.getElementById('wa');
+            elWA.addEventListener('input', function() {
+                let val = this.value.replace(/\D/g, '');
+                if (val.startsWith('08')) val = '628' + val.substring(2);
+                this.value = val;
+            });
+            elWA.addEventListener('blur', function() { if(this.value.length > 8) checkAutofill(this.value); });
+            document.getElementById('nama').addEventListener('input', function() { this.value = this.value.toUpperCase(); });
+        }
+
+        function checkAutofill(waInput) {
+            const user = db.users.find(u => u.wa === waInput);
+            if (user) {
+                document.getElementById('nama').value = user.nama;
+                document.getElementById('email').value = user.email;
+                document.getElementById('asal').value = user.asal;
+                
+                const radio = document.querySelector(`input[name="entitas"][value="${user.entitas}"]`);
+                if(radio) radio.checked = true;
+
+                document.querySelectorAll('input[name="sesi"]').forEach(cb => cb.checked = false);
+                const userSesiArray = user.sesi.split(", ");
+                userSesiArray.forEach(s => { const cb = document.querySelector(`input[name="sesi"][value="${s}"]`); if(cb) cb.checked = true; });
+                
+                Toast.fire({ icon: 'info', title: 'Data ditemukan, siap diperbarui' });
+            }
+        }
+
+        function submitForm(e) {
+            e.preventDefault();
+            const sesiChecked = Array.from(document.querySelectorAll('input[name="sesi"]:checked')).map(cb => cb.value);
+            if(sesiChecked.length === 0) return Toast.fire({ icon: 'warning', title: 'Pilih minimal 1 sesi' });
+            const entitasChecked = document.querySelector('input[name="entitas"]:checked');
+            if(!entitasChecked) return Toast.fire({ icon: 'warning', title: 'Pilih entitas' });
+
+            const payload = {
+                wa: document.getElementById('wa').value, nama: document.getElementById('nama').value,
+                email: document.getElementById('email').value, entitas: entitasChecked.value,
+                asal: document.getElementById('asal').value, sesi: sesiChecked
+            };
+
+            document.getElementById('loading-overlay').style.display = 'flex';
+            fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'save', ...payload }) })
+            .then(res => res.json()).then(res => {
+                Toast.fire({ icon: 'success', title: res.message });
+                document.getElementById('registrationForm').reset(); loadData();
+            }).catch(err => {
+                Toast.fire({ icon: 'error', title: 'Gagal mengirim data' });
+                document.getElementById('loading-overlay').style.display = 'none';
+            });
+        }
+
+        function renderAdminUI() {
+            if(!db.users) return;
+
+            const total = db.users.length;
+            const verifiedUsers = db.users.filter(u => u.status === 'Terverifikasi');
+            const emailedUsers = db.users.filter(u => u.statusEmail === 'Terkirim');
+            
+            document.getElementById('stat-total').innerText = total;
+            document.getElementById('stat-verified').innerText = verifiedUsers.length;
+            document.getElementById('stat-emailed').innerText = emailedUsers.length;
+            document.getElementById('stat-pending').innerText = total - verifiedUsers.length;
+
+            let sesiCounts = {};
+            db.sesiData.forEach(s => sesiCounts[s] = 0);
+            verifiedUsers.forEach(u => { u.sesi.split(", ").forEach(s => { if(sesiCounts[s] !== undefined) sesiCounts[s]++; }); });
+
+            const sesiStatDiv = document.getElementById('sesi-stats-container');
+            sesiStatDiv.innerHTML = '';
+            for(let key in sesiCounts) {
+                let p = verifiedUsers.length === 0 ? 0 : Math.round((sesiCounts[key] / verifiedUsers.length) * 100);
+                sesiStatDiv.innerHTML += `
+                    <div class="bg-slate-50 border border-slate-100 p-4 rounded-xl">
+                        <p class="text-xs text-slate-500 font-bold mb-1">${key}</p>
+                        <div class="flex items-end justify-between">
+                            <span class="text-2xl font-black text-sky-700">${sesiCounts[key]} <span class="text-sm font-medium text-slate-400">Org</span></span>
+                            <span class="text-sm font-bold text-emerald-600">${p}%</span>
+                        </div>
+                    </div>`;
+            }
+
+            const tbody = document.getElementById('table-body');
+            tbody.innerHTML = '';
+            const sortedUsers = [...db.users].reverse();
+
+            sortedUsers.forEach(user => {
+                const isVerified = user.status === 'Terverifikasi';
+                const isEmailed = user.statusEmail === 'Terkirim';
+                
+                let statusBadge = '';
+                if(isVerified) {
+                    statusBadge = `<span class="px-2 py-1 bg-sky-100 text-sky-700 rounded text-[10px] font-bold shadow-sm mr-1"><i data-lucide="user-check" class="w-3 h-3 inline"></i> ACC</span>`;
+                    if(isEmailed) statusBadge += `<span class="px-2 py-1 bg-emerald-100 text-emerald-700 rounded text-[10px] font-bold shadow-sm"><i data-lucide="mail-check" class="w-3 h-3 inline"></i> Sent</span>`;
+                    else statusBadge += `<span class="px-2 py-1 bg-red-100 text-red-700 rounded text-[10px] font-bold shadow-sm"><i data-lucide="mail-warning" class="w-3 h-3 inline"></i> Fail</span>`;
+                } else {
+                    statusBadge = `<span class="px-2 py-1 bg-amber-100 text-amber-700 rounded text-[10px] font-bold shadow-sm">Pending</span>`;
+                }
+                
+                const actionBtn = isVerified
+                    ? `<span class="text-[10px] text-slate-400 font-medium">Selesai</span>`
+                    : `<button onclick="verifyAction('${user.wa}')" class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-lg text-xs font-bold shadow-md hover:scale-105 transition flex items-center gap-1 mx-auto"><i data-lucide="check" class="w-3 h-3"></i> ACC</button>`;
+
+                const sesiList = user.sesi.split(", ").map(s => `<span class="inline-block bg-slate-100 text-slate-600 text-[10px] px-2 py-0.5 rounded mr-1 mb-1 border border-slate-200">${s}</span>`).join('');
+
+                const tr = document.createElement('tr');
+                tr.className = 'hover:bg-slate-50/70 transition';
+                tr.innerHTML = `
+                    <td class="py-3 px-5">
+                        <div class="font-bold text-slate-800">${user.nama}</div>
+                        <div class="text-xs text-sky-600 font-medium">${user.wa}</div>
+                        <div class="text-[10px] text-slate-400">${user.email}</div>
+                    </td>
+                    <td class="py-3 px-5">
+                        <span class="font-bold text-slate-700">${user.entitas}</span>
+                        <div class="text-xs text-slate-500">${user.asal}</div>
+                    </td>
+                    <td class="py-3 px-5 whitespace-normal w-48">${sesiList}</td>
+                    <td class="py-3 px-5">${statusBadge}<br>
+                        ${user.noSertifikat ? `<span class="text-[10px] font-mono text-slate-500 mt-1 block">${user.noSertifikat}</span>` : ''}
+                    </td>
+                    <td class="py-3 px-5 text-center">${actionBtn}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+            lucide.createIcons();
+        }
+
+        function filterTable() {
+            const input = document.getElementById("searchInput").value.toUpperCase();
+            const tr = document.getElementById("table-body").getElementsByTagName("tr");
+            for (let i = 0; i < tr.length; i++) {
+                let text = tr[i].innerText;
+                tr[i].style.display = text.toUpperCase().indexOf(input) > -1 ? "" : "none";
+            }
+        }
+
+        function verifyAction(wa) {
+            Swal.fire({
+                title: 'Verifikasi Peserta?',
+                text: "Sistem akan membuat PDF & Nomor Sertifikat, lalu mengirim via email.",
+                icon: 'question', showCancelButton: true, confirmButtonColor: '#10b981', confirmButtonText: 'Ya, Verifikasi!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('loading-overlay').style.display = 'flex';
+                    fetch(SCRIPT_URL, { method: 'POST', body: JSON.stringify({ action: 'verify', wa: wa }) })
+                    .then(res => res.json()).then(res => {
+                        if(res.success) { Toast.fire({ icon: 'success', title: res.message }); loadData(); } 
+                        else { Toast.fire({ icon: 'error', title: res.message }); document.getElementById('loading-overlay').style.display = 'none'; }
+                    }).catch(err => {
+                        Toast.fire({ icon: 'error', title: 'Terjadi kesalahan jaringan' });
+                        document.getElementById('loading-overlay').style.display = 'none';
+                    });
+                }
+            })
+        }
+    </script>
+</body>
+</html>
