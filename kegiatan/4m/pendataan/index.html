@@ -503,17 +503,20 @@
         searchInput.disabled = false;
         searchInput.value = '';
         
-        // Cek secara dinamis, Muswil/Mukerwil = DPW, Musda/Mukerda = DPD
+        // Cek secara dinamis, Muswil/Mukerwil = DPW & DPLN, Musda/Mukerda = DPD
         const isDPW = (kegiatan === 'Mukerwil' || kegiatan === 'Muswil');
-        const filterStatus = isDPW ? 'DPW' : 'DPD';
         
-        searchInput.placeholder = `Ketik nama ${isDPW ? 'DPW Provinsi' : 'DPD Kabupaten/Kota'}...`;
+        searchInput.placeholder = `Ketik nama ${isDPW ? 'DPW Provinsi / DPLN' : 'DPD Kabupaten/Kota'}...`;
         document.getElementById('wilayahSelect').value = '';
         
         // Hide lanjutan
         document.getElementById('formLanjutan').classList.add('hidden');
 
-        const filteredWilayah = db.wilayah.filter(w => w.Status && w.Status.toString().trim().toUpperCase() === filterStatus);
+        const filteredWilayah = db.wilayah.filter(w => {
+            if (!w.Status) return false;
+            const status = w.Status.toString().trim().toUpperCase();
+            return isDPW ? (status === 'DPW' || status === 'DPLN') : (status === 'DPD');
+        });
         
         searchInput.onfocus = () => {
             searchInput.dispatchEvent(new Event('input')); 
@@ -871,7 +874,11 @@
         const p3 = payload.pendamping3 ? extractName(payload.pendamping3) : "";
         
         const isDPW = (payload.kegiatan === 'Mukerwil' || payload.kegiatan === 'Muswil');
-        let wilayahStatus = isDPW ? 'DPW' : 'DPD';
+        const wilayahData = db.wilayah.find(w => String(w['Kode']).trim() === String(payload.kodeWilayah).trim());
+        const statusAsli = wilayahData && wilayahData.Status ? wilayahData.Status.toString().trim().toUpperCase() : '';
+        
+        let wilayahStatus = statusAsli === 'DPLN' ? 'DPLN' : (isDPW ? 'DPW' : 'DPD');
+        let waNumber = statusAsli === 'DPLN' ? '6285732780889' : '6281277778448';
         
         let waText = `*KONFIRMASI ${payload.kegiatan.toUpperCase()} ${wilayahStatus} ${payload.wilayah.toUpperCase()}*\n\n`;
         waText += `Tanggal : ${formatWADate(payload.mulai, payload.selesai)}\n`;
@@ -879,7 +886,7 @@
         if (p2) waText += `\n2. ${p2}`;
         if (p3) waText += `\n3. ${p3}`;
         
-        document.getElementById('btnKonfirmasiWA').href = `https://wa.me/6281277778448?text=${encodeURIComponent(waText)}`;
+        document.getElementById('btnKonfirmasiWA').href = `https://wa.me/${waNumber}?text=${encodeURIComponent(waText)}`;
 
         // Update local memory
         const i = db.rekap.findIndex(r => r['Kode Wilayah'] == payload.kodeWilayah && r['Kegiatan'] == payload.kegiatan);
@@ -971,7 +978,9 @@
 
         processedRekap.forEach((r, index) => {
             let rowColor = index % 2 === 0 ? 'bg-white' : 'bg-slate-50';
-            let statusWilayah = (r.Kegiatan === 'Mukerwil' || r.Kegiatan === 'Muswil') ? 'DPW' : 'DPD';
+            const wData = db.wilayah.find(w => String(w['Kode']).trim() === String(r['Kode Wilayah']).trim());
+            const wStatus = wData && wData.Status ? wData.Status.toString().trim().toUpperCase() : '';
+            let statusWilayah = wStatus === 'DPLN' ? 'DPLN' : ((r.Kegiatan === 'Mukerwil' || r.Kegiatan === 'Muswil') ? 'DPW' : 'DPD');
             
             // Format Tema Warna Card Jenis Kegiatan
             let theme = '';
